@@ -101,20 +101,22 @@ const first = places[0];
 
   const placesById = Object.fromEntries(places.map((place) => [place.id, place]));
 
-  function clampTooltip() {
-    if (!card || !tooltip || !marker) return;
+function clampTooltip() {
+  if (!card || !tooltip) return;
 
-    const cardRect = card.getBoundingClientRect();
-    const markerRect = marker.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const offsetFromCard = markerRect.left - cardRect.left;
-    const centerLeft = -tooltipRect.width / 2;
-    const minLeft = 10 - offsetFromCard;
-    const maxLeft = cardRect.width - tooltipRect.width - offsetFromCard - 10;
-    const clampedLeft = Math.min(Math.max(centerLeft, minLeft), maxLeft);
+  tooltip.style.setProperty("--offset", "0px");
+  const cardRect = card.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+  const padding = 10;
 
-    tooltip.style.setProperty("--offset", `${clampedLeft}px`);
+  let offset = 0;
+  if (tooltipRect.left < cardRect.left + padding) {
+    offset = (cardRect.left + padding) - tooltipRect.left;
+  } else if (tooltipRect.right > cardRect.right - padding) {
+    offset = (cardRect.right - padding) - tooltipRect.right;
   }
+  tooltip.style.setProperty("--offset", `${offset}px`);
+}
 
   function showMapPlace(placeId) {
     const place = placesById[placeId];
@@ -313,17 +315,15 @@ const first = places[0];
     animation: evtPulse 1.8s ease infinite;
   }
 
-  .evt-map__tooltip {
+.evt-map__tooltip {
     position: absolute;
     left: 0;
-    /* Ajustado para abrir para cima evitando cortes embaixo */
     bottom: 22px;
     transform: translate(calc(-50% + var(--offset, 0px)), 0);
 
-    /* Narrower tooltip so edge marker labels wrap vertically instead of overflowing */
-    min-width: 140px;
-    max-width: min(220px, calc(100vw - 44px));
-    width: min(220px, calc(100vw - 44px));
+    min-width: 100px;
+    max-width: min(150px, calc(100vw - 44px));
+    width: min(150px, calc(100vw - 44px));
     box-sizing: border-box;
     white-space: normal;
     overflow-wrap: break-word;
@@ -332,7 +332,7 @@ const first = places[0];
     background: #fff;
     color: var(--teal);
     border-radius: 14px;
-    padding: 10px 14px; /* Mais respiro para o texto */
+    padding: 8px 10px;
     text-align: center;
     box-shadow: 0 18px 35px rgba(0, 0, 0, .3);
     animation: evtTooltipIn .35s ease both;
