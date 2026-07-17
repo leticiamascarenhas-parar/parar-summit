@@ -1,0 +1,261 @@
+---
+// FaqEvento.astro
+// Uso básico: <FaqEvento />
+// Uso customizado: veja os Props abaixo
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs?: FaqItem[];
+  headingLine1Start?: string; // "TEM" (destaque claro)
+  headingLine1End?: string;   // "ALGUMA DÚVIDA" (branco)
+  headingLine2?: string;      // "SOBRE O EVENTO?" (escuro)
+  ctaText?: string;
+  ctaHref?: string;
+}
+
+const {
+  faqs = [
+    {
+      question: "1. Qual o horário do evento?",
+      answer: "O PARAR Summit 26 será realizado nos dias 20 e 21 de outubro, com início às 8h00 nos dois dias de evento.",
+    },
+    {
+      question: "2. Como é feito o credenciamento?",
+      answer: "Após concluir sua inscrição e o pagamento pelo Sympla, você receberá sua credencial no e-mail cadastrado. No dia do evento, basta informar seu CPF ou apresentar o número da credencial diretamente no totem de autoatendimento para retirar seu crachá. O uso do crachá é obrigatório e intransferível durante todo o evento. A circulação de pessoas sem crachá não será permitida. Aqueles que estiverem sem identificação serão convidados a se retirar do local.",
+    },
+    {
+      question: "3. O que está incluso na inscrição?",
+      answer: "O ingresso dá direito a participar de todas as palestras e feira de negócios nos dois dias de evento. A participação no sorteio será exclusiva para a categoria de ingressos Profissionais de Frotas.",
+    },
+    {
+      question: "4. Haverá alimentação no local?",
+      answer: "Sim, haverá coffee breaks em momentos determinados. Para almoço completo, existem opções no entorno do local do evento.",
+    },
+    {
+      question: "5. Haverá certificado de participação?",
+      answer: "Sim. Mas para receber seu certificado digital, o participante deve responder a pesquisa de satisfação do evento, enviada após o evento.",
+    },
+  ],
+  headingLine1Start = "TEM",
+  headingLine1End = "ALGUMA DÚVIDA",
+  headingLine2 = "SOBRE O EVENTO?",
+  ctaText = "Entre em contato",
+  ctaHref = "#contato",
+} = Astro.props;
+---
+
+<section class="faq-section">
+  <div class="faq-inner">
+
+    <div class="faq-list">
+      {faqs.map((item, i) => (
+        <div class="faq-item">
+          <button class="faq-question" data-index={i}>
+            <span>{item.question}</span>
+            <span class="faq-arrow" aria-hidden="true">▼</span>
+          </button>
+          <div class="faq-panel" data-index={i}>
+            <p>{item.answer}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="faq-side">
+      <h2 class="faq-heading">
+        <span class="hl-soft">{headingLine1Start}</span>
+        <span class="hl-white"> {headingLine1End}</span>
+        <br />
+        <span class="hl-dark">{headingLine2}</span>
+      </h2>
+      <a class="faq-cta" href={ctaHref}>{ctaText}</a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const questions = document.querySelectorAll<HTMLButtonElement>(".faq-question");
+  const panels = document.querySelectorAll<HTMLDivElement>(".faq-panel");
+
+  questions.forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = button.dataset.index;
+      const isActive = button.classList.contains("active");
+
+      questions.forEach((btn) => btn.classList.remove("active"));
+      panels.forEach((p) => p.classList.remove("open"));
+
+      if (!isActive) {
+        button.classList.add("active");
+        const panel = document.querySelector(`.faq-panel[data-index="${index}"]`);
+        panel?.classList.add("open");
+      }
+    });
+  });
+</script>
+
+<style>
+  .faq-section {
+    --green: #00c264;
+    --dark: #024653;
+    --dark-soft: #05505f;
+
+    background: var(--green);
+    padding: 70px 24px;
+    font-family: Raleway, sans-serif;
+  }
+
+  .faq-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  /* ---------- Lista de perguntas ---------- */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(2, 70, 83, 0.25);
+  }
+
+  .faq-item:first-child .faq-question {
+    padding-top: 0;
+  }
+
+  .faq-question {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 20px 34px 20px 0;
+    position: relative;
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    transition: opacity 0.2s ease;
+  }
+
+  .faq-question:hover {
+    opacity: 0.8;
+  }
+
+  .faq-arrow {
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-question.active .faq-arrow {
+    transform: rotate(180deg);
+  }
+
+  .faq-panel {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.45s ease, opacity 0.4s ease, padding 0.45s ease;
+  }
+
+  .faq-panel p {
+    margin: 0;
+    color: var(--dark);
+    font-size: 15.5px;
+    line-height: 1.6;
+  }
+
+  .faq-panel.open {
+    max-height: 500px;
+    opacity: 1;
+    padding-bottom: 24px;
+  }
+
+  /* ---------- Coluna lateral ---------- */
+  .faq-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+  }
+
+  .faq-heading {
+    margin: 0;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-weight: 900;
+    font-size: clamp(30px, 3.4vw, 42px);
+    line-height: 1.08;
+    letter-spacing: -0.5px;
+  }
+
+  .hl-soft {
+    color: var(--dark);
+  }
+
+  .hl-white {
+    color: #f4fff9;
+  }
+
+  .hl-dark {
+    color: var(--dark);
+  }
+
+  .faq-cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 16px 30px;
+    border-radius: 999px;
+    background: var(--dark);
+    color: var(--green);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .faq-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(2, 70, 83, 0.35);
+  }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 900px) {
+    .faq-inner {
+      grid-template-columns: 1fr;
+      gap: 44px;
+    }
+
+    .faq-side {
+      order: -1;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .faq-section {
+      padding: 50px 18px;
+    }
+
+    .faq-question {
+      font-size: 16px;
+      padding-right: 24px;
+    }
+  }
+</style>

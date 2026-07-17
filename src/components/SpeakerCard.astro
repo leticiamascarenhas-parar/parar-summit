@@ -1,0 +1,493 @@
+---
+const {
+  nome,
+  cargo,
+  descricao,
+  foto,
+  palestra,
+  detalhes
+} = Astro.props;
+---
+
+<article class="speaker-card">
+  <button
+    class="speaker-card-button"
+    type="button"
+    aria-label={`Ver palestra de ${nome}`}
+    aria-expanded="false"
+  >
+    <div class="speaker-card-inner">
+
+      <!-- FRENTE -->
+      <div class="speaker-card-face speaker-card-front">
+        <div class="speaker-photo">
+          <img src={foto} alt={nome} />
+
+          <div class="photo-gradient"></div>
+
+          <div class="speaker-summary">
+            <span class="speaker-label">PLENÁRIA PRINCIPAL</span>
+
+            <h3>{nome}</h3>
+
+            <p>{cargo}</p>
+          </div>
+
+          <span class="speaker-action">
+            <span>Ver palestra</span>
+            <span class="speaker-arrow" aria-hidden="true">→</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- VERSO -->
+      <div class="speaker-card-face speaker-card-back">
+        <div class="back-header">
+          <span>PALESTRA</span>
+
+          <span class="back-close" aria-hidden="true">×</span>
+        </div>
+
+        <div class="back-content">
+          <h3>{palestra}</h3>
+
+          {detalhes && <p class="palestra-detalhes">{detalhes}</p>}
+
+          {descricao && (
+            <div class="speaker-description">
+              <span>SOBRE O PALESTRANTE</span>
+              <p>{descricao}</p>
+            </div>
+          )}
+        </div>
+
+        <small>Clique para voltar</small>
+      </div>
+
+    </div>
+  </button>
+</article>
+
+<style>
+  .speaker-card {
+    width: 340px;
+    aspect-ratio: 4 / 5.4;
+    flex: 0 0 340px;
+
+    perspective: 1500px;
+
+    font-family: "Raleway", sans-serif;
+
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease,
+      filter 0.4s ease;
+  }
+
+  .speaker-card-button {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+    border: 0;
+    border-radius: 24px;
+
+    background: transparent;
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .speaker-card-inner {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    transform-style: preserve-3d;
+
+    transition:
+      transform 0.8s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .speaker-card.flipped .speaker-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .speaker-card-face {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    border: 2px solid #00c264;
+    border-radius: 24px;
+
+    backface-visibility: hidden;
+    box-sizing: border-box;
+
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.22);
+  }
+
+  /* FRENTE */
+
+  .speaker-card-front {
+    background: #061827;
+  }
+
+  .speaker-photo {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+    background: #061827;
+  }
+
+  .speaker-photo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+    object-fit: cover;
+
+    transition:
+      transform 0.65s cubic-bezier(.22, 1, .36, 1),
+      filter 0.45s ease;
+  }
+
+  .photo-gradient {
+    position: absolute;
+    inset: 0;
+
+    background:
+      linear-gradient(
+        to top,
+        rgba(2, 32, 39, 0.98) 0%,
+        rgba(2, 32, 39, 0.82) 25%,
+        rgba(2, 32, 39, 0.15) 58%,
+        transparent 78%
+      );
+  }
+
+  .speaker-summary {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    bottom: 72px;
+
+    z-index: 2;
+
+    color: #ffffff;
+  }
+
+  .speaker-label {
+    display: block;
+    margin-bottom: 11px;
+
+    color: #00c264;
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.6px;
+  }
+
+  .speaker-summary h3 {
+    max-width: 280px;
+    margin: 0 0 10px;
+
+    color: #ffffff;
+
+    font-size: 29px;
+    line-height: 0.98;
+    font-weight: 900;
+    letter-spacing: -0.7px;
+    text-transform: uppercase;
+  }
+
+  .speaker-summary p {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.74);
+
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  .speaker-action {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    bottom: 24px;
+
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-top: 15px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+
+    color: #00c264;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .speaker-arrow {
+    font-size: 20px;
+
+    transition: transform 0.3s ease;
+  }
+
+  /* VERSO */
+
+  .speaker-card-back {
+    padding: 28px;
+
+    display: flex;
+    flex-direction: column;
+
+    transform: rotateY(180deg);
+
+    background:
+      radial-gradient(
+        circle at top right,
+        rgba(0, 194, 100, 0.18),
+        transparent 38%
+      ),
+      #061827;
+
+    color: #ffffff;
+  }
+
+  .back-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: #00c264;
+  }
+
+  .back-header > span:first-child {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.8px;
+  }
+
+  .back-close {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    font-size: 23px;
+    font-weight: 300;
+  }
+
+  .back-content {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .back-content > h3 {
+    margin: 0 0 18px;
+
+    color: #ffffff;
+
+    font-size: 30px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .palestra-detalhes {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.74);
+
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .speaker-description {
+    margin-top: 26px;
+    padding-top: 22px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .speaker-description > span {
+    display: block;
+    margin-bottom: 9px;
+
+    color: #00c264;
+
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.4px;
+  }
+
+  .speaker-description p {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.66);
+
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .speaker-card-back small {
+    color: rgba(255, 255, 255, 0.5);
+
+    font-size: 10px;
+    text-align: center;
+  }
+
+  /* INTERAÇÃO */
+
+  @media (hover: hover) {
+    .speaker-card:not(.flipped):hover {
+      transform: translateY(-8px);
+    }
+
+    .speaker-card:not(.flipped):hover .speaker-photo img {
+      transform: scale(1.045);
+      filter: brightness(1.04);
+    }
+
+    .speaker-card:not(.flipped):hover .speaker-arrow {
+      transform: translateX(5px);
+    }
+  }
+
+  :global(.plenaria-cards.has-flipped .speaker-card:not(.flipped)) {
+    opacity: 0.25;
+    transform: scale(0.96);
+    filter: saturate(0.55);
+  }
+
+  .speaker-card.flipped {
+    position: relative;
+    z-index: 10;
+    transform: translateY(-8px);
+  }
+
+  @media (max-width: 768px) {
+    .speaker-card {
+      width: 280px;
+      min-width: 280px;
+      flex-basis: 280px;
+    }
+
+    .speaker-summary {
+      left: 21px;
+      right: 21px;
+      bottom: 64px;
+    }
+
+    .speaker-summary h3 {
+      font-size: 25px;
+    }
+
+    .speaker-action {
+      left: 21px;
+      right: 21px;
+      bottom: 20px;
+    }
+
+    .speaker-card-back {
+      padding: 23px;
+    }
+
+    .back-content > h3 {
+      font-size: 25px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .speaker-card,
+    .speaker-card-inner,
+    .speaker-photo img,
+    .speaker-arrow {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function iniciarSpeakerCards() {
+    const cards = document.querySelectorAll('.speaker-card');
+
+    cards.forEach((card) => {
+      if (card.getAttribute('data-ready') === 'true') return;
+
+      card.setAttribute('data-ready', 'true');
+
+      const button = card.querySelector('.speaker-card-button');
+
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      button.addEventListener('click', () => {
+        const container = card.closest('.plenaria-cards');
+        const estavaVirado = card.classList.contains('flipped');
+
+        if (container) {
+          container
+            .querySelectorAll('.speaker-card')
+            .forEach((item) => {
+              item.classList.remove('flipped');
+
+              const itemButton = item.querySelector(
+                '.speaker-card-button'
+              );
+
+              itemButton?.setAttribute(
+                'aria-expanded',
+                'false'
+              );
+            });
+        }
+
+        if (!estavaVirado) {
+          card.classList.add('flipped');
+          button.setAttribute('aria-expanded', 'true');
+        }
+
+        if (container) {
+          const temCardVirado =
+            container.querySelector('.speaker-card.flipped');
+
+          container.classList.toggle(
+            'has-flipped',
+            Boolean(temCardVirado)
+          );
+        }
+      });
+    });
+  }
+
+  iniciarSpeakerCards();
+
+  document.addEventListener(
+    'astro:page-load',
+    iniciarSpeakerCards
+  );
+</script>

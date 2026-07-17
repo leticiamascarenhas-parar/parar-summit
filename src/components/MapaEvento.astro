@@ -1,0 +1,463 @@
+---
+import { locaisMapa } from "../data/mapa";
+
+interface LocalMapa {
+  id: string;
+  label?: string;
+  nome?: string;
+  x: string | number;
+  y: string | number;
+  title?: string;
+  text?: string;
+  descricao?: string;
+}
+
+const mapImg = "/images/mapa/mapa-summit.png";
+const tituloImg = "/images/mapa/titulo-mapa.png";
+
+const places = (locaisMapa as LocalMapa[]).map((local) => ({
+  id: local.id,
+  label: local.label ?? local.nome ?? "Local",
+  x: typeof local.x === "number" ? `${local.x}%` : local.x,
+  y: typeof local.y === "number" ? `${local.y}%` : local.y,
+  title: local.title ?? local.nome ?? local.label ?? "Local",
+  text: local.text ?? local.descricao ?? ""
+}));
+
+const first = places[0];
+---
+
+<section id="mapa-evento" class="evt-map">
+  <div class="evt-map__content">
+    <header class="evt-map__header">
+      <span class="evt-map__eyebrow">conheça o</span>
+      <img class="evt-map__titulo" src={tituloImg} alt="Mapa do evento" />
+
+      <div class="evt-map__text">
+        <p>O PARAR Summit 26 chega com uma grande novidade: as trilhas de conteúdo simultâneas! Você escolhe qual conteúdo vai assistir. E para isso, teremos, além do palco principal, 3 salas de conteúdo simultâneas: o Lab 4, Lab 5 e Hub 2. Além disso, ampliamos a feira de negócios, e agora você também terá um lounge especial do Instituto PARAR para se conectar com o nosso time, e fazer suas pausas ao longo do evento.</p>
+      </div>
+    </header>
+
+    <div class="evt-map__stage">
+      <div class="evt-map__map-shell">
+        <div class="evt-map__card">
+          <img class="evt-map__img" src={mapImg} alt="Mapa PARAR Summit 26" />
+          <div class="evt-map__grain"></div>
+
+          {places.map((place, index) => (
+            <button
+              type="button"
+              class:list={["evt-map__dot", { "is-active": index === 0 }]}
+              style={`left:${place.x}; top:${place.y};`}
+              data-place={place.id}
+              aria-label={place.label}
+              aria-selected={index === 0 ? "true" : "false"}
+            ></button>
+          ))}
+
+          {first && (
+            <div class="evt-map__marker" id="mapMarker" style={`left:${first.x}; top:${first.y};`}>
+              <div class="evt-map__pulse"></div>
+              <div class="evt-map__tooltip">
+                <div class="evt-map__tooltip-content" id="tooltipContent">
+                  <strong id="placeTitle">{first.title}</strong>
+                  <span id="placeText">{first.text}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <nav class="evt-map__menu" aria-label="Locais do mapa">
+          {places.map((place, index) => (
+            <button
+              type="button"
+              class:list={["evt-map__menu-item", { "is-active": index === 0 }]}
+              data-place={place.id}
+              aria-selected={index === 0 ? "true" : "false"}
+            >
+              {place.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ places }}>
+  const marker = document.getElementById("mapMarker");
+  const placeTitle = document.getElementById("placeTitle");
+  const placeText = document.getElementById("placeText");
+  const tooltipContent = document.getElementById("tooltipContent");
+  const menuButtons = document.querySelectorAll(".evt-map__menu-item");
+  const dots = document.querySelectorAll(".evt-map__dot");
+
+  const placesById = Object.fromEntries(places.map((place) => [place.id, place]));
+
+  function showMapPlace(placeId) {
+    const place = placesById[placeId];
+    if (!place || !marker || !placeTitle || !placeText || !tooltipContent) return;
+
+    // Atualiza estados visuais e de acessibilidade (aria-selected)
+    menuButtons.forEach((item) => {
+      const isActive = item.dataset.place === placeId;
+      item.classList.toggle("is-active", isActive);
+      item.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    dots.forEach((dot) => {
+      const isActive = dot.dataset.place === placeId;
+      dot.classList.toggle("is-active", isActive);
+      dot.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    // Animação de fade-out rápido do conteúdo do balão antes de mover
+    tooltipContent.style.opacity = "0";
+
+    marker.classList.remove("is-moving");
+    void marker.offsetWidth;
+    marker.classList.add("is-moving");
+
+    marker.style.left = place.x;
+    marker.style.top = place.y;
+
+    // Atualiza os textos logo em seguida
+    setTimeout(() => {
+      placeTitle.textContent = place.title;
+      placeText.textContent = place.text;
+      tooltipContent.style.opacity = "1"; // Fade-in suave de volta
+    }, 250);
+
+    window.setTimeout(() => marker.classList.remove("is-moving"), 800);
+  }
+
+  [...menuButtons, ...dots].forEach((el) => {
+    el.addEventListener("click", () => {
+      const placeId = el.getAttribute("data-place");
+      if (placeId) showMapPlace(placeId);
+    });
+  });
+</script>
+
+<style>
+  .evt-map {
+    --bg: #b7e2d8;
+    --teal: #064852;
+    --green: #00c264;
+    --ice: #27858d;
+
+    background: var(--bg);
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 194, 100, 0.10), transparent 50%);
+    padding: 80px 24px 90px;
+    font-family: "Raleway", sans-serif;
+    color: var(--ice);
+  }
+
+  .evt-map__content {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* ---------- cabeçalho ---------- */
+
+  .evt-map__header {
+    max-width: 640px;
+    margin: 0 auto 48px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .evt-map__eyebrow {
+    display: block;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 15px;
+    color: #064852;
+    margin-bottom: 14px;
+    width: fit-content;
+  }
+
+  .evt-map__titulo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 22px;
+    align-self: center;
+  }
+
+  .evt-map__text p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #064852;
+    margin: 0;
+  }
+
+  /* ---------- mapa ---------- */
+
+  .evt-map__stage {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .evt-map__map-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .evt-map__card {
+    position: relative;
+    border-radius: 20px;
+    overflow: visible; 
+    background: var(--teal);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .evt-map__img {
+    width: 100%;
+    display: block;
+    border-radius: 20px; 
+  }
+
+  .evt-map__grain {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 35, 43, 0.1), rgba(6, 35, 43, 0.3));
+    pointer-events: none;
+    border-radius: 20px; 
+  }
+
+  .evt-map__dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    border: 2px solid rgba(6, 35, 43, 0.5);
+    transform: translate(-50%, -50%);
+    padding: 0;
+    cursor: pointer;
+    z-index: 4;
+    transition: background .2s ease, transform .2s ease;
+  }
+
+  .evt-map__dot:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  .evt-map__dot.is-active {
+    background: var(--green);
+    border-color: #fff;
+  }
+
+  .evt-map__marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    transition: left .75s cubic-bezier(.22, 1, .36, 1), top .75s cubic-bezier(.22, 1, .36, 1);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .evt-map__pulse {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 26px;
+    border: 3px solid var(--green);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: evtPulse 1.8s ease infinite;
+  }
+
+  .evt-map__tooltip {
+    position: absolute;
+    left: 0;
+    /* Ajustado para abrir para cima evitando cortes embaixo */
+    bottom: 22px; 
+    transform: translate(-50%, 0);
+    
+    /* Aumentado o espaço horizontal para que textos médios fluam perfeitamente */
+    min-width: 160px;
+    max-width: 240px;
+    width: max-content;
+    
+    background: #fff;
+    color: var(--teal);
+    border-radius: 14px;
+    padding: 10px 14px; /* Mais respiro para o texto */
+    text-align: center;
+    box-shadow: 0 18px 35px rgba(0, 0, 0, .3);
+    animation: evtTooltipIn .35s ease both;
+  }
+
+  .evt-map__tooltip-content {
+    transition: opacity 0.25s ease-in-out;
+  }
+
+  .evt-map__tooltip strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  .evt-map__tooltip span {
+    display: block;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .evt-map__marker.is-moving .evt-map__tooltip {
+    animation: evtTooltipIn .35s ease both;
+  }
+
+  @keyframes evtPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 194, 100, .45); opacity: 1; }
+    50% { box-shadow: 0 0 0 14px rgba(0, 194, 100, 0); opacity: .8; }
+  }
+
+  @keyframes evtTooltipIn {
+    /* Surge subindo levemente */
+    from { opacity: 0; transform: translate(-50%, 6px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* ---------- lista de locais (Flexbox centralizado) ---------- */
+
+  .evt-map__menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .evt-map__menu-item {
+    border: 1px solid rgba(235, 245, 246, 0.16);
+    background: rgba(235, 245, 246, 0.04);
+    color: var(--ice);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-align: center;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+    
+    flex: 0 1 auto;
+    min-width: 140px;
+  }
+
+  .evt-map__menu-item:hover {
+    border-color: rgba(0, 194, 100, 0.5);
+  }
+
+  .evt-map__menu-item.is-active {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--teal);
+  }
+
+  @media (min-width: 960px) {
+    .evt-map__content {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      align-items: start;
+      gap: 48px;
+    }
+
+    .evt-map__header {
+      max-width: 560px;
+      margin: 0;
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .evt-map__titulo {
+      margin: 0 0 22px;
+      align-self: flex-start;
+    }
+
+    .evt-map__text p {
+      font-size: 19px;
+      line-height: 1.8;
+    }
+
+    .evt-map__stage {
+      max-width: 760px;
+      margin: 0;
+      align-items: stretch;
+      gap: 18px;
+    }
+
+    .evt-map__map-shell {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .evt-map__card {
+      max-width: 520px;
+      flex: 0 0 520px;
+    }
+
+    .evt-map__menu {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      margin-top: 0;
+      max-width: 220px;
+    }
+
+    .evt-map__menu-item {
+      min-width: 0;
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  /* ---------- mobile ---------- */
+
+  @media (max-width: 768px) {
+    .evt-map {
+      padding: 56px 18px 64px;
+    }
+
+    .evt-map__titulo {
+      max-width: 220px;
+    }
+
+    .evt-map__menu {
+      /* Volta para Grid no mobile para manter duas colunas organizadas */
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .evt-map__menu-item {
+      padding: 12px;
+      font-size: 12.5px;
+      min-width: unset;
+    }
+
+    .evt-map__tooltip {
+      max-width: 70vw;
+      width: max-content;
+    }
+  }
+</style>

@@ -1,0 +1,352 @@
+---
+const {
+  titulo,
+  palestrante,
+  cargo,
+  foto,
+  horario,
+  sala,
+  descricao,
+  trilha
+} = Astro.props;
+---
+
+<article class="trilha-card">
+  <button
+    class="trilha-card-button"
+    type="button"
+    aria-expanded="false"
+  >
+    <div class="trilha-card-photo">
+      <img src={foto} alt={palestrante} />
+
+      <span class="details-icon" aria-hidden="true">+</span>
+    </div>
+
+    <div class="trilha-card-info">
+      <h3>{palestrante}</h3>
+      <p class="cargo">{cargo}</p>
+
+      <div class="trilha-card-details">
+        <div class="details-divider"></div>
+
+        <span class="details-label">PALESTRA</span>
+
+        <h4>{titulo}</h4>
+
+        <div class="details-tags">
+          <span>{trilha}</span>
+          <span>{horario}</span>
+          <span>{sala}</span>
+        </div>
+
+        {descricao && <p class="descricao">{descricao}</p>}
+      </div>
+    </div>
+  </button>
+</article>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
+
+  .trilha-card {
+    flex: 0 0 290px;
+    width: 290px;
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      filter 0.35s ease;
+  }
+
+  .trilha-card-button {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    overflow: hidden;
+
+    background: #061827;
+    color: #ffffff;
+
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+
+    transition:
+      transform 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .trilha-card-photo {
+    position: relative;
+    height: 245px;
+    overflow: hidden;
+    background: #061827;
+    border: 3px solid #00c264;
+    border-bottom: 0;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .trilha-card-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .details-icon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #00c264;
+    color: #064852;
+
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 400;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+
+    transition:
+      transform 0.35s ease,
+      background 0.35s ease,
+      color 0.35s ease;
+  }
+
+  .trilha-card-info {
+    padding: 22px 24px;
+    border: 3px solid #00c264;
+    border-top: 0;
+    border-radius: 0 0 22px 22px;
+    background: #061827;
+  }
+
+  .trilha-card-info h3 {
+    margin: 0 0 10px;
+
+    color: #ffffff;
+
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 24px;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cargo {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .trilha-card-details {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+
+    transition:
+      max-height 0.55s cubic-bezier(.22, 1, .36, 1),
+      opacity 0.35s ease,
+      margin-top 0.35s ease;
+  }
+
+  .details-divider {
+    height: 1px;
+    margin: 24px 0;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .details-label {
+    display: block;
+    margin-bottom: 10px;
+
+    color: #00c264;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .trilha-card-details h4 {
+    margin: 0 0 16px;
+
+    color: #ffffff;
+
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 20px;
+    line-height: 1.18;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .details-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .details-tags span {
+    padding: 7px 10px;
+
+    border-radius: 999px;
+    background: #00c264;
+    color: #064852;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .descricao {
+    margin: 16px 0 0;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 12.5px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  .trilha-card.selected {
+    z-index: 10;
+    transform: translateY(-8px);
+  }
+
+  .trilha-card.selected .trilha-card-button {
+    box-shadow: 0 28px 55px rgba(0, 0, 0, 0.28);
+  }
+
+  .trilha-card.selected .trilha-card-details {
+    max-height: 360px;
+    opacity: 1;
+  }
+
+  .trilha-card.selected .details-icon {
+    transform: rotate(45deg);
+    background: #ffffff;
+    color: #064852;
+  }
+
+  @media (hover: hover) {
+    .trilha-card:not(.selected):hover {
+      transform: translateY(-5px);
+    }
+
+    .trilha-card:not(.selected):hover .trilha-card-button {
+      box-shadow: 0 24px 46px rgba(0, 0, 0, 0.24);
+    }
+  }
+
+  /* Abaixo de 900px o card ocupa a maior parte da largura visível do
+     carrossel (não 100%), deixando uma "espiada" do próximo card —
+     assim não fica gigante ocupando a tela inteira */
+  @media (max-width: 900px) {
+    .trilha-card {
+      flex: 0 0 72%;
+      width: 72%;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trilha-card-photo {
+      height: 190px;
+    }
+
+    .trilha-card-info {
+      padding: 19px 20px;
+    }
+
+    .trilha-card-info h3 {
+      font-size: 22px;
+    }
+
+    .trilha-card-details h4 {
+      font-size: 18px;
+    }
+
+    .descricao {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trilha-card {
+      flex: 0 0 78%;
+      width: 78%;
+    }
+
+    .trilha-card-photo {
+      height: 170px;
+    }
+  }
+</style>
+
+<script>
+  function iniciarTrilhaCards() {
+    document
+      .querySelectorAll('.trilha-card-button')
+      .forEach((button) => {
+        if (button.getAttribute('data-ready') === 'true') return;
+
+        button.setAttribute('data-ready', 'true');
+
+        button.addEventListener('click', () => {
+          const card = button.closest('.trilha-card');
+          const track = button.closest('.track');
+
+          if (!card || !track) return;
+
+          const estavaAberto = card.classList.contains('selected');
+
+          track.querySelectorAll('.trilha-card').forEach((item) => {
+            item.classList.remove('selected');
+
+            const itemButton = item.querySelector(
+              '.trilha-card-button'
+            );
+
+            itemButton?.setAttribute('aria-expanded', 'false');
+          });
+
+          track.classList.remove('has-selected');
+
+          if (!estavaAberto) {
+            card.classList.add('selected');
+            track.classList.add('has-selected');
+            button.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+  }
+
+  iniciarTrilhaCards();
+
+  document.addEventListener(
+    'astro:page-load',
+    iniciarTrilhaCards
+  );
+</script>

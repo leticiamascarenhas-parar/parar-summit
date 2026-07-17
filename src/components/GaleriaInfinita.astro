@@ -1,0 +1,128 @@
+---
+const fotos = [
+  "/images/galeria/foto-1.jpg",
+  "/images/galeria/foto-2.jpg",
+  "/images/galeria/foto-3.jpg",
+  "/images/galeria/foto-4.jpg",
+  "/images/galeria/foto-5.jpg",
+  "/images/galeria/foto-6.jpg",
+  "/images/galeria/foto-7.jpg",
+  "/images/galeria/foto-8.jpg",
+  "/images/galeria/foto-9.jpg",
+  "/images/galeria/foto-10.jpg",
+  "/images/galeria/foto-11.jpg",
+  "/images/galeria/foto-12.jpg",
+  "/images/galeria/foto-13.jpg",
+  "/images/galeria/foto-14.jpg",
+  "/images/galeria/foto-15.jpg"
+
+];
+
+const fotosDuplicadas = [...fotos, ...fotos];
+---
+
+<section class="galeria-infinita" aria-label="Galeria de fotos do PARAR Summit">
+  <div class="galeria-viewport">
+    <div class="galeria-track">
+      {fotosDuplicadas.map((foto, index) => (
+        <figure class="galeria-item">
+          <img
+            src={foto}
+            alt={`Momento do PARAR Summit ${index + 1}`}
+            loading="lazy"
+          />
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .galeria-infinita {
+    width: 100%;
+    overflow: hidden;
+    padding: 26px 0;
+    background: #f3faf8;
+    font-family: "Raleway", sans-serif;
+  }
+
+  .galeria-viewport {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .galeria-track {
+    width: max-content;
+    display: flex;
+    gap: 18px;
+    animation: galeriaScroll 90s linear infinite;
+    will-change: transform;
+  }
+
+  .galeria-item {
+    flex: 0 0 auto;
+    width: 320px;
+    height: 220px;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #061827;
+  }
+
+  .galeria-item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition:
+      transform 0.45s ease,
+      filter 0.45s ease;
+  }
+
+  .galeria-item:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.08);
+  }
+
+  .galeria-viewport:hover .galeria-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes galeriaScroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-50% - 9px));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .galeria-infinita {
+      padding: 18px 0;
+    }
+
+    .galeria-track {
+      gap: 12px;
+      animation-duration: 26s;
+    }
+
+    .galeria-item {
+      width: 245px;
+      height: 170px;
+      border-radius: 16px;
+    }
+
+    .galeria-viewport:hover .galeria-track {
+      animation-play-state: running;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .galeria-track {
+      animation: none;
+      overflow-x: auto;
+    }
+  }
+</style>

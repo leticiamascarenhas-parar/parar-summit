@@ -1,0 +1,232 @@
+---
+// Parceiros.astro
+// Uso básico: <Parceiros />
+// Uso customizado: <Parceiros tiers={meusTiers} />
+
+export interface Logo {
+  href: string;
+  src: string;
+  alt: string;
+  wide?: boolean; // usa a mesma regra do .parar-logo-img (logo maior, ex: Realização)
+}
+
+export interface Tier {
+  key: string;
+  title: string;
+  logos: Logo[];
+  smallLogos?: boolean; // reduz max-height das logos (usado no Green Hub)
+}
+
+interface Props {
+  tiers?: Tier[];
+}
+
+const {
+  tiers = [
+    {
+      key: "realizacao",
+      title: "Realização",
+      logos: [
+        { href: "https://institutoparar.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/1.png", alt: "Logo PARAR", wide: true },
+      ],
+    },
+    {
+      key: "idealizacao",
+      title: "Idealização",
+      logos: [
+        { href: "https://golfleet.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/2.png", alt: "Logo Golfleet" },
+      ],
+    },
+    {
+      key: "patrocinadores-oficiais",
+      title: "Patrocinadores Oficiais",
+      logos: [
+        { href: "https://www.gmfleet.com.br/pt-br/inicio.html", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/3.png", alt: "GM Fleet" },
+      ],
+    },
+    {
+      key: "patrocinadores-diamante",
+      title: "Patrocinadores Diamante",
+      logos: [
+        { href: "https://lmmobilidade.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/10.png", alt: "LM Frotas" },
+        { href: "https://www.renault.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/12.png", alt: "Renault" },
+        { href: "https://frotas.localiza.com/", src: "https://institutoparar.com.br/wp-content/uploads/2025/09/LOGOS-LP-PARAR-SUMMIT-18.png", alt: "Localiza" },
+        { href: "https://www.sempararempresas.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/5.png", alt: "Sem Parar" },
+        { href: "https://ecxpay.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2026/04/ECX.png", alt: "ECX" },
+      ],
+    },
+    {
+      key: "patrocinadores-ouro",
+      title: "Patrocinadores Ouro",
+      logos: [
+        { href: "https://www.valecard.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/9.png", alt: "ValeCard" },
+        { href: "https://monacobr.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-8.png", alt: "Monaco" },
+        { href: "https://nearlocation.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-1.png", alt: "Near Location" },
+        { href: "https://www.arvalbrasil.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-9.png", alt: "Arval" },
+        { href: "https://www.movidafrotas.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-4.png", alt: "Movida" },
+        { href: "https://www.nextfleet.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/14.png", alt: "Nextfleet" },
+        { href: "https://lp.conectcar.com/planos-empresas", src: "https://institutoparar.com.br/wp-content/uploads/2026/04/CONECTCAR-2.png", alt: "ConectCar" },
+        { href: "https://vecfleet.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/09/LOGO-VEC-FLEET.png", alt: "Vec Fleet" },
+        { href: "https://www.meuflua.com.br/PJ.html", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/15.png", alt: "Stellantis" },
+        { href: "https://veloe.com.br/veloego", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/6.png", alt: "Veloe Go" },
+        { href: "https://www.ayvens.com/pt-br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-3.png", alt: "Ayvens" },
+        { href: "https://www.bosch.com.br/produtos-e-servicos/mobilidade/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-2.png", alt: "Bosch" },
+        { href: "https://veic.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-5.png", alt: "VEIC MaxFrota" },
+        { href: "https://frotas.unidas.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2026/05/logo-unidas-1.png", alt: "Unidas" },
+      ],
+    },
+    {
+      key: "hub-inovacao",
+      title: "Green Hub",
+      smallLogos: true,
+      logos: [
+        { href: "https://aioti.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/08/LOGOS-LP-PARAR-SUMMIT-13.png", alt: "AIOT Mobile" },
+        { href: "https://www.gestran.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/09/GESTRAN-LOGO.png", alt: "Gestran" },
+        { href: "https://activefleet.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-7.png", alt: "Active Fleet" },
+        { href: "https://loopbrasil.com/", src: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-6.png", alt: "Loop Brasil" },
+        { href: "https://www.airobag.pro/", src: "https://institutoparar.com.br/wp-content/uploads/2025/09/LOGO-AIROBAG.png", alt: "Airobag" },
+        { href: "https://jusfleet.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/10/JUSFLEET-1.png", alt: "Jusfleet" },
+        { href: "https://cargaonline.com.br/", src: "https://institutoparar.com.br/wp-content/uploads/2025/09/LOGO-CARGA-ONLINE.png", alt: "Carga Online" },
+      ],
+    },
+  ],
+} = Astro.props;
+---
+
+<section id="parceiros" class="parceiros-section">
+  <div class="container">
+    {tiers.map((tier) => (
+      <div class:list={["tier", tier.key]}>
+        <h3><strong>{tier.title}</strong></h3>
+        <div class="logos-group">
+          {tier.logos.map((logo) => (
+            <div class:list={["logo-wrapper", "shine", { "small-logos": tier.smallLogos }]}>
+              <a href={logo.href} target="_blank" rel="noopener noreferrer">
+                <img
+                  class:list={{ "wide-logo": logo.wide }}
+                  src={logo.src}
+                  alt={logo.alt}
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .parceiros-section {
+    background: #ebf5f6;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  h3 {
+    font-size: 0.75rem;
+    margin-bottom: 1.2rem;
+    color: #0b4f67;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .logos-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+
+  .logo-wrapper {
+    width: 160px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  }
+
+  .logo-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(11, 79, 103, 0.3);
+    opacity: 0.9;
+  }
+
+  .logo-wrapper img {
+    max-width: 100%;
+    max-height: 70px;
+    object-fit: contain;
+  }
+
+  .logo-wrapper.small-logos img {
+    max-height: 60px;
+  }
+
+  .logo-wrapper.shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: shineMove 2.5s infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @keyframes shineMove {
+    0% { left: -75%; }
+    100% { left: 125%; }
+  }
+
+  .logo-wrapper img.wide-logo {
+    width: 125%;
+    height: auto;
+    max-width: none;
+  }
+
+  @media (max-width: 600px) {
+    .logos-group {
+      gap: 1rem;
+    }
+
+    .logos-group .logo-wrapper {
+      flex: 1 1 30%;
+      min-width: 80px;
+      max-width: 120px;
+    }
+
+    h3 {
+      font-size: 0.78rem;
+    }
+
+    .container {
+      gap: 2rem;
+    }
+
+    .logo-wrapper img.wide-logo {
+      width: 150%;
+    }
+  }
+</style>

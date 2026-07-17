@@ -1,0 +1,702 @@
+---
+import { trilhas } from "../data/trilhas";
+import TrilhaCard from "./TrilhaCard.astro";
+---
+
+<section class="trilhas-section" id="trilhas">
+  <div class="trilhas-header">
+    <img
+      src="/images/trilhas/titulo/titulo-trilhas.png"
+      alt="Trilhas Simultâneas"
+      class="titulo-trilhas"
+    />
+  </div>
+
+  <div class="tabs-wrapper">
+    <button
+      class="tabs-arrow tabs-arrow-left"
+      type="button"
+      aria-label="Ver trilhas anteriores"
+    >
+      ‹
+    </button>
+
+    <div class="tabs">
+      {trilhas.map((trilha, index) => (
+        <button
+          class={`tab ${index === 0 ? "active" : ""}`}
+          type="button"
+          data-tab={trilha.id}
+        >
+          {trilha.nome}
+        </button>
+      ))}
+    </div>
+
+    <button
+      class="tabs-arrow tabs-arrow-right"
+      type="button"
+      aria-label="Ver próximas trilhas"
+    >
+      ›
+    </button>
+  </div>
+
+  <div class="tracks">
+    {trilhas.map((trilha, index) => (
+      <div
+        class={`track-shell ${index === 0 ? "active" : ""}`}
+        data-track-shell={trilha.id}
+      >
+        <button
+          class="track-arrow track-arrow-left"
+          type="button"
+          aria-label="Ver palestra anterior"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </button>
+
+        <!--
+          IMPORTANTE: NÃO envolva <TrilhaCard /> em outra div com
+          classe "trilha-card". O próprio TrilhaCard.astro já é o
+          elemento raiz ".trilha-card" (um <article>). Duplicar a
+          classe aqui quebra a navegação do carrossel E o efeito de
+          destacar o card selecionado (todos ficam opacos ao clicar).
+        -->
+        <div
+          class={`track ${index === 0 ? "active" : ""}`}
+          data-track={trilha.id}
+        >
+          {trilha.palestras.map((palestra) => (
+            <TrilhaCard
+              {...palestra}
+              trilha={trilha.nome}
+            />
+          ))}
+        </div>
+
+        <button
+          class="track-arrow track-arrow-right"
+          type="button"
+          aria-label="Ver próxima palestra"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .trilhas-section {
+    position: relative;
+    overflow: hidden;
+
+    padding: 70px 20px 90px;
+
+    background:
+      radial-gradient(
+        circle at 8% 22%,
+        rgba(0, 194, 100, 0.16),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 92% 78%,
+        rgba(6, 72, 82, 0.13),
+        transparent 35%
+      ),
+      linear-gradient(
+        135deg,
+        #f9fdfc 0%,
+        #e4f2f2 48%,
+        #f3faf8 100%
+      );
+
+    font-family: "Raleway", sans-serif;
+  }
+
+  .trilhas-section::before {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    top: 80px;
+    z-index: 0;
+
+    width: 980px;
+    height: 700px;
+
+    transform: translateX(-50%);
+
+    background:
+      radial-gradient(
+        ellipse at center,
+        rgba(0, 194, 100, 0.18) 0%,
+        rgba(0, 194, 100, 0.08) 34%,
+        transparent 70%
+      );
+
+    filter: blur(45px);
+    pointer-events: none;
+  }
+
+  .trilhas-header,
+  .tabs-wrapper,
+  .tracks {
+    position: relative;
+    z-index: 1;
+  }
+
+  .trilhas-header {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .titulo-trilhas {
+    width: min(760px, 90%);
+    display: block;
+    margin: 0 auto 42px;
+  }
+
+  .tabs-wrapper {
+    width: min(1260px, 100%);
+    margin: 0 auto 48px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tabs {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    overflow-x: auto;
+
+    padding: 5px 3px 8px;
+
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+
+    min-height: 42px;
+    padding: 0 20px;
+
+    border: 1px solid rgba(6, 72, 82, 0.1);
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.82);
+    color: #064852;
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+      transform 0.25s ease,
+      background 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .tab:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 194, 100, 0.5);
+  }
+
+  .tab.active {
+    background: #064852;
+    color: #00c264;
+    border-color: #00c264;
+
+    box-shadow:
+      0 12px 24px rgba(6, 72, 82, 0.14);
+  }
+
+  .tabs-arrow {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(6, 72, 82, 0.12);
+    border-radius: 50%;
+
+    background: #ffffff;
+    color: #064852;
+
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+      0 10px 22px rgba(6, 72, 82, 0.1);
+
+    transition:
+      transform 0.25s ease,
+      background 0.25s ease,
+      opacity 0.25s ease;
+  }
+
+  .tabs-arrow:hover:not(:disabled) {
+    transform: scale(1.06);
+    background: #00c264;
+  }
+
+  .tabs-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .track-shell {
+    position: relative;
+    display: none;
+  }
+
+  .track-shell.active {
+    display: block;
+  }
+
+  .track {
+    display: none;
+
+    width: min(1200px, 100%);
+    margin: 0 auto;
+
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 40px;
+  }
+
+  .track.active {
+    display: flex;
+  }
+
+  .track-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+
+    width: 40px;
+    height: 40px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+
+    background: rgba(6, 72, 82, 0.95);
+    color: #ffffff;
+
+    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.2);
+
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: transform 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+  }
+
+  .track-arrow:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+    background: #0a5f6c;
+  }
+
+  .track-arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .track-arrow svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .track-arrow-left {
+    left: 8px;
+  }
+
+  .track-arrow-right {
+    right: 8px;
+  }
+
+  /* :global() é essencial aqui: .trilha-card e .selected pertencem ao
+     TrilhaCard.astro (outro componente). Sem :global(), o Astro nunca
+     casa esse seletor com os elementos reais, e a regra fica "morta". */
+  .track:has(:global(.trilha-card.selected))
+    :global(.trilha-card:not(.selected)) {
+    opacity: 0.28;
+    transform: scale(0.96);
+    filter: saturate(0.65);
+  }
+
+  @media (max-width: 900px) {
+    .trilhas-section {
+      padding: 55px 0 68px;
+    }
+
+    .trilhas-section::before {
+      width: 720px;
+      height: 540px;
+      top: 60px;
+      filter: blur(36px);
+    }
+
+    .titulo-trilhas {
+      width: min(560px, 88%);
+      margin-bottom: 30px;
+    }
+
+    .tabs-wrapper {
+      width: 100%;
+      box-sizing: border-box;
+
+      gap: 7px;
+      margin-bottom: 34px;
+      padding: 0 10px;
+    }
+
+    .tabs {
+      padding-block: 5px 9px;
+    }
+
+    .tabs-arrow {
+      width: 34px;
+      height: 34px;
+      font-size: 25px;
+    }
+
+    .tab {
+      min-height: 38px;
+      padding: 0 16px;
+      font-size: 10px;
+    }
+
+    .track-shell.active {
+      display: block;
+    }
+
+    /* As setas só aparecem no mobile se houver a classe 'has-many' ativa (mais de 1 card) */
+    .track-shell.active.has-many .track-arrow {
+      display: inline-flex !important;
+    }
+
+    .track.active {
+      justify-content: center;
+
+      overflow-x: auto;
+      overflow-y: visible;
+
+      /* Evita que o scroll do carrossel "vaze" e mexa na página inteira
+         quando chega no fim/começo dos cards */
+      overscroll-behavior-x: contain;
+
+      gap: 22px;
+
+      /* Respiro lateral fixo — a largura do card em si é definida no
+         próprio TrilhaCard.astro (72% / 78%), então ele sempre preenche
+         proporcionalmente esse espaço disponível */
+      padding: 8px 20px 28px;
+
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .track.active::-webkit-scrollbar {
+      display: none;
+    }
+
+    .track.active :global(.trilha-card) {
+      scroll-snap-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trilhas-section {
+      padding-top: 48px;
+    }
+
+    .titulo-trilhas {
+      width: min(500px, 90%);
+      margin-bottom: 26px;
+    }
+
+    .tabs-wrapper {
+      padding-inline: 8px;
+    }
+
+    .tabs-arrow {
+      width: 32px;
+      height: 32px;
+      font-size: 23px;
+    }
+
+    .tab {
+      min-height: 36px;
+      padding: 0 14px;
+      font-size: 9px;
+    }
+
+    .track.active {
+      padding: 8px 16px 28px;
+    }
+  }
+
+  @media (min-width: 901px) {
+    .track-arrow {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  function setupTrackNavigation(section) {
+    const trackShells = section.querySelectorAll('.track-shell');
+    const tabs = section.querySelectorAll('.tab');
+    const tabsContainer = section.querySelector('.tabs');
+    const tabsLeft = section.querySelector('.tabs-arrow-left');
+    const tabsRight = section.querySelector('.tabs-arrow-right');
+
+    if (!tabsContainer) return;
+
+    // --- CONTROLE DAS TABS SUPERIORES ---
+    const updateTabArrows = () => {
+      const maxScroll = tabsContainer.scrollWidth - tabsContainer.clientWidth;
+      if (tabsLeft instanceof HTMLButtonElement) {
+        tabsLeft.disabled = tabsContainer.scrollLeft <= 4;
+      }
+      if (tabsRight instanceof HTMLButtonElement) {
+        tabsRight.disabled = tabsContainer.scrollLeft >= maxScroll - 4;
+      }
+    };
+
+    tabsLeft?.addEventListener('click', () => {
+      tabsContainer.scrollBy({ left: -760, behavior: 'smooth' });
+    });
+
+    tabsRight?.addEventListener('click', () => {
+      tabsContainer.scrollBy({ left: 760, behavior: 'smooth' });
+    });
+
+    tabsContainer.addEventListener('scroll', updateTabArrows, { passive: true });
+    updateTabArrows();
+
+    // --- Re-implementation using Plenaria-like scrolling ---
+    function obterDistanciaDoCard(track) {
+      const firstCard = track.querySelector('.trilha-card');
+      if (!(firstCard instanceof HTMLElement)) return 300;
+
+      const styles = window.getComputedStyle(track);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 22;
+
+      return firstCard.getBoundingClientRect().width + gap;
+    }
+
+    function obterCards(track) {
+      return Array.from(track.querySelectorAll('.trilha-card'));
+    }
+
+    function navegarPara(track, index) {
+      const cards = obterCards(track);
+      if (!cards[index]) return;
+
+      const targetLeft = Math.max(
+        0,
+        Math.min(
+          cards[index].offsetLeft,
+          track.scrollWidth - track.clientWidth
+        )
+      );
+
+      track.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    }
+
+    function navegarPorPasso(track, direcao) {
+      const distance = obterDistanciaDoCard(track);
+      track.scrollBy({ left: distance * direcao, behavior: 'smooth' });
+    }
+
+    function obterIndiceAtivo(track) {
+      const cards = obterCards(track);
+      if (cards.length === 0) return 0;
+
+      const containerCenter = track.scrollLeft + track.clientWidth / 2;
+      let activeIndex = 0;
+      let menorDistancia = Infinity;
+
+      cards.forEach((card, index) => {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const distancia = Math.abs(cardCenter - containerCenter);
+        if (distancia < menorDistancia) {
+          menorDistancia = distancia;
+          activeIndex = index;
+        }
+      });
+
+      return activeIndex;
+    }
+
+    function atualizarSetasDoTrack(track, leftButton, rightButton) {
+      const cards = obterCards(track);
+      const activeIndex = obterIndiceAtivo(track);
+
+      if (leftButton instanceof HTMLButtonElement) {
+        leftButton.disabled = activeIndex <= 0;
+      }
+      if (rightButton instanceof HTMLButtonElement) {
+        rightButton.disabled = activeIndex >= cards.length - 1;
+      }
+    }
+
+    function checkCardsCount(shell) {
+      const track = shell.querySelector('.track');
+      if (!(track instanceof HTMLElement)) return;
+
+      const cards = track.querySelectorAll('.trilha-card');
+      const hasMany = cards.length > 1;
+
+      shell.classList.toggle('has-many', hasMany);
+
+      const leftButton = shell.querySelector('.track-arrow-left');
+      const rightButton = shell.querySelector('.track-arrow-right');
+
+      if (leftButton instanceof HTMLButtonElement && rightButton instanceof HTMLButtonElement) {
+        leftButton.style.display = hasMany ? '' : 'none';
+        rightButton.style.display = hasMany ? '' : 'none';
+      }
+    }
+
+    trackShells.forEach((shell) => {
+      const track = shell.querySelector('.track');
+      const leftButton = shell.querySelector('.track-arrow-left');
+      const rightButton = shell.querySelector('.track-arrow-right');
+
+      if (!(track instanceof HTMLElement)) return;
+
+      checkCardsCount(shell);
+
+      leftButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (leftButton instanceof HTMLElement) leftButton.blur();
+        navegarPorPasso(track, -1);
+      });
+
+      rightButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (rightButton instanceof HTMLElement) rightButton.blur();
+        navegarPorPasso(track, 1);
+      });
+
+      track.addEventListener('scroll', () => {
+        window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
+      }, { passive: true });
+
+      window.addEventListener('resize', () => {
+        window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
+      });
+
+      // init state for this track
+      window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
+    });
+
+    const initialActiveTrack = section.querySelector('.track.active');
+    if (initialActiveTrack instanceof HTMLElement) {
+      // center first card similar to plenaria
+      window.requestAnimationFrame(() => navegarPara(initialActiveTrack, 0));
+    }
+
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const activeTrack = section.querySelector('.track.active');
+        if (!(activeTrack instanceof HTMLElement)) return;
+
+        const activeIndex = obterIndiceAtivo(activeTrack);
+        window.requestAnimationFrame(() => navegarPara(activeTrack, activeIndex));
+      }, 150);
+    });
+
+    // --- TROCA DE ABAS (TABS) ---
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+
+        const selectedShell = section.querySelector(`[data-track-shell="${target}"]`);
+        const selectedTrack = section.querySelector(`[data-track="${target}"]`);
+
+        tabs.forEach((item) => item.classList.remove('active'));
+        trackShells.forEach((shell) => shell.classList.remove('active'));
+        section.querySelectorAll('.track').forEach((t) => t.classList.remove('active'));
+
+        tab.classList.add('active');
+
+        if (selectedShell instanceof HTMLElement) {
+          selectedShell.classList.add('active');
+          checkCardsCount(selectedShell);
+        }
+
+        if (selectedTrack instanceof HTMLElement) {
+          selectedTrack.classList.add('active');
+          // center first card after layout change
+          window.requestAnimationFrame(() => navegarPara(selectedTrack, 0));
+          window.setTimeout(() => navegarPara(selectedTrack, 0), 40);
+        }
+
+        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      });
+    });
+  }
+
+  function initTrilhas() {
+    document.querySelectorAll('.trilhas-section').forEach((section) => {
+      if (!(section instanceof HTMLElement)) return;
+      if (section.dataset.ready === 'true') return;
+      section.dataset.ready = 'true';
+      setupTrackNavigation(section);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTrilhas, { once: true });
+  } else {
+    initTrilhas();
+  }
+
+  document.addEventListener('astro:page-load', initTrilhas);
+</script>

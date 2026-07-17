@@ -1,0 +1,469 @@
+---
+import SpeakerCard from "./SpeakerCard.astro";
+import { speakers } from "../data/speakers";
+---
+
+<section id="plenaria" class="plenaria-section">
+  <div class="plenaria-inner">
+
+    <img
+      class="plenaria-title"
+      src="/images/plenaria/titulo-plenaria.png"
+      alt="Plenária Principal"
+    />
+
+    <div class="plenaria-stage">
+      <div class="plenaria-cards">
+        {speakers.map((speaker) => (
+          <SpeakerCard {...speaker} />
+        ))}
+      </div>
+
+      <div class="plenaria-nav" aria-label="Navegação da plenária">
+        <div class="plenaria-dots" role="tablist" aria-label="Escolher palestrante">
+          {speakers.map((speaker, index) => (
+            <button
+              class="plenaria-dot"
+              type="button"
+              data-index={index}
+              aria-label={`Ver palestrante ${index + 1}`}
+              aria-current="false"
+            />
+          ))}
+        </div>
+
+        <div class="plenaria-arrow-group">
+          <button
+            class="plenaria-arrow plenaria-arrow-left"
+            type="button"
+            aria-label="Ver palestrante anterior"
+          >
+            ‹
+          </button>
+
+          <button
+            class="plenaria-arrow plenaria-arrow-right"
+            type="button"
+            aria-label="Ver próximo palestrante"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .plenaria-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    padding: 76px 20px 90px;
+
+    background:
+      radial-gradient(
+        circle at 15% 10%,
+        rgba(0, 194, 100, 0.07),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 88% 18%,
+        rgba(0, 212, 109, 0.06),
+        transparent 28%
+      ),
+      #f6f8f7;
+
+    font-family: "Raleway", sans-serif;
+  }
+
+  .plenaria-section::before {
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+
+    width: 760px;
+    height: 260px;
+
+    left: 50%;
+    top: -90px;
+
+    transform: translateX(-50%);
+
+    background:
+      radial-gradient(
+        ellipse,
+        rgba(0, 194, 100, 0.10),
+        transparent 68%
+      );
+
+    filter: blur(12px);
+    pointer-events: none;
+  }
+
+  .plenaria-inner {
+    position: relative;
+    z-index: 1;
+
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .plenaria-title {
+    width: min(760px, 90%);
+    display: block;
+
+    margin: 0 auto 60px;
+
+    filter:
+      drop-shadow(0 8px 18px rgba(6, 72, 82, 0.08));
+  }
+
+  .plenaria-stage {
+    position: relative;
+  }
+
+  .plenaria-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-top: 8px;
+    padding: 0 6px 0;
+  }
+
+  .plenaria-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .plenaria-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(6, 72, 82, 0.28);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .plenaria-dot:hover {
+    transform: scale(1.08);
+    background: rgba(6, 72, 82, 0.42);
+  }
+
+  .plenaria-dot.is-active {
+    background: #064852;
+    transform: scale(1.14);
+  }
+
+  .plenaria-arrow-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .plenaria-cards {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 32px;
+
+    flex-wrap: nowrap;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 16px 60px 34px;
+
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    cursor: grab;
+  }
+
+  .plenaria-cards:active {
+    cursor: grabbing;
+  }
+
+  .plenaria-cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .plenaria-cards :global(.speaker-card) {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+  }
+
+  .plenaria-arrow {
+    z-index: 20;
+
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    background: #064852;
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.16);
+
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .plenaria-arrow:hover {
+    background: #0a5f6c;
+  }
+
+  .plenaria-arrow:active {
+    transform: scale(0.92);
+  }
+
+  .plenaria-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  @media (max-width: 900px) {
+    .plenaria-section {
+      padding: 58px 0 70px;
+    }
+
+    .plenaria-title {
+      width: min(620px, 88%);
+      margin-bottom: 36px;
+    }
+
+    .plenaria-cards {
+      gap: 22px;
+
+      padding:
+        14px
+        max(42px, calc((100vw - 280px) / 2))
+        28px;
+
+      scroll-snap-type: x mandatory;
+      cursor: auto;
+    }
+
+    .plenaria-nav {
+      margin-top: 4px;
+      padding: 0 12px 0;
+    }
+
+    .plenaria-cards :global(.speaker-card) {
+      width: 280px;
+      min-width: 280px;
+      flex-basis: 280px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .plenaria-section {
+      padding-top: 48px;
+    }
+
+    .plenaria-title {
+      margin-bottom: 28px;
+    }
+
+    .plenaria-arrow {
+      width: 42px;
+      height: 42px;
+      font-size: 30px;
+    }
+
+    .plenaria-arrow {
+      width: 34px;
+      height: 34px;
+      font-size: 22px;
+    }
+  }
+</style>
+
+<script>
+  function iniciarCarrosselPlenaria() {
+    const sections = document.querySelectorAll('.plenaria-section');
+
+    sections.forEach((section) => {
+      if (!(section instanceof HTMLElement)) return;
+      if (section.dataset.carouselReady === 'true') return;
+
+      section.dataset.carouselReady = 'true';
+
+      const cardsContainer =
+        section.querySelector('.plenaria-cards');
+
+      const previousButton =
+        section.querySelector('.plenaria-arrow-left');
+
+      const nextButton =
+        section.querySelector('.plenaria-arrow-right');
+
+      const dots = Array.from(
+        section.querySelectorAll('.plenaria-dot')
+      );
+
+      if (
+        !(cardsContainer instanceof HTMLElement) ||
+        !(previousButton instanceof HTMLButtonElement) ||
+        !(nextButton instanceof HTMLButtonElement)
+      ) {
+        return;
+      }
+
+      function obterDistanciaDoCard() {
+        const firstCard =
+          cardsContainer.querySelector('.speaker-card');
+
+        if (!(firstCard instanceof HTMLElement)) {
+          return 302;
+        }
+
+        const styles = window.getComputedStyle(cardsContainer);
+        const gap = Number.parseFloat(styles.columnGap) || 22;
+
+        return firstCard.getBoundingClientRect().width + gap;
+      }
+
+      function obterCards() {
+        return Array.from(cardsContainer.querySelectorAll('.speaker-card'));
+      }
+
+      function navegarPara(index) {
+        const cards = obterCards();
+
+        if (!cards[index]) {
+          return;
+        }
+
+        const targetLeft = Math.max(
+          0,
+          Math.min(
+            cards[index].offsetLeft,
+            cardsContainer.scrollWidth - cardsContainer.clientWidth
+          )
+        );
+
+        cardsContainer.scrollTo({
+          left: targetLeft,
+          behavior: 'smooth'
+        });
+      }
+
+      function navegarPorPasso(direcao) {
+        const distance = obterDistanciaDoCard();
+        cardsContainer.scrollBy({
+          left: distance * direcao,
+          behavior: 'smooth'
+        });
+      }
+
+      previousButton.addEventListener('click', () => {
+        navegarPorPasso(-1);
+      });
+
+      nextButton.addEventListener('click', () => {
+        navegarPorPasso(1);
+      });
+
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const index = Number(dot.dataset.index ?? 0);
+          navegarPara(index);
+        });
+      });
+
+      function obterIndiceAtivo() {
+        const cards = obterCards();
+
+        if (cards.length === 0) {
+          return 0;
+        }
+
+        const containerCenter =
+          cardsContainer.scrollLeft + (cardsContainer.clientWidth / 2);
+
+        let activeIndex = 0;
+        let menorDistancia = Number.POSITIVE_INFINITY;
+
+        cards.forEach((card, index) => {
+          const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+          const distancia = Math.abs(cardCenter - containerCenter);
+
+          if (distancia < menorDistancia) {
+            menorDistancia = distancia;
+            activeIndex = index;
+          }
+        });
+
+        return activeIndex;
+      }
+
+      function atualizarSetas() {
+        const cards = obterCards();
+        const activeIndex = obterIndiceAtivo();
+        const maxScroll =
+          cardsContainer.scrollWidth -
+          cardsContainer.clientWidth;
+
+        previousButton.disabled = activeIndex <= 0;
+        nextButton.disabled = activeIndex >= cards.length - 1;
+
+        dots.forEach((dot, index) => {
+          const isActive = index === activeIndex;
+          dot.classList.toggle('is-active', isActive);
+          dot.setAttribute('aria-current', String(isActive));
+        });
+      }
+
+      cardsContainer.addEventListener(
+        'scroll',
+        () => {
+          window.requestAnimationFrame(atualizarSetas);
+        },
+        { passive: true }
+      );
+
+      window.addEventListener('resize', () => {
+        window.requestAnimationFrame(atualizarSetas);
+      });
+
+      window.requestAnimationFrame(atualizarSetas);
+    });
+  }
+
+  iniciarCarrosselPlenaria();
+
+  document.addEventListener(
+    'astro:page-load',
+    iniciarCarrosselPlenaria
+  );
+</script>
