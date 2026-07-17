@@ -57,6 +57,8 @@
 </section>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Raleway:wght@500;600&display=swap');
+
 .summit-info-section {
   width: 100%;
   min-height: 100vh;
@@ -193,21 +195,31 @@
 }
 
 .number-item .counter {
-  font-family: "Raleway", sans-serif;
-  font-weight: 900;
-  font-size: clamp(28px, 2.4vw, 40px);
-  line-height: 1;
-  color: #ffffff;
-  letter-spacing: -1px;
-}
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    font-size: clamp(28px, 2.4vw, 40px);
+    line-height: 1;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+  }
 
-.number-item p {
-  margin: 0;
-  font-family: "Oswald", sans-serif;
-  font-size: 13.5px;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.65);
-}
+  .number-item .counter .counter-suffix {
+    display: inline-block;
+    font-size: 0.70em;
+    line-height: 1;
+    vertical-align: super;
+    margin-left: 0.12em;
+  }
+
+  .number-item p {
+    margin: 0;
+    font-family: "Raleway", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0.025em;
+    color: rgba(255, 255, 255, 0.65);
+  }
 
 .number-item--highlight {
   padding-left: 0;
@@ -263,8 +275,8 @@
     font-size: 30px;
   }
 
-  .number-item p {
-    font-size: 12px;
+.number-item p {
+    font-size: 13px; /* Ajustou o mobile aqui */
   }
 }
 </style>
@@ -323,19 +335,19 @@
             easedProgress * target
           );
 
-          counter.textContent =
+          counter.innerHTML =
             prefix +
             current.toLocaleString('pt-BR') +
-            suffix;
+            (suffix ? `<span class="counter-suffix">${suffix}</span>` : '');
 
           if (progress < 1) {
             const frame = requestAnimationFrame(atualizar);
             animationFrames.push(frame);
           } else {
-            counter.textContent =
+            counter.innerHTML =
               prefix +
               target.toLocaleString('pt-BR') +
-              suffix;
+              (suffix ? `<span class="counter-suffix">${suffix}</span>` : '');
           }
         }
 
