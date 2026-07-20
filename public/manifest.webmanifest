@@ -1,0 +1,21 @@
+{
+  "name": "PARAR Summit 2026",
+  "short_name": "PARAR Summit",
+  "description": "O maior encontro de gestão de frotas e mobilidade corporativa do Brasil.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b6b42",
+  "icons": [
+  {
+    "src": "/icone-parar-192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "/icone-parar-512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+]
+}

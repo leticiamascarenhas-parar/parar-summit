@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://parar-summit.com.br/sitemap.xml
