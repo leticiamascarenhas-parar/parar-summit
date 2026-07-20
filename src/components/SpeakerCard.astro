@@ -52,13 +52,6 @@ const {
           <h3>{palestra}</h3>
 
           {detalhes && <p class="palestra-detalhes">{detalhes}</p>}
-
-          {descricao && (
-            <div class="speaker-description">
-              <span>SOBRE O PALESTRANTE</span>
-              <p>{descricao}</p>
-            </div>
-          )}
         </div>
 
         <small>Clique para voltar</small>
@@ -267,6 +260,7 @@ const {
       #061827;
 
     color: #ffffff;
+    overflow: hidden;
   }
 
   .back-header {
@@ -305,7 +299,9 @@ const {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 18px;
+    padding-right: 4px;
   }
 
   .back-content > h3 {
@@ -327,32 +323,6 @@ const {
     line-height: 1.55;
   }
 
-  .speaker-description {
-    margin-top: 26px;
-    padding-top: 22px;
-
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-  }
-
-  .speaker-description > span {
-    display: block;
-    margin-bottom: 9px;
-
-    color: #00c264;
-
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 1.4px;
-  }
-
-  .speaker-description p {
-    margin: 0;
-
-    color: rgba(255, 255, 255, 0.66);
-
-    font-size: 12px;
-    line-height: 1.5;
-  }
 
   .speaker-card-back small {
     color: rgba(255, 255, 255, 0.5);

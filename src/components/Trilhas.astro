@@ -58,13 +58,6 @@ import TrilhaCard from "./TrilhaCard.astro";
           </svg>
         </button>
 
-        <!--
-          IMPORTANTE: NÃO envolva <TrilhaCard /> em outra div com
-          classe "trilha-card". O próprio TrilhaCard.astro já é o
-          elemento raiz ".trilha-card" (um <article>). Duplicar a
-          classe aqui quebra a navegação do carrossel E o efeito de
-          destacar o card selecionado (todos ficam opacos ao clicar).
-        -->
         <div
           class={`track ${index === 0 ? "active" : ""}`}
           data-track={trilha.id}
@@ -95,9 +88,7 @@ import TrilhaCard from "./TrilhaCard.astro";
   .trilhas-section {
     position: relative;
     overflow: hidden;
-
     padding: 70px 20px 90px;
-
     background:
       radial-gradient(
         circle at 8% 22%,
@@ -115,23 +106,18 @@ import TrilhaCard from "./TrilhaCard.astro";
         #e4f2f2 48%,
         #f3faf8 100%
       );
-
     font-family: "Raleway", sans-serif;
   }
 
   .trilhas-section::before {
     content: "";
-
     position: absolute;
     left: 50%;
     top: 80px;
     z-index: 0;
-
     width: 980px;
     height: 700px;
-
     transform: translateX(-50%);
-
     background:
       radial-gradient(
         ellipse at center,
@@ -139,7 +125,6 @@ import TrilhaCard from "./TrilhaCard.astro";
         rgba(0, 194, 100, 0.08) 34%,
         transparent 70%
       );
-
     filter: blur(45px);
     pointer-events: none;
   }
@@ -165,7 +150,6 @@ import TrilhaCard from "./TrilhaCard.astro";
   .tabs-wrapper {
     width: min(1260px, 100%);
     margin: 0 auto 48px;
-
     display: flex;
     align-items: center;
     gap: 10px;
@@ -173,15 +157,11 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .tabs {
     flex: 1;
-
     display: flex;
     align-items: center;
     gap: 10px;
-
     overflow-x: auto;
-
     padding: 5px 3px 8px;
-
     scroll-behavior: smooth;
     scrollbar-width: none;
   }
@@ -192,24 +172,18 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .tab {
     flex: 0 0 auto;
-
     min-height: 42px;
     padding: 0 20px;
-
     border: 1px solid rgba(6, 72, 82, 0.1);
     border-radius: 999px;
-
     background: rgba(255, 255, 255, 0.82);
     color: #064852;
-
     font: inherit;
     font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
     white-space: nowrap;
-
     cursor: pointer;
-
     transition:
       transform 0.25s ease,
       background 0.25s ease,
@@ -227,38 +201,26 @@ import TrilhaCard from "./TrilhaCard.astro";
     background: #064852;
     color: #00c264;
     border-color: #00c264;
-
-    box-shadow:
-      0 12px 24px rgba(6, 72, 82, 0.14);
+    box-shadow: 0 12px 24px rgba(6, 72, 82, 0.14);
   }
 
   .tabs-arrow {
     flex: 0 0 auto;
-
     width: 38px;
     height: 38px;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     padding: 0;
-
     border: 1px solid rgba(6, 72, 82, 0.12);
     border-radius: 50%;
-
     background: #ffffff;
     color: #064852;
-
     font-family: Arial, sans-serif;
     font-size: 28px;
     line-height: 1;
-
     cursor: pointer;
-
-    box-shadow:
-      0 10px 22px rgba(6, 72, 82, 0.1);
-
+    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.1);
     transition:
       transform 0.25s ease,
       background 0.25s ease,
@@ -278,6 +240,7 @@ import TrilhaCard from "./TrilhaCard.astro";
   .track-shell {
     position: relative;
     display: none;
+    width: 100%;
   }
 
   .track-shell.active {
@@ -286,10 +249,8 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .track {
     display: none;
-
     width: min(1200px, 100%);
     margin: 0 auto;
-
     justify-content: center;
     align-items: flex-start;
     flex-wrap: nowrap;
@@ -300,47 +261,46 @@ import TrilhaCard from "./TrilhaCard.astro";
     display: flex;
   }
 
+  /* --- Setas Circulares --- */
   .track-arrow {
     position: absolute;
     top: 50%;
-    z-index: 5;
-
-    width: 40px;
-    height: 40px;
-
+    z-index: 20;
+    width: 44px;
+    height: 44px;
     display: none;
     align-items: center;
     justify-content: center;
-
     padding: 0;
-    border: 0;
-    border-radius: 999px;
-
+    border: 1.5px solid rgba(0, 194, 100, 0.5);
+    border-radius: 50%;
     background: rgba(6, 72, 82, 0.95);
-    color: #ffffff;
-
-    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.2);
-
+    color: #00c264;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
     cursor: pointer;
-    transform: translateY(-50%);
-    transition: transform 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+    transform: translateY(-50%) scale(1);
+    transition:
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
   }
 
-  .track-arrow:hover:not(:disabled) {
-    transform: translateY(-50%) scale(1.05);
-    background: #0a5f6c;
-  }
-
-  .track-arrow:disabled {
-    opacity: 0.35;
-    cursor: default;
+  .track-arrow:hover:not(:disabled),
+  .track-arrow:active:not(:disabled) {
+    transform: translateY(-50%) scale(1.12);
+    background: #00c264;
+    color: #061827;
+    border-color: #00c264;
+    box-shadow: 0 0 20px rgba(0, 194, 100, 0.7);
   }
 
   .track-arrow svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     stroke: currentColor;
-    stroke-width: 2.2;
+    stroke-width: 2.5;
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -354,9 +314,6 @@ import TrilhaCard from "./TrilhaCard.astro";
     right: 8px;
   }
 
-  /* :global() é essencial aqui: .trilha-card e .selected pertencem ao
-     TrilhaCard.astro (outro componente). Sem :global(), o Astro nunca
-     casa esse seletor com os elementos reais, e a regra fica "morta". */
   .track:has(:global(.trilha-card.selected))
     :global(.trilha-card:not(.selected)) {
     opacity: 0.28;
@@ -364,6 +321,7 @@ import TrilhaCard from "./TrilhaCard.astro";
     filter: saturate(0.65);
   }
 
+  /* --- Mobile Layout & Alignment --- */
   @media (max-width: 900px) {
     .trilhas-section {
       padding: 55px 0 68px;
@@ -384,7 +342,6 @@ import TrilhaCard from "./TrilhaCard.astro";
     .tabs-wrapper {
       width: 100%;
       box-sizing: border-box;
-
       gap: 7px;
       margin-bottom: 34px;
       padding: 0 10px;
@@ -406,35 +363,25 @@ import TrilhaCard from "./TrilhaCard.astro";
       font-size: 10px;
     }
 
-    .track-shell.active {
-      display: block;
-    }
-
-    /* As setas só aparecem no mobile se houver a classe 'has-many' ativa (mais de 1 card) */
-    .track-shell.active.has-many .track-arrow {
+    /* As setas aparecem flutuando nas bordas no mobile */
+    .track-shell.active.has-many .track-arrow.visible {
       display: inline-flex !important;
     }
 
     .track.active {
-      justify-content: center;
-
+      justify-content: flex-start;
       overflow-x: auto;
-      overflow-y: visible;
-
-      /* Evita que o scroll do carrossel "vaze" e mexa na página inteira
-         quando chega no fim/começo dos cards */
+      overflow-y: hidden;
       overscroll-behavior-x: contain;
-
-      gap: 22px;
-
-      /* Respiro lateral fixo — a largura do card em si é definida no
-         próprio TrilhaCard.astro (72% / 78%), então ele sempre preenche
-         proporcionalmente esse espaço disponível */
-      padding: 8px 20px 28px;
+      gap: 16px;
+      
+      /* Card = 290px; 50vw - 145px centraliza o primeiro e o último card exatamente na tela */
+      padding: 12px calc(50vw - 145px) 28px;
+      scroll-padding-inline: calc(50vw - 145px);
 
       scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      box-sizing: border-box;
     }
 
     .track.active::-webkit-scrollbar {
@@ -443,6 +390,11 @@ import TrilhaCard from "./TrilhaCard.astro";
 
     .track.active :global(.trilha-card) {
       scroll-snap-align: center;
+      scroll-snap-stop: always;
+      flex: 0 0 290px !important;
+      width: 290px !important;
+      max-width: 290px !important;
+      box-sizing: border-box;
     }
   }
 
@@ -471,10 +423,6 @@ import TrilhaCard from "./TrilhaCard.astro";
       padding: 0 14px;
       font-size: 9px;
     }
-
-    .track.active {
-      padding: 8px 16px 28px;
-    }
   }
 
   @media (min-width: 901px) {
@@ -494,7 +442,7 @@ import TrilhaCard from "./TrilhaCard.astro";
 
     if (!tabsContainer) return;
 
-    // --- CONTROLE DAS TABS SUPERIORES ---
+    // Navegação das abas superiores
     const updateTabArrows = () => {
       const maxScroll = tabsContainer.scrollWidth - tabsContainer.clientWidth;
       if (tabsLeft instanceof HTMLButtonElement) {
@@ -516,39 +464,8 @@ import TrilhaCard from "./TrilhaCard.astro";
     tabsContainer.addEventListener('scroll', updateTabArrows, { passive: true });
     updateTabArrows();
 
-    // --- Re-implementation using Plenaria-like scrolling ---
-    function obterDistanciaDoCard(track) {
-      const firstCard = track.querySelector('.trilha-card');
-      if (!(firstCard instanceof HTMLElement)) return 300;
-
-      const styles = window.getComputedStyle(track);
-      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 22;
-
-      return firstCard.getBoundingClientRect().width + gap;
-    }
-
     function obterCards(track) {
       return Array.from(track.querySelectorAll('.trilha-card'));
-    }
-
-    function navegarPara(track, index) {
-      const cards = obterCards(track);
-      if (!cards[index]) return;
-
-      const targetLeft = Math.max(
-        0,
-        Math.min(
-          cards[index].offsetLeft,
-          track.scrollWidth - track.clientWidth
-        )
-      );
-
-      track.scrollTo({ left: targetLeft, behavior: 'smooth' });
-    }
-
-    function navegarPorPasso(track, direcao) {
-      const distance = obterDistanciaDoCard(track);
-      track.scrollBy({ left: distance * direcao, behavior: 'smooth' });
     }
 
     function obterIndiceAtivo(track) {
@@ -571,92 +488,91 @@ import TrilhaCard from "./TrilhaCard.astro";
       return activeIndex;
     }
 
-    function atualizarSetasDoTrack(track, leftButton, rightButton) {
+    function navegarParaCard(track, targetIndex) {
       const cards = obterCards(track);
-      const activeIndex = obterIndiceAtivo(track);
+      const card = cards[targetIndex];
+      if (!card) return;
 
-      if (leftButton instanceof HTMLButtonElement) {
-        leftButton.disabled = activeIndex <= 0;
-      }
-      if (rightButton instanceof HTMLButtonElement) {
-        rightButton.disabled = activeIndex >= cards.length - 1;
-      }
+      // scrollIntoView com inline: 'center' faz o navegador usar o alinhamento perfeito de CSS Snap
+      card.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
     }
 
-    function checkCardsCount(shell) {
+    function atualizarSetas(shell) {
       const track = shell.querySelector('.track');
       if (!(track instanceof HTMLElement)) return;
 
-      const cards = track.querySelectorAll('.trilha-card');
-      const hasMany = cards.length > 1;
+      const cards = obterCards(track);
+      const leftArrow = shell.querySelector('.track-arrow-left');
+      const rightArrow = shell.querySelector('.track-arrow-right');
 
-      shell.classList.toggle('has-many', hasMany);
+      // 1 Card -> Oculta AMBAS
+      if (cards.length <= 1) {
+        shell.classList.remove('has-many');
+        leftArrow?.classList.remove('visible');
+        rightArrow?.classList.remove('visible');
+        return;
+      }
 
-      const leftButton = shell.querySelector('.track-arrow-left');
-      const rightButton = shell.querySelector('.track-arrow-right');
+      shell.classList.add('has-many');
+      const activeIndex = obterIndiceAtivo(track);
 
-      if (leftButton instanceof HTMLButtonElement && rightButton instanceof HTMLButtonElement) {
-        leftButton.style.display = hasMany ? '' : 'none';
-        rightButton.style.display = hasMany ? '' : 'none';
+      // Regras de Exibição das setas
+      if (leftArrow instanceof HTMLElement) {
+        if (activeIndex > 0) {
+          leftArrow.classList.add('visible');
+        } else {
+          leftArrow.classList.remove('visible');
+        }
+      }
+
+      if (rightArrow instanceof HTMLElement) {
+        if (activeIndex < cards.length - 1) {
+          rightArrow.classList.add('visible');
+        } else {
+          rightArrow.classList.remove('visible');
+        }
       }
     }
 
     trackShells.forEach((shell) => {
       const track = shell.querySelector('.track');
-      const leftButton = shell.querySelector('.track-arrow-left');
-      const rightButton = shell.querySelector('.track-arrow-right');
+      const leftArrow = shell.querySelector('.track-arrow-left');
+      const rightArrow = shell.querySelector('.track-arrow-right');
 
       if (!(track instanceof HTMLElement)) return;
 
-      checkCardsCount(shell);
-
-      leftButton?.addEventListener('click', (e) => {
+      leftArrow?.addEventListener('click', (e) => {
         e.preventDefault();
-        if (leftButton instanceof HTMLElement) leftButton.blur();
-        navegarPorPasso(track, -1);
+        const activeIndex = obterIndiceAtivo(track);
+        if (activeIndex > 0) {
+          navegarParaCard(track, activeIndex - 1);
+        }
       });
 
-      rightButton?.addEventListener('click', (e) => {
+      rightArrow?.addEventListener('click', (e) => {
         e.preventDefault();
-        if (rightButton instanceof HTMLElement) rightButton.blur();
-        navegarPorPasso(track, 1);
+        const activeIndex = obterIndiceAtivo(track);
+        const cards = obterCards(track);
+        if (activeIndex < cards.length - 1) {
+          navegarParaCard(track, activeIndex + 1);
+        }
       });
 
       track.addEventListener('scroll', () => {
-        window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
+        window.requestAnimationFrame(() => atualizarSetas(shell));
       }, { passive: true });
 
-      window.addEventListener('resize', () => {
-        window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
-      });
-
-      // init state for this track
-      window.requestAnimationFrame(() => atualizarSetasDoTrack(track, leftButton, rightButton));
+      atualizarSetas(shell);
     });
 
-    const initialActiveTrack = section.querySelector('.track.active');
-    if (initialActiveTrack instanceof HTMLElement) {
-      // center first card similar to plenaria
-      window.requestAnimationFrame(() => navegarPara(initialActiveTrack, 0));
-    }
-
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const activeTrack = section.querySelector('.track.active');
-        if (!(activeTrack instanceof HTMLElement)) return;
-
-        const activeIndex = obterIndiceAtivo(activeTrack);
-        window.requestAnimationFrame(() => navegarPara(activeTrack, activeIndex));
-      }, 150);
-    });
-
-    // --- TROCA DE ABAS (TABS) ---
+    // Troca de Abas
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const target = tab.getAttribute('data-tab');
-
         const selectedShell = section.querySelector(`[data-track-shell="${target}"]`);
         const selectedTrack = section.querySelector(`[data-track="${target}"]`);
 
@@ -666,20 +582,25 @@ import TrilhaCard from "./TrilhaCard.astro";
 
         tab.classList.add('active');
 
-        if (selectedShell instanceof HTMLElement) {
+        if (selectedShell instanceof HTMLElement && selectedTrack instanceof HTMLElement) {
           selectedShell.classList.add('active');
-          checkCardsCount(selectedShell);
-        }
-
-        if (selectedTrack instanceof HTMLElement) {
           selectedTrack.classList.add('active');
-          // center first card after layout change
-          window.requestAnimationFrame(() => navegarPara(selectedTrack, 0));
-          window.setTimeout(() => navegarPara(selectedTrack, 0), 40);
+          
+          window.requestAnimationFrame(() => {
+            navegarParaCard(selectedTrack, 0);
+            atualizarSetas(selectedShell);
+          });
         }
 
         tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       });
+    });
+
+    window.addEventListener('resize', () => {
+      const activeShell = section.querySelector('.track-shell.active');
+      if (activeShell instanceof HTMLElement) {
+        atualizarSetas(activeShell);
+      }
     });
   }
 

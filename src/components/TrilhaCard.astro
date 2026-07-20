@@ -52,6 +52,8 @@ const {
   .trilha-card {
     flex: 0 0 290px;
     width: 290px;
+    max-width: 290px;
+    box-sizing: border-box;
     transition:
       opacity 0.35s ease,
       transform 0.35s ease,
@@ -241,7 +243,7 @@ const {
   }
 
   .trilha-card.selected .trilha-card-details {
-    max-height: 360px;
+    max-height: 999px;
     opacity: 1;
   }
 
@@ -258,17 +260,6 @@ const {
 
     .trilha-card:not(.selected):hover .trilha-card-button {
       box-shadow: 0 24px 46px rgba(0, 0, 0, 0.24);
-    }
-  }
-
-  /* Abaixo de 900px o card ocupa a maior parte da largura visível do
-     carrossel (não 100%), deixando uma "espiada" do próximo card —
-     assim não fica gigante ocupando a tela inteira */
-  @media (max-width: 900px) {
-    .trilha-card {
-      flex: 0 0 72%;
-      width: 72%;
-      min-width: 0;
     }
   }
 
@@ -295,11 +286,6 @@ const {
   }
 
   @media (max-width: 480px) {
-    .trilha-card {
-      flex: 0 0 78%;
-      width: 78%;
-    }
-
     .trilha-card-photo {
       height: 195px;
     }
