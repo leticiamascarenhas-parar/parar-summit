@@ -9,9 +9,8 @@ export const trilhas = [
         palestrante: "Carlos Tudisco",
         cargo: "COO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
-        horario: "a definir",
-        sala: "a definir",
-        descricao: "Descrição da palestra."
+        horario: "horário: a definir",
+        sala: "sala: Hub 2",
       }
     ]
   },
@@ -27,7 +26,7 @@ export const trilhas = [
         cargo: "Gerente de Sustentabilidade da UNICA",
         foto: "/images/trilhas/titulo/renata-unica.jpeg",
         horario: "21/10 às 13h50",
-        sala: "Lab 5",
+        sala: "sala: Lab 5",
       }
     ]
   },
@@ -38,12 +37,12 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Gestão de Inovação",
+        titulo: "Gestão de Inovação | Guia prático para o gestor de frotas do futuro? ",
         palestrante: "Sergio Jabali",
         cargo: "CTO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/sergio-jabali.jpg",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: Hub 2",
       },
     ]
   },
@@ -58,8 +57,8 @@ export const trilhas = [
         palestrante: "Milad Neto",
         cargo: "Diretor na KLume e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/milad-neto.jpg",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       }
     ]
   },
@@ -70,12 +69,12 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Gestão de Manutenção para frotas de alta performance",
+        titulo: "Gestão de Manutenção de alta performance",
         palestrante: "William Magalhães",
         cargo: "Especialista em Manutenção",
         foto: "/images/speakers/william-magalhaes.jpeg",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: Hub 2",
       }
     ]
   },
@@ -90,17 +89,17 @@ export const trilhas = [
         palestrante: "Carlos Tudisco",
         cargo: "COO da Golfleet e professor do PARAR",
         foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: Lab 4",
       },
       {
         id: 2,
-        titulo: "Gestão eficiente de Frotas públicas",
-        palestrante: "Daniela Diniz",
-        cargo: "Advogada e especialista em políticas públicas",
-        foto: "/images/trilhas/placeholder.jpg",
-        horario: "a definir",
-        sala: "a definir",
+        titulo: "",
+        palestrante: "",
+        cargo: "",
+        foto: "/images/trilhas/em-breve.png",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       }
     ]
   },
@@ -115,8 +114,8 @@ export const trilhas = [
         palestrante: "Eliandro Maurat",
         cargo: "CEO do Instituto Vida Segura",
         foto: "/images/trilhas/eliandro-maurat.png",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       },
       {
         id: 2,
@@ -124,8 +123,8 @@ export const trilhas = [
         palestrante: "Mauricio Franco",
         cargo: "CEO da Carga Online",
         foto: "/images/trilhas/mauricio-franco.jpg",
-        horario: "a definir",
-        sala: "a definir",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       }
     ]
   }, 
@@ -136,12 +135,12 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Palestra a definir",
-        palestrante: "Nome do palestrante",
-        cargo: "Cargo do palestrante",
-        foto: "/images/trilhas/placeholder.jpg",
-        horario: "a definir",
-        sala: "a definir",
+        titulo: "Direção defensiva como estratégia na Gestão de Frotas",
+        palestrante: "Eduardo Marçon",
+        cargo: "CEO da SafeD Cursos e Eventos",
+        foto: "/images/trilhas/eduardo-marcon.jpeg",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       },
     ]
   },
@@ -152,13 +151,12 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Palestra a definir",
-        palestrante: "Nome do palestrante",
-        cargo: "Cargo do palestrante",
-        foto: "/images/trilhas/placeholder.jpg",
-        horario: "a definir",
-        sala: "a definir",
-        descricao: "Descrição da palestra."
+        titulo: "",
+        palestrante: "",
+        cargo: "",
+        foto: "/images/trilhas/em-breve.png",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       },
     ]
   },
@@ -169,13 +167,12 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Palestra a definir",
-        palestrante: "Nome do palestrante",
-        cargo: "Cargo do palestrante",
-        foto: "/images/trilhas/placeholder.jpg",
-        horario: "a definir",
-        sala: "a definir",
-        descricao: "Descrição da palestra."
+        titulo: "",
+        palestrante: "",
+        cargo: "",
+        foto: "/images/trilhas/em-breve.png",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
       }
     ]
   }

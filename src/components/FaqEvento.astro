@@ -44,7 +44,7 @@ const {
   headingLine1End = "ALGUMA DÚVIDA",
   headingLine2 = "SOBRE O EVENTO?",
   ctaText = "Entre em contato",
-  ctaHref = "#contato",
+  ctaHref = "https://wa.me/5543984617114?text=Quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20PARAR%20Summit",
 } = Astro.props;
 ---
 
@@ -72,7 +72,7 @@ const {
         <br />
         <span class="hl-dark">{headingLine2}</span>
       </h2>
-      <a class="faq-cta" href={ctaHref}>{ctaText}</a>
+      <a class="faq-cta" href={ctaHref} target="_blank" rel="noopener noreferrer">{ctaText}</a>
     </div>
 
   </div>

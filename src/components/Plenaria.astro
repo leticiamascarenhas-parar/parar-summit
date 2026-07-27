@@ -142,24 +142,48 @@ import { speakers } from "../data/speakers";
     gap: 8px;
   }
 
-  .plenaria-dot {
+  /* Ensure dots are visible by default */
+  .plenaria-dots {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Reset native button styles so our circular dot styling applies */
+  .plenaria-dots .plenaria-dot {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* Explicit circular dot sizing and colors */
+  .plenaria-dots .plenaria-dot {
     width: 10px;
     height: 10px;
-    padding: 0;
-    border: none;
-    border-radius: 999px;
-    background: rgba(6, 72, 82, 0.28);
-    cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    border-radius: 50%;
+    background-color: #d1d5d5; /* inactive - light gray */
+    transition: transform 0.18s ease, background-color 0.18s ease;
+    flex: 0 0 auto;
   }
 
-  .plenaria-dot:hover {
+  .plenaria-dots .plenaria-dot:hover,
+  .plenaria-dots .plenaria-dot:focus {
     transform: scale(1.08);
-    background: rgba(6, 72, 82, 0.42);
+    background-color: #b8bebd;
+    box-shadow: 0 0 0 4px rgba(6,72,82,0.06);
   }
 
-  .plenaria-dot.is-active {
-    background: #064852;
+  .plenaria-dots .plenaria-dot.is-active,
+  .plenaria-dots .plenaria-dot[aria-current="true"] {
+    background-color: #064852; /* active - dark teal/navy */
     transform: scale(1.14);
   }
 
@@ -236,6 +260,13 @@ import { speakers } from "../data/speakers";
       opacity 0.25s ease,
       transform 0.25s ease,
       background 0.25s ease;
+  }
+
+  /* Make sure arrows are visible and interactive */
+  .plenaria-arrow {
+    display: inline-flex;
+    opacity: 1;
+    visibility: visible;
   }
 
   .plenaria-arrow:hover {
@@ -318,30 +349,22 @@ import { speakers } from "../data/speakers";
 
       section.dataset.carouselReady = 'true';
 
-      const cardsContainer =
-        section.querySelector('.plenaria-cards');
+      const cardsContainer = section.querySelector('.plenaria-cards');
+      const previousButton = section.querySelector('.plenaria-arrow-left');
+      const nextButton = section.querySelector('.plenaria-arrow-right');
+      const dotsContainer = section.querySelector('.plenaria-dots');
+      const arrowGroup = section.querySelector('.plenaria-arrow-group');
 
-      const previousButton =
-        section.querySelector('.plenaria-arrow-left');
-
-      const nextButton =
-        section.querySelector('.plenaria-arrow-right');
-
-      const dots = Array.from(
-        section.querySelectorAll('.plenaria-dot')
-      );
-
-      if (
-        !(cardsContainer instanceof HTMLElement) ||
-        !(previousButton instanceof HTMLButtonElement) ||
-        !(nextButton instanceof HTMLButtonElement)
-      ) {
+      if (!(cardsContainer instanceof HTMLElement) || !(dotsContainer instanceof HTMLElement)) {
         return;
       }
 
+      // Be tolerant: previous/next may exist but not be strict HTMLButtonElement in some envs
+      const prevBtn = previousButton instanceof HTMLButtonElement ? previousButton : previousButton;
+      const nextBtn = nextButton instanceof HTMLButtonElement ? nextButton : nextButton;
+
       function obterDistanciaDoCard() {
-        const firstCard =
-          cardsContainer.querySelector('.speaker-card');
+        const firstCard = cardsContainer.querySelector('.speaker-card');
 
         if (!(firstCard instanceof HTMLElement)) {
           return 302;
@@ -372,34 +395,75 @@ import { speakers } from "../data/speakers";
           )
         );
 
-        cardsContainer.scrollTo({
-          left: targetLeft,
-          behavior: 'smooth'
-        });
+        cardsContainer.scrollTo({ left: targetLeft, behavior: 'smooth' });
       }
 
       function navegarPorPasso(direcao) {
         const distance = obterDistanciaDoCard();
-        cardsContainer.scrollBy({
-          left: distance * direcao,
-          behavior: 'smooth'
+        cardsContainer.scrollBy({ left: distance * direcao, behavior: 'smooth' });
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          navegarPorPasso(-1);
         });
       }
 
-      previousButton.addEventListener('click', () => {
-        navegarPorPasso(-1);
-      });
-
-      nextButton.addEventListener('click', () => {
-        navegarPorPasso(1);
-      });
-
-      dots.forEach((dot) => {
-        dot.addEventListener('click', () => {
-          const index = Number(dot.dataset.index ?? 0);
-          navegarPara(index);
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          navegarPorPasso(1);
         });
-      });
+      }
+
+      // Pagination (dots) handling. We build dots based on pages (groups of slides),
+      // not one per slide. This keeps count in sync with visible pages.
+      let currentPerPage = 1;
+
+      function isOverflowing() {
+        // True when container width is less than total scroll width (i.e. needs scrolling)
+        return cardsContainer.scrollWidth > cardsContainer.clientWidth + 1;
+      }
+
+      function rebuildDots() {
+        const cards = obterCards();
+        const distance = obterDistanciaDoCard();
+        currentPerPage = Math.max(1, Math.floor(cardsContainer.clientWidth / distance));
+        const pages = Math.max(1, Math.ceil(cards.length / currentPerPage));
+
+        // If there's no overflow (all cards visible), hide controls and clear dots
+        if (!isOverflowing() || pages <= 1) {
+          dotsContainer.innerHTML = '';
+          dotsContainer.style.display = 'none';
+          if (arrowGroup) arrowGroup.style.display = 'none';
+          if (dotsContainer) dotsContainer.setAttribute('aria-hidden', 'true');
+          if (arrowGroup) arrowGroup.setAttribute('aria-hidden', 'true');
+          return 0;
+        }
+
+        // show controls
+        dotsContainer.style.display = '';
+        if (arrowGroup) arrowGroup.style.display = '';
+        dotsContainer.removeAttribute('aria-hidden');
+        if (arrowGroup) arrowGroup.removeAttribute('aria-hidden');
+
+        // clear and recreate
+        dotsContainer.innerHTML = '';
+
+        for (let p = 0; p < pages; p += 1) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'plenaria-dot';
+          btn.dataset.page = String(p);
+          btn.setAttribute('aria-label', `Ir para página ${p + 1} de ${pages}`);
+          btn.setAttribute('aria-current', 'false');
+          btn.addEventListener('click', () => {
+            const targetIndex = p * currentPerPage;
+            navegarPara(Math.min(targetIndex, cards.length - 1));
+          });
+          dotsContainer.appendChild(btn);
+        }
+        return pages;
+      }
 
       function obterIndiceAtivo() {
         const cards = obterCards();
@@ -408,14 +472,13 @@ import { speakers } from "../data/speakers";
           return 0;
         }
 
-        const containerCenter =
-          cardsContainer.scrollLeft + (cardsContainer.clientWidth / 2);
+        const containerCenter = cardsContainer.scrollLeft + cardsContainer.clientWidth / 2;
 
         let activeIndex = 0;
         let menorDistancia = Number.POSITIVE_INFINITY;
 
         cards.forEach((card, index) => {
-          const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
           const distancia = Math.abs(cardCenter - containerCenter);
 
           if (distancia < menorDistancia) {
@@ -430,19 +493,33 @@ import { speakers } from "../data/speakers";
       function atualizarSetas() {
         const cards = obterCards();
         const activeIndex = obterIndiceAtivo();
-        const maxScroll =
-          cardsContainer.scrollWidth -
-          cardsContainer.clientWidth;
 
-        previousButton.disabled = activeIndex <= 0;
-        nextButton.disabled = activeIndex >= cards.length - 1;
+        if (prevBtn) prevBtn.disabled = activeIndex <= 0;
+        if (nextBtn) nextBtn.disabled = activeIndex >= cards.length - 1;
+
+        // Update dots to reflect current page
+        const dots = Array.from(dotsContainer.querySelectorAll('.plenaria-dot'));
+        const activePage = Math.floor(activeIndex / Math.max(1, currentPerPage));
 
         dots.forEach((dot, index) => {
-          const isActive = index === activeIndex;
+          const isActive = index === activePage;
           dot.classList.toggle('is-active', isActive);
           dot.setAttribute('aria-current', String(isActive));
         });
       }
+
+      // Initial build and attach resize observer to rebuild when layout changes
+      rebuildDots();
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        // debounce rebuild/updates
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          rebuildDots();
+          window.requestAnimationFrame(atualizarSetas);
+        }, 120);
+      });
 
       cardsContainer.addEventListener(
         'scroll',
@@ -452,18 +529,12 @@ import { speakers } from "../data/speakers";
         { passive: true }
       );
 
-      window.addEventListener('resize', () => {
-        window.requestAnimationFrame(atualizarSetas);
-      });
-
+      // run an initial update to set button states
       window.requestAnimationFrame(atualizarSetas);
     });
   }
 
   iniciarCarrosselPlenaria();
 
-  document.addEventListener(
-    'astro:page-load',
-    iniciarCarrosselPlenaria
-  );
+  document.addEventListener('astro:page-load', iniciarCarrosselPlenaria);
 </script>
