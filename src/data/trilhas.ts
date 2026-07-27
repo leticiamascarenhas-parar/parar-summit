@@ -5,7 +5,7 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Política de frotas na prática ",
+        titulo: "Política de Frotas: alta performance com segurança jurídica",
         palestrante: "Carlos Tudisco",
         cargo: "COO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
@@ -37,7 +37,7 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Gestão de Inovação | Guia prático para o gestor de frotas do futuro? ",
+        titulo: "Frota do Futuro: o impacto da IA e outras tecnologias no dia a dia do gestor",
         palestrante: "Sergio Jabali",
         cargo: "CTO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/sergio-jabali.jpg",

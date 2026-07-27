@@ -63,18 +63,27 @@ const {
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
 
   .trilha-card {
-    flex: 0 0 290px;
     width: 290px;
+    min-width: 290px;
     max-width: 290px;
+    /* Altura fixa mantida quando fechado */
+    height: 440px; 
+    flex: 0 0 290px;
     box-sizing: border-box;
+
     transition:
       opacity 0.35s ease,
       transform 0.35s ease,
-      filter 0.35s ease;
+      filter 0.35s ease,
+      height 0.35s ease;
   }
 
   .trilha-card-button {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
     padding: 0;
     border: 0;
     border-radius: 22px;
@@ -96,7 +105,8 @@ const {
 
   .trilha-card-photo {
     position: relative;
-    height: 285px;
+    height: 250px;
+    flex-shrink: 0;
     overflow: hidden;
     background: #061827;
     border: 3px solid #00c264;
@@ -141,6 +151,11 @@ const {
   }
 
   .trilha-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
     padding: 22px 24px;
     border: 3px solid #00c264;
     border-top: 0;
@@ -183,6 +198,11 @@ const {
     line-height: 1.18;
     font-weight: 600;
     letter-spacing: 0.02em;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .trilha-card-details {
@@ -247,7 +267,12 @@ const {
 
   .trilha-card.selected {
     z-index: 10;
+    height: auto; /* Permite expandir ao abrir */
     transform: translateY(-8px);
+  }
+
+  .trilha-card.selected .titulo-palestra {
+    -webkit-line-clamp: unset; /* Mostra o título completo ao expandir */
   }
 
   .trilha-card.selected .trilha-card-button {
@@ -276,10 +301,6 @@ const {
   }
 
   @media (max-width: 768px) {
-    .trilha-card-photo {
-      height: 220px;
-    }
-
     .trilha-card-info {
       padding: 19px 20px;
     }
@@ -294,12 +315,6 @@ const {
 
     .descricao {
       font-size: 12px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .trilha-card-photo {
-      height: 195px;
     }
   }
 </style>

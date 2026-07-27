@@ -31,7 +31,7 @@ export const speakers = [
     cargo: "Secretário Geral do Latin NCAP e Global NCAP",
     foto: "/images/speakers/alejandro-furas.jpeg",
     descricao: "Secretário Geral do Latin NCAP e Global NCAP.",
-    palestra: "Latin Ncap: o impacto dos níveis de segurança dos veículos disponíveis no mercado na Gestão de Frotas",
+    palestra: "Latin NCAP: O Impacto da Segurança Veicular na Gestão de Frotas",
     detalhes: "Ter uma frota segura começa muito antes do veículo ir para a rua. Alejandro Furas analisa o panorama da segurança automotiva e o papel das empresas como forças de mudança no setor."
   }
 
