@@ -70,7 +70,7 @@ export const trilhas = [
       {
         id: 1,
         titulo: "Gestão de Manutenção de alta performance",
-        palestrante: "William Magalhães",
+        palestrante: "Wiliam Magalhães",
         cargo: "Especialista em Manutenção",
         foto: "/images/speakers/william-magalhaes.jpeg",
         horario: "horário: a definir",
