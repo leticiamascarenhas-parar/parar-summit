@@ -22,7 +22,7 @@ export const speakers = [
     cargo: "Engenheiro, especialista em Engenharia Automotiva e Gestão de Ativos, e técnico em Mecatrônica Volvo Trucks.",
     foto: "/images/speakers/william-magalhaes.jpeg",
     descricao: "Engenheiro, especialista em Engenharia Automotiva e Gestão de Ativos, e técnico em Mecatrônica Volvo Trucks.",
-    palestra: "Gestão de ativos para uma gestão de frotas de alto nível",
+    palestra: "Engenharia da Decisão Aplicada à Gestão de Frotas",
     detalhes: "O especialista William Magalhães traz práticas essenciais de monitoramento e manutenção que minimizam custos operacionais e protegem o capital. Uma palestra indispensável para gestores que buscam extrair o valor máximo de cada recurso."
   },
 
