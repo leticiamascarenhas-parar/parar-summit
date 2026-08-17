@@ -94,13 +94,13 @@ export const trilhas = [
       },
       {
         id: 2,
-        titulo: "",
-        palestrante: "",
-        cargo: "",
-        foto: "/images/trilhas/em-breve.png",
+        titulo: "Desafios na governança e na gestão de frotas públicas",
+        palestrante: "Stanley Plácido",
+        cargo: "Diretor de Mobilidade Interna na Secretaria de Gestão e Governo Digital do Estado de São Paulo",
+        foto: "/images/trilhas/stanley-placido.jpeg",
         horario: "horário: a definir",
         sala: "sala: a definir",
-      }
+      } 
     ]
   },
 
@@ -167,10 +167,10 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "",
-        palestrante: "",
-        cargo: "",
-        foto: "/images/trilhas/em-breve.png",
+        titulo: "O Transporte Rodoviário de Cargas mudou: os principais desafios e tendências",
+        palestrante: "Eduardo Souza",
+        cargo: "Head de Operações, Logística e Comex | Conselheiro SAE Brasil | Prof. Inst. PARAR",
+        foto: "/images/trilhas/eduardo-souza.jpeg",
         horario: "horário: a definir",
         sala: "sala: a definir",
       }
