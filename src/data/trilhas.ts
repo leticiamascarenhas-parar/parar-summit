@@ -9,12 +9,28 @@ export const trilhas = [
         palestrante: "Carlos Tudisco",
         cargo: "COO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
-        horario: "horário: a definir",
+        horario: "20/10 às 13h45",
         sala: "sala: Hub 2",
       }
     ]
   },
   
+   {
+    id: "gestao-e-lideranca",
+    nome: "Gestão e Liderança",
+    palestras: [
+      {
+        id: 1,
+        titulo: "Liderança e Inteligência Emocional na Gestão de Frotas",
+        palestrante: "Eliandro Maurat",
+        cargo: "CEO do Instituto Vida Segura",
+        foto: "/images/trilhas/eliandro-maurat.png",
+        horario: "21/10 às 09h",
+        sala: "sala: Lab 5",
+      }
+    ]
+  }, 
+
   {
     id: "sustentabilidade",
     nome: "Sustentabilidade",
@@ -41,8 +57,18 @@ export const trilhas = [
         palestrante: "Sergio Jabali",
         cargo: "CTO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/sergio-jabali.jpg",
-        horario: "horário: a definir",
+        horario: "20/10 às 13h40",
         sala: "sala: Hub 2",
+      },
+      
+      {
+        id: 2,
+        titulo: "Como a conectividade transforma a Gestão de Frotas",
+        palestrante: "Sergio Jabali",
+        cargo: "CTO da Golfleet e professor do Instituto PARAR",
+        foto: "/images/trilhas/titulo/sergio-jabali.jpg",
+        horario: "20/10 às 14h45",
+        sala: "sala: Lab 5",
       },
     ]
   },
@@ -57,8 +83,8 @@ export const trilhas = [
         palestrante: "Milad Neto",
         cargo: "Diretor na KLume e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/milad-neto.jpg",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
+        horario: "20/10 às 14h45",
+        sala: "sala: Lab 4",
       }
     ]
   },
@@ -85,49 +111,24 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
-        titulo: "Política de Frota no Setor Público",
-        palestrante: "Carlos Tudisco",
-        cargo: "COO da Golfleet e professor do PARAR",
-        foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
-        horario: "horário: a definir",
-        sala: "sala: Lab 4",
-      },
-      {
-        id: 2,
         titulo: "Desafios na governança e na gestão de frotas públicas",
         palestrante: "Stanley Plácido",
         cargo: "Diretor de Mobilidade Interna na Secretaria de Gestão e Governo Digital do Estado de São Paulo",
         foto: "/images/trilhas/stanley-placido.jpeg",
+        horario: "horário: 09h",
+        sala: "sala: Lab 4",
+      },
+      {
+        id: 2,
+        titulo: "",
+        palestrante: "",
+        cargo: "",
+        foto: "/images/trilhas/em-breve.png",
         horario: "horário: a definir",
         sala: "sala: a definir",
       } 
     ]
   },
-
-   {
-    id: "gestao-e-lideranca",
-    nome: "Gestão e Liderança",
-    palestras: [
-      {
-        id: 1,
-        titulo: "Liderança e Inteligência Emocional na Gestão de Frotas",
-        palestrante: "Eliandro Maurat",
-        cargo: "CEO do Instituto Vida Segura",
-        foto: "/images/trilhas/eliandro-maurat.png",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
-      },
-      {
-        id: 2,
-        titulo: "Seu motorista é seu maior ativo ou seu maior risco?",
-        palestrante: "Mauricio Franco",
-        cargo: "CEO da Carga Online",
-        foto: "/images/trilhas/mauricio-franco.jpg",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
-      }
-    ]
-  }, 
 
   {
     id: "cultura-de-seguranca",
@@ -160,6 +161,23 @@ export const trilhas = [
       },
     ]
   },
+ 
+  {
+    id: "frotas-eletricas",
+    nome: "Frotas Elétricas",
+    palestras: [
+      {
+        id: 1,
+        titulo: "",
+        palestrante: "",
+        cargo: "",
+        foto: "/images/trilhas/em-breve.png",
+        horario: "horário: a definir",
+        sala: "sala: a definir",
+      }
+    ]
+  },
+
 
   {
     id: "frotas-mistas-e-pesadas",
@@ -171,8 +189,8 @@ export const trilhas = [
         palestrante: "Eduardo Souza",
         cargo: "Head de Operações, Logística e Comex | Conselheiro SAE Brasil | Prof. Inst. PARAR",
         foto: "/images/trilhas/eduardo-souza.jpeg",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
+        horario: "20/10 às 13h40",
+        sala: "sala: Lab 5",
       }
     ]
   }
