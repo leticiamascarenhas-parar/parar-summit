@@ -1,0 +1,118 @@
+<section id="olimpiadas" class="olimpiadas" aria-label="Inscrição para a Olimpíada da Frota">
+	<img
+		class="olimpiadas-banner"
+		src="https://institutoparar.com.br/wp-content/uploads/2026/09/FACA-SUA-INSCRICAO-4.png"
+		alt="Faça sua inscrição na Olimpíada da Frota"
+	/>
+
+	<a
+		class="olimpiadas-button"
+		href="https://conteudo.institutoparar.com.br/olimpiada-da-frota"
+		target="_blank"
+		rel="noopener noreferrer"
+	>
+		INSCREVA-SE
+	</a>
+</section>
+
+<style>
+	.olimpiadas {
+		--verde-profundo: #0c6856;
+		--verde-vivo: #05d16e;
+		--verde-claro: #2be0bd;
+
+		position: relative;
+		overflow: hidden;
+		scroll-margin-top: 140px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 24px;
+		width: 100%;
+		margin: 0;
+		padding: 48px 24px;
+		box-sizing: border-box;
+		background:
+			radial-gradient(circle at 8% 22%, rgba(5, 209, 110, 0.16), transparent 32%),
+			radial-gradient(circle at 92% 78%, rgba(12, 104, 86, 0.13), transparent 35%),
+			linear-gradient(135deg, #f9fdfc 0%, #e4f2f2 48%, #f3faf8 100%);
+	}
+
+	.olimpiadas::before,
+	.olimpiadas::after {
+		content: "";
+		position: absolute;
+		left: 50%;
+		width: min(900px, 72%);
+		height: 1px;
+		transform: translateX(-50%);
+		background: linear-gradient(
+			90deg,
+			transparent,
+			var(--verde-profundo),
+			var(--verde-claro),
+			#ffffff,
+			var(--verde-claro),
+			var(--verde-profundo),
+			transparent
+		);
+		opacity: 0.65;
+		pointer-events: none;
+	}
+
+	.olimpiadas::before {
+		top: 0;
+	}
+
+	.olimpiadas::after {
+		bottom: 0;
+	}
+
+	.olimpiadas-banner {
+		display: block;
+		width: min(1200px, 100%);
+		height: auto;
+		object-fit: contain;
+	}
+
+	.olimpiadas-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 52px;
+		padding: 14px 32px;
+		border-radius: 8px;
+		background: var(--verde-profundo);
+		color: #fff;
+		font-family: "Alfarn", "Arial Black", sans-serif;
+		font-size: 1rem;
+		font-weight: 900;
+		text-decoration: none;
+		box-shadow: 0 8px 22px rgba(12, 104, 86, 0.24);
+		transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+	}
+
+	.olimpiadas-button:hover {
+		background: var(--verde-vivo);
+		color: #000;
+		transform: translateY(-2px);
+		box-shadow: 0 12px 28px rgba(5, 209, 110, 0.3);
+	}
+
+	.olimpiadas-button:focus-visible {
+		outline: 3px solid var(--verde-claro);
+		outline-offset: 4px;
+	}
+
+	@media (max-width: 600px) {
+		.olimpiadas {
+			gap: 20px;
+			padding: 32px 16px;
+		}
+
+		.olimpiadas-button {
+			width: 100%;
+			max-width: 320px;
+		}
+	}
+</style>
