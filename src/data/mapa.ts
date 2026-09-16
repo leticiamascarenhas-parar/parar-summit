@@ -56,6 +56,13 @@ export const locaisMapa = [
     y: 60
   },
   {
+    id: "test-drive",
+    nome: "Test Drive",
+    descricao: "Área para test drive de veículos.",
+    x: 70,
+    y: 85
+  },
+  {
     id: "lounge-parar",
     nome: "Lounge do PARAR",
     descricao: "Networking e relacionamento. O ponto de encontro do Summit 26.",
