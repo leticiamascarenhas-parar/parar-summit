@@ -33,6 +33,41 @@ export const speakers = [
     descricao: "Secretário Geral do Latin NCAP e Global NCAP.",
     palestra: "Latin NCAP: O Impacto da Segurança Veicular na Gestão de Frotas",
     detalhes: "Ter uma frota segura começa muito antes do veículo ir para a rua. Alejandro Furas analisa o panorama da segurança automotiva e o papel das empresas como forças de mudança no setor."
-  }
+  },
 
+  {
+    nome: "Mauricio Franco",
+    cargo: "CEO da Carga Online e Prof. Instituto PARAR",
+    foto: "/images/trilhas/mauricio-franco.webp",
+    descricao: "CEO da Carga Online e Prof. Instituto PARAR",
+    palestra: "PAINEL: Seu motorista é seu maior ativo ou seu maior risco?",
+    detalhes: "Uma gestão de condutores eficiente é determinante para os resultados da gestão de frotas pesadas. Aprenda a liderar e valorizar os seus condutores para que eles se tornem agentes estratégicos dentro da sua operação."
+  },
+
+  {
+    nome: "Cleodimir Vieira do Amaral",
+    cargo: "Coordenador de Rastreamento do Grupo Sada",
+    foto: "/images/speakers/cleodimir-vieira.webp",
+    descricao: "Coordenador de Rastreamento do Grupo Sada",
+    palestra: "PAINEL: Seu motorista é seu maior ativo ou seu maior risco?",
+    detalhes: "XXUma gestão de condutores eficiente é determinante para os resultados da gestão de frotas pesadas. Aprenda a liderar e valorizar os seus condutores para que eles se tornem agentes estratégicos dentro da sua operação.XX"
+  },
+
+  {
+    nome: "Wily Martins",
+    cargo: "Coodenador de Frota do Grupo Sada",
+    foto: "/images/speakers/wily-martins.webp",
+    descricao: "Coodenador de Frota do Grupo Sada",
+    palestra: "PAINEL: Seu motorista é seu maior ativo ou seu maior risco?",
+    detalhes: "Uma gestão de condutores eficiente é determinante para os resultados da gestão de frotas pesadas. Aprenda a liderar e valorizar os seus condutores para que eles se tornem agentes estratégicos dentro da sua operação."
+  },
+
+  {
+    nome: "Marcos Rogério",
+    cargo: "Gerente de Frota do Grupo Sada",
+    foto: "/images/speakers/marcos-rogerio.webp",
+    descricao: "Gerente de Frota do Grupo Sada",
+    palestra: "PAINEL: Seu motorista é seu maior ativo ou seu maior risco?",
+    detalhes: "Uma gestão de condutores eficiente é determinante para os resultados da gestão de frotas pesadas. Aprenda a liderar e valorizar os seus condutores para que eles se tornem agentes estratégicos dentro da sua operação."
+  }
 ];
