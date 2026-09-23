@@ -1060,19 +1060,6 @@ import Header from "../components/Header.astro";
       a.click();
     }
 
-    async function copyImageToClipboard(blob) {
-      if (!navigator.clipboard || !window.ClipboardItem) return false;
-
-      try {
-        await navigator.clipboard.write([
-          new ClipboardItem({ [blob.type]: blob }),
-        ]);
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
     function showToast() {
       if (!toast) return;
       toast.classList.add("show");
@@ -1081,7 +1068,7 @@ import Header from "../components/Header.astro";
       }, 5000);
     }
 
-    // ── Share (Web Share API) ─────────────────────────────────
+    // ── Share to LinkedIn feed ────────────────────────────────
     async function share() {
       if (!photoDataUrl) return;
 
@@ -1096,18 +1083,9 @@ import Header from "../components/Header.astro";
       // 2. Exibe o aviso para o usuario
       showToast();
 
-      // 3. Aguarda 1.5s para o usuario ler, e entao abre o share nativo so com texto
-      setTimeout(async () => {
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: "#EuVou ao PARAR Summit 26",
-              text: "Sou presença confirmada no PARAR Summit 26 | O maior e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvoupararsummit @institutoparar www.pararsummit.com.br",
-            });
-          } catch (error) {
-            // Ignora erro se o usuario fechar a janela de share
-          }
-        }
+      // 3. Aguarda 1.5s para o usuario ler e abre o feed do LinkedIn
+      setTimeout(() => {
+        window.open("https://www.linkedin.com/feed/", "_blank", "noopener,noreferrer");
       }, 1500);
     }
 
