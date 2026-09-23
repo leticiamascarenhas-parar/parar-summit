@@ -44,6 +44,13 @@ import Header from "../components/Header.astro";
             aria-hidden="true"
           />
 
+          <!-- Invisible circular hit-zone, positioned exactly over the
+               photo circle. Only this element intercepts touch (pinch/drag)
+               to adjust the photo — everywhere else on the stage keeps
+               normal page scrolling. It's only "active" once there's a
+               photo to adjust. -->
+          <div class="booth-photo-zone" id="booth-photo-zone" aria-hidden="true"></div>
+
           <!-- No-camera fallback message -->
           <div class="booth-no-camera" id="booth-no-camera" aria-live="polite">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -124,7 +131,7 @@ import Header from "../components/Header.astro";
 
         <!-- Tip -->
         <p class="booth-tip">
-          💡 Para melhor resultado, posicione seu rosto no centro da moldura.<br/>
+          💡 Depois de tirar ou enviar a foto, use dois dedos (ou o scroll) para dar zoom e arraste dentro do círculo para ajustar o enquadramento.<br/>
           📤 Ou envie uma foto da galeria para adicionar a moldura.
         </p>
 
@@ -231,11 +238,32 @@ import Header from "../components/Header.astro";
     box-shadow:
       0 0 0 1px rgba(0, 194, 100, 0.15),
       0 32px 64px rgba(0, 0, 0, 0.5);
+    /* Normal touch behaviour on the stage itself — scrolling the page by
+       touching the booth (outside the photo circle) must keep working. */
     touch-action: auto;
+  }
+
+  /* Invisible circular hit-zone over the photo circle. touch-action: none
+     here (and only here) is what stops the browser's native pinch-zoom /
+     scroll from fighting with our own pinch/drag handling — and it only
+     intercepts touches once a photo exists to adjust (see .active). */
+  .booth-photo-zone {
+    position: absolute;
+    z-index: 6;
+    border-radius: 50%;
+    touch-action: none;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .booth-photo-zone.active {
+    pointer-events: auto;
     cursor: grab;
   }
 
-  .booth-stage:active { cursor: grabbing; }
+  .booth-photo-zone.active:active {
+    cursor: grabbing;
+  }
 
   .booth-video,
   .booth-canvas {
@@ -618,6 +646,7 @@ import Header from "../components/Header.astro";
     const flash       = document.getElementById("booth-flash");
     const countdown   = document.getElementById("booth-countdown");
     const noCam       = document.getElementById("booth-no-camera");
+    const photoZone   = document.getElementById("booth-photo-zone");
 
     if (
       !(video instanceof HTMLVideoElement) ||
@@ -625,7 +654,8 @@ import Header from "../components/Header.astro";
       !(frameImg instanceof HTMLImageElement) ||
       !(stage instanceof HTMLElement) ||
       !(btnShutter instanceof HTMLButtonElement) ||
-      !(shutterLabel instanceof HTMLElement)
+      !(shutterLabel instanceof HTMLElement) ||
+      !(photoZone instanceof HTMLElement)
     ) return;
 
     const ctx = canvas.getContext("2d");
@@ -633,10 +663,16 @@ import Header from "../components/Header.astro";
     let rafId = null;
     let photoDataUrl = null;
     let mode = "live"; // "live" | "captured"
-    let uploadedImage = null;
-    let uploadZoom = 1;
-    let uploadOffsetX = 0;
-    let uploadOffsetY = 0;
+
+    // ── Unified photo source (works for camera snapshot AND upload) ───
+    // photoSource holds a static <img> (or canvas) once a photo has been
+    // taken or uploaded, so pinch/zoom + drag work the same way for both.
+    let photoSource = null;
+    let sourceMirror = false; // true for camera photos (selfie mirror), false for uploads
+    let photoZoom = 1;
+    let photoOffsetX = 0;
+    let photoOffsetY = 0;
+
     const pointers = new Map();
     let pinchStartDistance = 0;
     let pinchStartZoom = 1;
@@ -651,6 +687,20 @@ import Header from "../components/Header.astro";
     const CIRC_CX = Math.round(CW / 2);
     const CIRC_CY = Math.round(CH * 0.445);
     const CIRC_R  = Math.round(CW * 0.335);
+
+    // Position the invisible hit-zone exactly over that circle, in %,
+    // so it lines up correctly at any screen size (stage keeps the same
+    // 3:4 aspect ratio as the canvas, so % maps 1:1, no distortion).
+    photoZone.style.left   = (((CIRC_CX - CIRC_R) / CW) * 100) + "%";
+    photoZone.style.top    = (((CIRC_CY - CIRC_R) / CH) * 100) + "%";
+    photoZone.style.width  = (((CIRC_R * 2) / CW) * 100) + "%";
+    photoZone.style.height = (((CIRC_R * 2) / CH) * 100) + "%";
+
+    // Toggle whether the zone can intercept touches at all — only true
+    // once there's a photo in the circle to adjust.
+    function updateZoneActive() {
+      photoZone.classList.toggle("active", mode === "captured" && !!photoSource);
+    }
 
     // ── Helper: draw an image cover-fitted into the circle ───
     function drawIntoCircle(source, mirror = false, imageScale = 1, offsetX = 0, offsetY = 0) {
@@ -743,21 +793,24 @@ import Header from "../components/Header.astro";
       }
     }
 
-    function renderUploadedPhoto() {
-      if (!uploadedImage) return;
+    // ── Render the current photoSource with zoom/pan + frame ──
+    // Used both for the just-captured camera photo and for an uploaded
+    // photo — same pipeline, so pinch/drag behaves identically.
+    function renderPhoto() {
+      if (!photoSource) return;
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, CW, CH);
-      drawIntoCircle(uploadedImage, false, uploadZoom, uploadOffsetX, uploadOffsetY);
+      drawIntoCircle(photoSource, sourceMirror, photoZoom, photoOffsetX, photoOffsetY);
       compositeFrame();
       photoDataUrl = canvas.toDataURL("image/png");
     }
 
-    function getUploadOffsetLimit(imageScale = uploadZoom) {
-      if (!uploadedImage) return { x: 0, y: 0 };
+    function getOffsetLimit(imageScale = photoZoom) {
+      if (!photoSource) return { x: 0, y: 0 };
 
-      const sw = uploadedImage.naturalWidth || uploadedImage.width;
-      const sh = uploadedImage.naturalHeight || uploadedImage.height;
+      const sw = photoSource instanceof HTMLVideoElement ? photoSource.videoWidth  : (photoSource.naturalWidth  || photoSource.width);
+      const sh = photoSource instanceof HTMLVideoElement ? photoSource.videoHeight : (photoSource.naturalHeight || photoSource.height);
       const diameter = CIRC_R * 2;
       const scale = Math.max(diameter / sw, diameter / sh) * imageScale;
 
@@ -767,16 +820,16 @@ import Header from "../components/Header.astro";
       };
     }
 
-    function clampUploadOffsets() {
-      const limit = getUploadOffsetLimit();
-      uploadOffsetX = Math.max(-limit.x, Math.min(limit.x, uploadOffsetX));
-      uploadOffsetY = Math.max(-limit.y, Math.min(limit.y, uploadOffsetY));
+    function clampOffsets() {
+      const limit = getOffsetLimit();
+      photoOffsetX = Math.max(-limit.x, Math.min(limit.x, photoOffsetX));
+      photoOffsetY = Math.max(-limit.y, Math.min(limit.y, photoOffsetY));
     }
 
-    function setUploadZoom(nextZoom) {
-      uploadZoom = Math.max(1, Math.min(3, nextZoom));
-      clampUploadOffsets();
-      renderUploadedPhoto();
+    function setZoom(nextZoom) {
+      photoZoom = Math.max(1, Math.min(3, nextZoom));
+      clampOffsets();
+      renderPhoto();
     }
 
     function pointerDistance() {
@@ -791,34 +844,40 @@ import Header from "../components/Header.astro";
       return Math.hypot(x - CIRC_CX, y - CIRC_CY) <= CIRC_R;
     }
 
-    stage.addEventListener("pointerdown", (event) => {
-      if (!uploadedImage || mode !== "captured") return;
+    // Pinch/drag works for ANY photo already in the circle — camera
+    // capture or upload. Listeners live on photoZone (not the whole
+    // stage), so touches outside the circle never get intercepted —
+    // the isInsidePhotoCircle() check is kept as an extra safety net
+    // in case the zone's square hit-box (before CSS border-radius
+    // clipping) catches a corner.
+    photoZone.addEventListener("pointerdown", (event) => {
+      if (!photoSource || mode !== "captured") return;
       if (!isInsidePhotoCircle(event.clientX, event.clientY)) return;
 
       event.preventDefault();
-      stage.setPointerCapture(event.pointerId);
+      photoZone.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
       if (pointers.size === 2) {
         pinchStartDistance = pointerDistance();
-        pinchStartZoom = uploadZoom;
+        pinchStartZoom = photoZoom;
       }
     });
 
-    stage.addEventListener("pointermove", (event) => {
-      if (!uploadedImage || mode !== "captured" || !pointers.has(event.pointerId)) return;
+    photoZone.addEventListener("pointermove", (event) => {
+      if (!photoSource || mode !== "captured" || !pointers.has(event.pointerId)) return;
 
       const previous = pointers.get(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
       if (pointers.size === 1 && previous) {
         const rect = canvas.getBoundingClientRect();
-        uploadOffsetX += (event.clientX - previous.x) * (CW / rect.width);
-        uploadOffsetY += (event.clientY - previous.y) * (CH / rect.height);
-        clampUploadOffsets();
-        renderUploadedPhoto();
+        photoOffsetX += (event.clientX - previous.x) * (CW / rect.width);
+        photoOffsetY += (event.clientY - previous.y) * (CH / rect.height);
+        clampOffsets();
+        renderPhoto();
       } else if (pointers.size === 2 && pinchStartDistance > 0) {
-        setUploadZoom(pinchStartZoom * (pointerDistance() / pinchStartDistance));
+        setZoom(pinchStartZoom * (pointerDistance() / pinchStartDistance));
       }
     });
 
@@ -827,25 +886,24 @@ import Header from "../components/Header.astro";
       if (pointers.size < 2) pinchStartDistance = 0;
     }
 
-    stage.addEventListener("pointerup", releasePointer);
-    stage.addEventListener("pointercancel", releasePointer);
+    photoZone.addEventListener("pointerup", releasePointer);
+    photoZone.addEventListener("pointercancel", releasePointer);
 
-    stage.addEventListener("wheel", (event) => {
-      if (!uploadedImage || mode !== "captured") return;
+    photoZone.addEventListener("wheel", (event) => {
+      if (!photoSource || mode !== "captured") return;
       if (!isInsidePhotoCircle(event.clientX, event.clientY)) return;
 
       event.preventDefault();
-      setUploadZoom(uploadZoom - event.deltaY * 0.002);
+      setZoom(photoZoom - event.deltaY * 0.002);
     }, { passive: false });
 
     // ── Finalise capture (shared by camera & upload) ──────────
     function finalise() {
-      compositeFrame();
-      photoDataUrl = canvas.toDataURL("image/png");
       mode = "captured";
       btnShutter.classList.add("is-captured");
       secondary.setAttribute("aria-hidden", "false");
       btnShare.classList.add("is-attention");
+      updateZoneActive();
     }
 
     // ── Capture from camera ───────────────────────────────────
@@ -856,11 +914,31 @@ import Header from "../components/Header.astro";
       await runCountdown(3);
       await doFlash();
 
-      // Draw one clean frame then stop the live loop
+      // Stop the live loop and freeze the current video frame into a
+      // static image, so it can be pinch-zoomed/dragged afterwards
+      // exactly like an uploaded photo.
       cancelAnimationFrame(rafId);
-      ctx.clearRect(0, 0, CW, CH);
-      drawIntoCircle(video, true);
 
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      const snapCanvas = document.createElement("canvas");
+      snapCanvas.width = vw;
+      snapCanvas.height = vh;
+      snapCanvas.getContext("2d").drawImage(video, 0, 0, vw, vh);
+
+      const snapshot = new Image();
+      await new Promise((resolve) => {
+        snapshot.onload = resolve;
+        snapshot.src = snapCanvas.toDataURL("image/png");
+      });
+
+      photoSource = snapshot;
+      sourceMirror = true; // keep the selfie mirror look from the live preview
+      photoZoom = 1;
+      photoOffsetX = 0;
+      photoOffsetY = 0;
+
+      renderPhoto();
       finalise();
 
       btnShutter.disabled = false;
@@ -878,15 +956,17 @@ import Header from "../components/Header.astro";
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          uploadedImage = img;
-          uploadZoom = 1;
-          uploadOffsetX = 0;
-          uploadOffsetY = 0;
+          photoSource = img;
+          sourceMirror = false;
+          photoZoom = 1;
+          photoOffsetX = 0;
+          photoOffsetY = 0;
+
           btnShutter.classList.add("is-uploaded");
           btnShutter.setAttribute("aria-label", "Abrir a câmera");
           shutterLabel.textContent = "Abrir a câmera";
 
-          renderUploadedPhoto();
+          renderPhoto();
 
           doFlash().then(() => {
             finalise();
@@ -901,14 +981,20 @@ import Header from "../components/Header.astro";
     function retake() {
       mode = "live";
       photoDataUrl = null;
-      uploadedImage = null;
+      photoSource = null;
+      sourceMirror = false;
+      photoZoom = 1;
+      photoOffsetX = 0;
+      photoOffsetY = 0;
       pointers.clear();
+
       btnShutter.classList.remove("is-uploaded");
       btnShutter.classList.remove("is-captured");
       btnShutter.setAttribute("aria-label", "Tirar foto");
       shutterLabel.textContent = "Tirar foto";
       btnShare.classList.remove("is-attention");
       secondary.setAttribute("aria-hidden", "true");
+      updateZoneActive();
 
       ctx.clearRect(0, 0, CW, CH);
       drawFrame();
@@ -951,11 +1037,12 @@ import Header from "../components/Header.astro";
 
     // ── Wire up buttons ───────────────────────────────────────
     btnShutter.addEventListener("click", () => {
-      if (uploadedImage) {
+      // Uploaded photo showing → this click reopens the camera.
+      // Camera photo (or live view) showing → this click captures.
+      if (btnShutter.classList.contains("is-uploaded")) {
         retake();
         return;
       }
-
       capturePhoto();
     });
     btnDownload.addEventListener("click", download);
