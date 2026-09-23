@@ -135,6 +135,10 @@ import Header from "../components/Header.astro";
           📤 Ou envie uma foto da galeria para adicionar a moldura.
         </p>
 
+        <div class="booth-toast" id="booth-toast" aria-hidden="true">
+          📸 Foto salva na galeria!<br/>Não esqueça de anexar a imagem ao seu post.
+        </div>
+
       </div>
 
     </div>
@@ -627,6 +631,34 @@ import Header from "../components/Header.astro";
       font-size: 12px;
     }
   }
+
+  .booth-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #00c264;
+    color: #002d18;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-family: "Raleway", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999;
+    width: max-content;
+    max-width: 90%;
+  }
+
+  .booth-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 </style>
 
 <script>
@@ -646,6 +678,7 @@ import Header from "../components/Header.astro";
     const flash       = document.getElementById("booth-flash");
     const countdown   = document.getElementById("booth-countdown");
     const noCam       = document.getElementById("booth-no-camera");
+    const toast        = document.getElementById("booth-toast");
     const photoZone   = document.getElementById("booth-photo-zone");
 
     if (
@@ -1040,33 +1073,42 @@ import Header from "../components/Header.astro";
       }
     }
 
+    function showToast() {
+      if (!toast) return;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 5000);
+    }
+
     // ── Share (Web Share API) ─────────────────────────────────
     async function share() {
       if (!photoDataUrl) return;
 
       btnShare.classList.remove("is-attention");
 
-      if (navigator.share && navigator.canShare) {
-        try {
-          const blob = await (await fetch(photoDataUrl)).blob();
-          const file = new File([blob], "eu-vou-parar-summit-26.png", { type: "image/png" });
-          // LinkedIn may accept the share text but silently discard files.
-          // Keeping a copy lets the user paste the image into its composer.
-          await copyImageToClipboard(blob);
-          if (navigator.canShare({ files: [file] })) {
+      // 1. Forca o download da foto
+      const a = document.createElement("a");
+      a.href = photoDataUrl;
+      a.download = "eu-vou-parar-summit-26.png";
+      a.click();
+
+      // 2. Exibe o aviso para o usuario
+      showToast();
+
+      // 3. Aguarda 1.5s para o usuario ler, e entao abre o share nativo so com texto
+      setTimeout(async () => {
+        if (navigator.share) {
+          try {
             await navigator.share({
-              files: [file],
               title: "#EuVou ao PARAR Summit 26",
               text: "Sou presença confirmada no PARAR Summit 26 | O maior e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvoupararsummit @institutoparar www.pararsummit.com.br",
             });
-            return;
+          } catch (error) {
+            // Ignora erro se o usuario fechar a janela de share
           }
-        } catch {
-          // fall through to download
         }
-      }
-      // Fallback: just download
-      download();
+      }, 1500);
     }
 
     // ── Wire up buttons ───────────────────────────────────────
