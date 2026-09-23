@@ -1068,25 +1068,34 @@ import Header from "../components/Header.astro";
       }, 5000);
     }
 
-    // ── Share to LinkedIn feed ────────────────────────────────
+    // ── Share via native share sheet ──────────────────────────
     async function share() {
       if (!photoDataUrl) return;
 
       btnShare.classList.remove("is-attention");
 
-      // 1. Forca o download da foto
+      // Download the image first; the native share sheet carries text only.
       const a = document.createElement("a");
       a.href = photoDataUrl;
       a.download = "eu-vou-parar-summit-26.png";
       a.click();
 
-      // 2. Exibe o aviso para o usuario
       showToast();
 
-      // 3. Aguarda 1.5s para o usuario ler e abre o feed do LinkedIn
-      setTimeout(() => {
-        window.open("https://www.linkedin.com/feed/", "_blank", "noopener,noreferrer");
-      }, 1500);
+      // Keep this in the original click handler so mobile browsers allow it.
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "#EuVou ao PARAR Summit 26",
+            text: "Sou presença confirmada no PARAR Summit 26 | O maior e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvoupararsummit @institutoparar www.pararsummit.com.br",
+          });
+          return;
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+        }
+      }
+
+      window.open("https://www.linkedin.com/feed/", "_blank", "noopener,noreferrer");
     }
 
     // ── Wire up buttons ───────────────────────────────────────
