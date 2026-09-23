@@ -11,9 +11,9 @@ import Header from "../components/Header.astro";
 
       <div class="euvou-hero">
         <p class="euvou-eyebrow">#EuVou</p>
-        <h1 class="euvou-title">Eu Vou ao<br /><span>PARAR Summit 26</span></h1>
+        <h1 class="euvou-title">Já garantiu seu lugar no<br /><span>PARAR Summit 26?</span></h1>
         <p class="euvou-subtitle">
-          Tire uma foto com a moldura oficial do evento e compartilhe nas suas redes!
+          Crie sua foto com a nossa moldura oficial, use a hashtag #EUVOUNOPARARSUMMIT, marque o perfil do Instituto PARAR e comece a se conectar com outros participantes antes mesmo do evento começar.
         </p>
       </div>
 
@@ -138,10 +138,15 @@ import Header from "../components/Header.astro";
   /* ─── Page shell ─────────────────────────────────────────── */
   .euvou-page {
     min-height: 100vh;
-    background:
-      radial-gradient(ellipse at 0% 0%, rgba(0,194,100,0.14) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(6,72,82,0.18) 0%, transparent 55%),
-      #0c1a1e;
+    background-image:
+      linear-gradient(
+        rgba(5, 33, 48, 0.82),
+        rgba(5, 33, 48, 0.82)
+      ),
+      url("/images/hero-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
     display: flex;
     flex-direction: column;
@@ -226,7 +231,11 @@ import Header from "../components/Header.astro";
     box-shadow:
       0 0 0 1px rgba(0, 194, 100, 0.15),
       0 32px 64px rgba(0, 0, 0, 0.5);
+    touch-action: none;
+    cursor: grab;
   }
+
+  .booth-stage:active { cursor: grabbing; }
 
   .booth-video,
   .booth-canvas {
@@ -571,6 +580,7 @@ import Header from "../components/Header.astro";
 <script>
   (function () {
     const video       = document.getElementById("booth-video");
+    const stage       = document.getElementById("booth-stage");
     const canvas      = document.getElementById("booth-canvas");
     const frameImg    = document.getElementById("booth-frame");
     const btnShutter  = document.getElementById("btn-shutter");
@@ -587,7 +597,8 @@ import Header from "../components/Header.astro";
     if (
       !(video instanceof HTMLVideoElement) ||
       !(canvas instanceof HTMLCanvasElement) ||
-      !(frameImg instanceof HTMLImageElement)
+      !(frameImg instanceof HTMLImageElement) ||
+      !(stage instanceof HTMLElement)
     ) return;
 
     const ctx = canvas.getContext("2d");
@@ -595,6 +606,13 @@ import Header from "../components/Header.astro";
     let rafId = null;
     let photoDataUrl = null;
     let mode = "live"; // "live" | "captured"
+    let uploadedImage = null;
+    let uploadZoom = 1;
+    let uploadOffsetX = 0;
+    let uploadOffsetY = 0;
+    const pointers = new Map();
+    let pinchStartDistance = 0;
+    let pinchStartZoom = 1;
 
     // ── Canvas dimensions ────────────────────────────────────
     const CW = canvas.width;   // 810
@@ -608,11 +626,16 @@ import Header from "../components/Header.astro";
     const CIRC_R  = Math.round(CW * 0.335);
 
     // ── Helper: draw an image cover-fitted into the circle ───
-    function drawIntoCircle(source) {
+    function drawIntoCircle(source, mirror = false, imageScale = 1, offsetX = 0, offsetY = 0) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(CIRC_CX, CIRC_CY, CIRC_R, 0, Math.PI * 2);
       ctx.clip();
+
+      if (mirror) {
+        ctx.translate(CIRC_CX * 2, 0);
+        ctx.scale(-1, 1);
+      }
 
       // source dimensions
       const sw = source instanceof HTMLVideoElement ? source.videoWidth  : source.naturalWidth  || source.width;
@@ -621,10 +644,10 @@ import Header from "../components/Header.astro";
       // scale to fill the circle bounding box
       const diameter = CIRC_R * 2;
       const scale = Math.max(diameter / sw, diameter / sh);
-      const dw = sw * scale;
-      const dh = sh * scale;
-      const dx = CIRC_CX - CIRC_R - (dw - diameter) / 2;
-      const dy = CIRC_CY - CIRC_R - (dh - diameter) / 2;
+      const dw = sw * scale * imageScale;
+      const dh = sh * scale * imageScale;
+      const dx = CIRC_CX - CIRC_R - (dw - diameter) / 2 + offsetX;
+      const dy = CIRC_CY - CIRC_R - (dh - diameter) / 2 + offsetY;
 
       ctx.drawImage(source, dx, dy, dw, dh);
       ctx.restore();
@@ -634,7 +657,7 @@ import Header from "../components/Header.astro";
     function drawFrame() {
       if (mode !== "live") return;
       ctx.clearRect(0, 0, CW, CH);
-      drawIntoCircle(video);
+      drawIntoCircle(video, true);
       rafId = requestAnimationFrame(drawFrame);
     }
 
@@ -693,6 +716,91 @@ import Header from "../components/Header.astro";
       }
     }
 
+    function renderUploadedPhoto() {
+      if (!uploadedImage) return;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, CW, CH);
+      drawIntoCircle(uploadedImage, false, uploadZoom, uploadOffsetX, uploadOffsetY);
+      compositeFrame();
+      photoDataUrl = canvas.toDataURL("image/png");
+    }
+
+    function getUploadOffsetLimit(imageScale = uploadZoom) {
+      if (!uploadedImage) return { x: 0, y: 0 };
+
+      const sw = uploadedImage.naturalWidth || uploadedImage.width;
+      const sh = uploadedImage.naturalHeight || uploadedImage.height;
+      const diameter = CIRC_R * 2;
+      const scale = Math.max(diameter / sw, diameter / sh) * imageScale;
+
+      return {
+        x: Math.max(0, (sw * scale - diameter) / 2),
+        y: Math.max(0, (sh * scale - diameter) / 2),
+      };
+    }
+
+    function clampUploadOffsets() {
+      const limit = getUploadOffsetLimit();
+      uploadOffsetX = Math.max(-limit.x, Math.min(limit.x, uploadOffsetX));
+      uploadOffsetY = Math.max(-limit.y, Math.min(limit.y, uploadOffsetY));
+    }
+
+    function setUploadZoom(nextZoom) {
+      uploadZoom = Math.max(1, Math.min(3, nextZoom));
+      clampUploadOffsets();
+      renderUploadedPhoto();
+    }
+
+    function pointerDistance() {
+      const [first, second] = [...pointers.values()];
+      return Math.hypot(second.x - first.x, second.y - first.y);
+    }
+
+    stage.addEventListener("pointerdown", (event) => {
+      if (!uploadedImage || mode !== "captured") return;
+
+      stage.setPointerCapture(event.pointerId);
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pointers.size === 2) {
+        pinchStartDistance = pointerDistance();
+        pinchStartZoom = uploadZoom;
+      }
+    });
+
+    stage.addEventListener("pointermove", (event) => {
+      if (!uploadedImage || mode !== "captured" || !pointers.has(event.pointerId)) return;
+
+      const previous = pointers.get(event.pointerId);
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pointers.size === 1 && previous) {
+        const rect = canvas.getBoundingClientRect();
+        uploadOffsetX += (event.clientX - previous.x) * (CW / rect.width);
+        uploadOffsetY += (event.clientY - previous.y) * (CH / rect.height);
+        clampUploadOffsets();
+        renderUploadedPhoto();
+      } else if (pointers.size === 2 && pinchStartDistance > 0) {
+        setUploadZoom(pinchStartZoom * (pointerDistance() / pinchStartDistance));
+      }
+    });
+
+    function releasePointer(event) {
+      pointers.delete(event.pointerId);
+      if (pointers.size < 2) pinchStartDistance = 0;
+    }
+
+    stage.addEventListener("pointerup", releasePointer);
+    stage.addEventListener("pointercancel", releasePointer);
+
+    stage.addEventListener("wheel", (event) => {
+      if (!uploadedImage || mode !== "captured") return;
+
+      event.preventDefault();
+      setUploadZoom(uploadZoom - event.deltaY * 0.002);
+    }, { passive: false });
+
     // ── Finalise capture (shared by camera & upload) ──────────
     function finalise() {
       compositeFrame();
@@ -712,7 +820,7 @@ import Header from "../components/Header.astro";
       // Draw one clean frame then stop the live loop
       cancelAnimationFrame(rafId);
       ctx.clearRect(0, 0, CW, CH);
-      drawIntoCircle(video);
+      drawIntoCircle(video, true);
 
       finalise();
 
@@ -731,12 +839,12 @@ import Header from "../components/Header.astro";
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          // Reset to identity so upload is NOT mirrored
-          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          uploadedImage = img;
+          uploadZoom = 1;
+          uploadOffsetX = 0;
+          uploadOffsetY = 0;
 
-          // Cover-fit into the circle
-          ctx.clearRect(0, 0, CW, CH);
-          drawIntoCircle(img);
+          renderUploadedPhoto();
 
           doFlash().then(() => {
             finalise();
@@ -751,6 +859,8 @@ import Header from "../components/Header.astro";
     function retake() {
       mode = "live";
       photoDataUrl = null;
+      uploadedImage = null;
+      pointers.clear();
       secondary.setAttribute("aria-hidden", "true");
 
       ctx.clearRect(0, 0, CW, CH);
