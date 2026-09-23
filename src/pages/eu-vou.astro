@@ -44,6 +44,15 @@ import Header from "../components/Header.astro";
             aria-hidden="true"
           />
 
+          <button
+            id="btn-replace-photo"
+            class="btn-replace-photo"
+            type="button"
+            hidden
+          >
+            Enviar outra foto
+          </button>
+
           <!-- No-camera fallback message -->
           <div class="booth-no-camera" id="booth-no-camera" aria-live="polite">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -231,11 +240,33 @@ import Header from "../components/Header.astro";
     box-shadow:
       0 0 0 1px rgba(0, 194, 100, 0.15),
       0 32px 64px rgba(0, 0, 0, 0.5);
-    touch-action: none;
+    touch-action: auto;
     cursor: grab;
   }
 
   .booth-stage:active { cursor: grabbing; }
+
+  .btn-replace-photo {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    z-index: 6;
+    transform: translateX(-50%);
+    padding: 11px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    background: rgba(5, 33, 48, 0.88);
+    color: #ffffff;
+    font-family: "Raleway", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn-replace-photo:hover { background: #074157; }
 
   .booth-video,
   .booth-canvas {
@@ -585,6 +616,7 @@ import Header from "../components/Header.astro";
     const frameImg    = document.getElementById("booth-frame");
     const btnShutter  = document.getElementById("btn-shutter");
     const btnUpload   = document.getElementById("btn-upload");
+    const btnReplace  = document.getElementById("btn-replace-photo");
     const inputUpload = document.getElementById("input-upload");
     const btnDownload = document.getElementById("btn-download");
     const btnShare    = document.getElementById("btn-share");
@@ -598,7 +630,8 @@ import Header from "../components/Header.astro";
       !(video instanceof HTMLVideoElement) ||
       !(canvas instanceof HTMLCanvasElement) ||
       !(frameImg instanceof HTMLImageElement) ||
-      !(stage instanceof HTMLElement)
+      !(stage instanceof HTMLElement) ||
+      !(btnReplace instanceof HTMLButtonElement)
     ) return;
 
     const ctx = canvas.getContext("2d");
@@ -757,9 +790,18 @@ import Header from "../components/Header.astro";
       return Math.hypot(second.x - first.x, second.y - first.y);
     }
 
+    function isInsidePhotoCircle(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (clientX - rect.left) * (CW / rect.width);
+      const y = (clientY - rect.top) * (CH / rect.height);
+      return Math.hypot(x - CIRC_CX, y - CIRC_CY) <= CIRC_R;
+    }
+
     stage.addEventListener("pointerdown", (event) => {
       if (!uploadedImage || mode !== "captured") return;
+      if (!isInsidePhotoCircle(event.clientX, event.clientY)) return;
 
+      event.preventDefault();
       stage.setPointerCapture(event.pointerId);
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
@@ -796,10 +838,21 @@ import Header from "../components/Header.astro";
 
     stage.addEventListener("wheel", (event) => {
       if (!uploadedImage || mode !== "captured") return;
+      if (!isInsidePhotoCircle(event.clientX, event.clientY)) return;
 
       event.preventDefault();
       setUploadZoom(uploadZoom - event.deltaY * 0.002);
     }, { passive: false });
+
+    stage.addEventListener("click", (event) => {
+      if (!uploadedImage || mode !== "captured") return;
+      if (event.target instanceof Element && event.target.closest("#btn-replace-photo")) return;
+      if (!(event instanceof MouseEvent) || !isInsidePhotoCircle(event.clientX, event.clientY)) return;
+
+      btnReplace.hidden = false;
+    });
+
+    btnReplace.addEventListener("click", () => inputUpload.click());
 
     // ── Finalise capture (shared by camera & upload) ──────────
     function finalise() {
@@ -843,6 +896,7 @@ import Header from "../components/Header.astro";
           uploadZoom = 1;
           uploadOffsetX = 0;
           uploadOffsetY = 0;
+          btnReplace.hidden = true;
 
           renderUploadedPhoto();
 
@@ -861,6 +915,7 @@ import Header from "../components/Header.astro";
       photoDataUrl = null;
       uploadedImage = null;
       pointers.clear();
+      btnReplace.hidden = true;
       secondary.setAttribute("aria-hidden", "true");
 
       ctx.clearRect(0, 0, CW, CH);
