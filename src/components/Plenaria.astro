@@ -20,17 +20,7 @@ import { speakers } from "../data/speakers";
       </div>
 
       <div class="plenaria-nav" aria-label="Navegação da plenária">
-        <div class="plenaria-dots" role="tablist" aria-label="Escolher palestrante">
-          {speakers.map((speaker, index) => (
-            <button
-              class="plenaria-dot"
-              type="button"
-              data-index={index}
-              aria-label={`Ver palestrante ${index + 1}`}
-              aria-current="false"
-            />
-          ))}
-        </div>
+        <div class="plenaria-dots" role="tablist" aria-label="Escolher palestrante"></div>
 
         <div class="plenaria-arrow-group">
           <button
@@ -129,7 +119,7 @@ import { speakers } from "../data/speakers";
   .plenaria-nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 16px;
 
     margin-top: 8px;
@@ -137,14 +127,14 @@ import { speakers } from "../data/speakers";
   }
 
   .plenaria-dots {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
   }
 
   /* Ensure dots are visible by default */
   .plenaria-dots {
-    display: flex;
+    display: none;
     opacity: 1;
     visibility: visible;
   }

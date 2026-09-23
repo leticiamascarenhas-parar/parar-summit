@@ -3,22 +3,24 @@
     <img src="/logos/logo-summit.svg" alt="PARAR Summit 26" />
   </a>
 
-    <div class="header-actions">
+  <div class="header-actions">
     <a
-  class="ticket-button"
-  href="https://www.sympla.com.br/evento/parar-summit-26/3273575?utm_source=site_oficial&utm_medium=referral&utm_campaign=parar_summit_26&utm_content=header_ingressos"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  Ingressos
-</a>
+      class="ticket-button"
+      href="https://www.sympla.com.br/evento/parar-summit-26/3273575?utm_source=site_oficial&utm_medium=referral&utm_campaign=parar_summit_26&utm_content=header_ingressos"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Ingressos
+    </a>
 
-  <nav class="menu" id="main-menu">
-    <a href="#trilhas">Trilhas de conteúdo</a>
-    <a href="#plenaria">Plenária principal</a>
-    <a href="#mapa-evento">Mapa do evento</a>
-    <a href="#patrocinio">Patrocinadores</a>
-  </nav>
+    <a class="eu-vou-button" href="/eu-vou" id="eu-vou-header-btn"> #EuVou </a>
+
+    <nav class="menu" id="main-menu">
+      <a href="#trilhas">Trilhas de conteúdo</a>
+      <a href="#plenaria">Plenária principal</a>
+      <a href="#mapa-evento">Mapa do evento</a>
+      <a href="#patrocinio">Patrocinadores</a>
+    </nav>
 
     <button
       class="menu-toggle"
@@ -35,7 +37,7 @@
 </header>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap");
 
   html {
     scroll-behavior: smooth;
@@ -46,7 +48,7 @@
   }
 
   .site-header {
-    font-family: 'Raleway', sans-serif;
+    font-family: "Raleway", sans-serif;
     position: fixed;
     top: 0;
     left: 0;
@@ -81,8 +83,7 @@
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
-    box-shadow:
-      0 8px 28px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
   }
 
   .logo {
@@ -105,8 +106,43 @@
     margin-left: auto;
   }
 
+  .eu-vou-button {
+    font-family: "Raleway", sans-serif;
+    min-height: 46px;
+    padding: 0 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+
+    background: transparent;
+    color: #ffffff;
+
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .eu-vou-button:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+  }
+
   .ticket-button {
-    font-family: 'Raleway', sans-serif;
+    font-family: "Raleway", sans-serif;
     min-height: 46px;
     padding: 0 24px;
 
@@ -153,7 +189,7 @@
   }
 
   .menu a {
-    font-family: 'Raleway', sans-serif;
+    font-family: "Raleway", sans-serif;
     color: #ffffff;
 
     text-decoration: none;
@@ -249,6 +285,13 @@
       gap: 10px;
     }
 
+    .eu-vou-button {
+      min-height: 40px;
+      padding: 0 16px;
+      font-size: 13px;
+      border-radius: 3px;
+    }
+
     .ticket-button {
       min-width: 120px;
       min-height: 40px;
@@ -293,8 +336,7 @@
 
       background: rgba(2, 70, 83, 0.97);
 
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.24);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 
       opacity: 0;
       visibility: hidden;
@@ -375,10 +417,10 @@
 
 <script>
   function iniciarHeader() {
-    const header = document.querySelector('.site-header');
-    const toggle = document.querySelector('.menu-toggle');
-    const menu = document.querySelector('.menu');
-    const numeros = document.querySelector('#numeros');
+    const header = document.querySelector(".site-header");
+    const toggle = document.querySelector(".menu-toggle");
+    const menu = document.querySelector(".menu");
+    const numeros = document.querySelector("#numeros");
 
     if (!(header instanceof HTMLElement)) return;
 
@@ -386,45 +428,39 @@
       if (!(toggle instanceof HTMLButtonElement)) return;
       if (!(menu instanceof HTMLElement)) return;
 
-      menu.classList.remove('open');
-      toggle.classList.remove('open');
+      menu.classList.remove("open");
+      toggle.classList.remove("open");
 
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-label', 'Abrir menu');
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Abrir menu");
     }
 
     if (
       toggle instanceof HTMLButtonElement &&
       menu instanceof HTMLElement &&
-      toggle.dataset.ready !== 'true'
+      toggle.dataset.ready !== "true"
     ) {
-      toggle.dataset.ready = 'true';
+      toggle.dataset.ready = "true";
 
-      toggle.addEventListener('click', () => {
-        const isOpen = menu.classList.toggle('open');
+      toggle.addEventListener("click", () => {
+        const isOpen = menu.classList.toggle("open");
 
-        toggle.classList.toggle('open', isOpen);
+        toggle.classList.toggle("open", isOpen);
+        toggle.setAttribute("aria-expanded", String(isOpen));
         toggle.setAttribute(
-          'aria-expanded',
-          String(isOpen)
-        );
-        toggle.setAttribute(
-          'aria-label',
-          isOpen ? 'Fechar menu' : 'Abrir menu'
+          "aria-label",
+          isOpen ? "Fechar menu" : "Abrir menu",
         );
       });
 
-      menu.querySelectorAll('a').forEach((link) => {
-        link.addEventListener('click', fecharMenu);
+      menu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", fecharMenu);
       });
 
-      document.addEventListener('click', (event) => {
+      document.addEventListener("click", (event) => {
         const target = event.target;
 
-        if (
-          target instanceof Element &&
-          !target.closest('.site-header')
-        ) {
+        if (target instanceof Element && !target.closest(".site-header")) {
           fecharMenu();
         }
       });
@@ -432,36 +468,26 @@
 
     function atualizarHeader() {
       if (!(numeros instanceof HTMLElement)) {
-        header.classList.remove('scrolled');
+        header.classList.remove("scrolled");
         return;
       }
 
       const fimDosNumeros =
-        numeros.offsetTop +
-        numeros.offsetHeight -
-        header.offsetHeight;
+        numeros.offsetTop + numeros.offsetHeight - header.offsetHeight;
 
-      header.classList.toggle(
-        'scrolled',
-        window.scrollY > fimDosNumeros
-      );
+      header.classList.toggle("scrolled", window.scrollY > fimDosNumeros);
     }
 
     function ajustarEspacoDoHeader() {
-      document.body.style.paddingTop =
-        `${header.offsetHeight}px`;
+      document.body.style.paddingTop = `${header.offsetHeight}px`;
     }
 
     atualizarHeader();
     ajustarEspacoDoHeader();
 
-    window.addEventListener(
-      'scroll',
-      atualizarHeader,
-      { passive: true }
-    );
+    window.addEventListener("scroll", atualizarHeader, { passive: true });
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       ajustarEspacoDoHeader();
       atualizarHeader();
     });
@@ -469,8 +495,5 @@
 
   iniciarHeader();
 
-  document.addEventListener(
-    'astro:page-load',
-    iniciarHeader
-  );
+  document.addEventListener("astro:page-load", iniciarHeader);
 </script>

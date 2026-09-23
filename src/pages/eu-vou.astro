@@ -1,0 +1,811 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+---
+
+<Layout>
+  <Header />
+
+  <main class="euvou-page" id="euvou">
+    <div class="euvou-inner">
+
+      <div class="euvou-hero">
+        <p class="euvou-eyebrow">#EuVou</p>
+        <h1 class="euvou-title">Eu Vou ao<br /><span>PARAR Summit 26</span></h1>
+        <p class="euvou-subtitle">
+          Tire uma foto com a moldura oficial do evento e compartilhe nas suas redes!
+        </p>
+      </div>
+
+      <div class="booth-wrapper">
+
+        <!-- Camera / Preview area -->
+        <div class="booth-stage" id="booth-stage">
+
+          <!-- Live camera feed (hidden behind canvas) -->
+          <video
+            id="booth-video"
+            class="booth-video"
+            autoplay
+            playsinline
+            muted
+            aria-hidden="true"
+          ></video>
+
+          <!-- Composite canvas (shows live + frame overlay) -->
+          <canvas id="booth-canvas" class="booth-canvas" width="810" height="1080"></canvas>
+
+          <!-- Frame overlay (PNG with transparent center) -->
+          <img
+            id="booth-frame"
+            class="booth-frame"
+            src="/images/eu-vou-frame.png"
+            alt="Moldura PARAR Summit 26"
+            aria-hidden="true"
+          />
+
+          <!-- No-camera fallback message -->
+          <div class="booth-no-camera" id="booth-no-camera" aria-live="polite">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+            <span>Câmera não disponível.<br/>Permita o acesso ou verifique sua câmera.</span>
+          </div>
+
+          <!-- Flash overlay for shutter effect -->
+          <div class="booth-flash" id="booth-flash" aria-hidden="true"></div>
+
+          <!-- Countdown overlay -->
+          <div class="booth-countdown" id="booth-countdown" aria-live="assertive"></div>
+
+        </div>
+
+        <!-- Controls -->
+        <div class="booth-controls">
+
+          <!-- Hidden file input for upload -->
+          <input type="file" id="input-upload" accept="image/*" aria-hidden="true" style="display:none" />
+
+          <div class="booth-controls-row booth-controls-primary">
+            <button class="btn-shutter" id="btn-shutter" type="button" aria-label="Tirar foto">
+              <span class="shutter-ring">
+                <span class="shutter-dot"></span>
+              </span>
+              <span class="btn-shutter-label">Tirar foto</span>
+            </button>
+
+            <div class="btn-upload-divider" aria-hidden="true">ou</div>
+
+            <button class="btn-upload" id="btn-upload" type="button" aria-label="Enviar foto da galeria">
+              <span class="upload-icon-wrap">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </span>
+              <span class="btn-upload-label">Enviar foto</span>
+            </button>
+          </div>
+
+          <div class="booth-controls-row booth-controls-secondary" id="booth-secondary" aria-hidden="true">
+            <button class="btn-secondary btn-download" id="btn-download" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Baixar foto
+            </button>
+
+            <button class="btn-secondary btn-share" id="btn-share" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              Compartilhar
+            </button>
+
+            <button class="btn-secondary btn-retake" id="btn-retake" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+              </svg>
+              Tirar outra
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Tip -->
+        <p class="booth-tip">
+          💡 Para melhor resultado, posicione seu rosto no centro da moldura.<br/>
+          📤 Ou envie uma foto da galeria para adicionar a moldura.
+        </p>
+
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* ─── Page shell ─────────────────────────────────────────── */
+  .euvou-page {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(0,194,100,0.14) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(6,72,82,0.18) 0%, transparent 55%),
+      #0c1a1e;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 0 20px 80px;
+    font-family: "Raleway", sans-serif;
+  }
+
+  .euvou-inner {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  /* ─── Hero text ──────────────────────────────────────────── */
+  .euvou-hero {
+    text-align: center;
+    padding-top: 60px;
+  }
+
+  .euvou-eyebrow {
+    display: inline-block;
+    background: linear-gradient(135deg, #00c264, #00e87a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  .euvou-title {
+    font-family: "Oswald", sans-serif;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.08;
+    margin: 0 0 18px;
+  }
+
+  .euvou-title span {
+    background: linear-gradient(135deg, #00c264 20%, #00e87a 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .euvou-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    font-weight: 500;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ─── Booth wrapper ──────────────────────────────────────── */
+  .booth-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  /* ─── Stage (camera + canvas + frame stacked) ────────────── */
+  .booth-stage {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 3 / 4;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #0b1c21;
+    box-shadow:
+      0 0 0 1px rgba(0, 194, 100, 0.15),
+      0 32px 64px rgba(0, 0, 0, 0.5);
+  }
+
+  .booth-video,
+  .booth-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  /* The actual video is hidden — canvas redraws it each frame */
+  .booth-video {
+    opacity: 0;
+    z-index: 0;
+  }
+
+  .booth-canvas {
+    z-index: 1;
+  }
+
+  /* Frame sits above canvas so it's always visible */
+  .booth-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 20px;
+
+    /* Hide until frame loads, no broken-image layout shift */
+    display: block;
+  }
+
+  /* No camera fallback */
+  .booth-no-camera {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 20px;
+  }
+
+  .booth-no-camera.visible {
+    display: flex;
+  }
+
+  /* Shutter flash */
+  .booth-flash {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 20px;
+    transition: opacity 0.05s ease;
+  }
+
+  .booth-flash.active {
+    opacity: 1;
+  }
+
+  /* Countdown */
+  .booth-countdown {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Oswald", sans-serif;
+    font-size: 8rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .booth-countdown.counting {
+    opacity: 1;
+  }
+
+  /* ─── Controls ───────────────────────────────────────────── */
+  .booth-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .booth-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* Primary controls row */
+  .booth-controls-primary {
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* Shutter button */
+  .btn-shutter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
+    transition: transform 0.18s ease;
+  }
+
+  .btn-shutter:hover { transform: scale(1.06); }
+  .btn-shutter:active { transform: scale(0.94); }
+
+  .shutter-ring {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 4px solid rgba(0, 194, 100, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+      0 0 0 0 rgba(0,194,100,0.4),
+      0 8px 24px rgba(0,194,100,0.3);
+
+    animation: shutter-pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes shutter-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,194,100,0.4), 0 8px 24px rgba(0,194,100,0.3); }
+    50%       { box-shadow: 0 0 0 10px rgba(0,194,100,0), 0 8px 24px rgba(0,194,100,0.2); }
+  }
+
+  .shutter-dot {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00c264, #00a853);
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25);
+  }
+
+  .btn-shutter-label {
+    font-family: "Raleway", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* Divider between shutter and upload */
+  .btn-upload-divider {
+    font-family: "Raleway", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.28);
+  }
+
+  /* Upload button */
+  .btn-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+
+  .btn-upload:hover { transform: scale(1.06); opacity: 1; }
+  .btn-upload:active { transform: scale(0.94); }
+
+  .upload-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.04);
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-upload:hover .upload-icon-wrap {
+    border-color: rgba(0,194,100,0.55);
+    color: #00c264;
+    background: rgba(0,194,100,0.06);
+  }
+
+  .btn-upload-label {
+    font-family: "Raleway", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.45);
+    transition: color 0.18s ease;
+  }
+
+  .btn-upload:hover .btn-upload-label {
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* Secondary action buttons */
+  .booth-controls-secondary {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .booth-controls-secondary[aria-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+  }
+
+  .booth-controls-secondary[aria-hidden="false"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: none;
+
+    font-family: "Raleway", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+
+    cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+  }
+
+  .btn-secondary:hover { transform: translateY(-2px); }
+  .btn-secondary:active { transform: scale(0.95); }
+
+  .btn-download {
+    background: #00c264;
+    color: #002d18;
+  }
+
+  .btn-download:hover { background: #00d96e; }
+
+  .btn-share {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+
+  .btn-share:hover { background: rgba(255,255,255,0.18); }
+
+  .btn-retake {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-retake:hover {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* ─── Tip ────────────────────────────────────────────────── */
+  .booth-tip {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 0.82rem;
+    text-align: center;
+    margin: 0;
+  }
+
+  /* ─── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .euvou-page {
+      padding-bottom: 60px;
+    }
+
+    .euvou-inner {
+      gap: 36px;
+    }
+
+    .euvou-hero {
+      padding-top: 40px;
+    }
+
+    .booth-stage {
+      border-radius: 14px;
+    }
+
+    .booth-flash,
+    .booth-video,
+    .booth-canvas,
+    .booth-frame {
+      border-radius: 14px;
+    }
+
+    .btn-secondary {
+      padding: 10px 16px;
+      font-size: 12px;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const video       = document.getElementById("booth-video");
+    const canvas      = document.getElementById("booth-canvas");
+    const frameImg    = document.getElementById("booth-frame");
+    const btnShutter  = document.getElementById("btn-shutter");
+    const btnUpload   = document.getElementById("btn-upload");
+    const inputUpload = document.getElementById("input-upload");
+    const btnDownload = document.getElementById("btn-download");
+    const btnShare    = document.getElementById("btn-share");
+    const btnRetake   = document.getElementById("btn-retake");
+    const secondary   = document.getElementById("booth-secondary");
+    const flash       = document.getElementById("booth-flash");
+    const countdown   = document.getElementById("booth-countdown");
+    const noCam       = document.getElementById("booth-no-camera");
+
+    if (
+      !(video instanceof HTMLVideoElement) ||
+      !(canvas instanceof HTMLCanvasElement) ||
+      !(frameImg instanceof HTMLImageElement)
+    ) return;
+
+    const ctx = canvas.getContext("2d");
+    let stream = null;
+    let rafId = null;
+    let photoDataUrl = null;
+    let mode = "live"; // "live" | "captured"
+
+    // ── Canvas dimensions ────────────────────────────────────
+    const CW = canvas.width;   // 810
+    const CH = canvas.height;  // 1080
+
+    // ── Circle area on the template (where the photo goes) ───
+    // These fractions match the jimp circle params:
+    //   cx = CW/2, cy = CH*0.445, r = CW*0.335
+    const CIRC_CX = Math.round(CW / 2);
+    const CIRC_CY = Math.round(CH * 0.445);
+    const CIRC_R  = Math.round(CW * 0.335);
+
+    // ── Helper: draw an image cover-fitted into the circle ───
+    function drawIntoCircle(source) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CIRC_CX, CIRC_CY, CIRC_R, 0, Math.PI * 2);
+      ctx.clip();
+
+      // source dimensions
+      const sw = source instanceof HTMLVideoElement ? source.videoWidth  : source.naturalWidth  || source.width;
+      const sh = source instanceof HTMLVideoElement ? source.videoHeight : source.naturalHeight || source.height;
+
+      // scale to fill the circle bounding box
+      const diameter = CIRC_R * 2;
+      const scale = Math.max(diameter / sw, diameter / sh);
+      const dw = sw * scale;
+      const dh = sh * scale;
+      const dx = CIRC_CX - CIRC_R - (dw - diameter) / 2;
+      const dy = CIRC_CY - CIRC_R - (dh - diameter) / 2;
+
+      ctx.drawImage(source, dx, dy, dw, dh);
+      ctx.restore();
+    }
+
+    // ── Live draw loop ────────────────────────────────────────
+    function drawFrame() {
+      if (mode !== "live") return;
+      ctx.clearRect(0, 0, CW, CH);
+      drawIntoCircle(video);
+      rafId = requestAnimationFrame(drawFrame);
+    }
+
+    // ── Start camera ──────────────────────────────────────────
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 1080 }, height: { ideal: 1080 } },
+          audio: false,
+        });
+        video.srcObject = stream;
+        await video.play();
+        noCam.classList.remove("visible");
+        drawFrame();
+      } catch {
+        noCam.classList.add("visible");
+      }
+    }
+
+    // ── Countdown helper ──────────────────────────────────────
+    function runCountdown(seconds) {
+      return new Promise((resolve) => {
+        countdown.classList.add("counting");
+        let remaining = seconds;
+        countdown.textContent = String(remaining);
+
+        const tick = setInterval(() => {
+          remaining -= 1;
+          if (remaining > 0) {
+            countdown.textContent = String(remaining);
+          } else {
+            clearInterval(tick);
+            countdown.textContent = "";
+            countdown.classList.remove("counting");
+            resolve();
+          }
+        }, 1000);
+      });
+    }
+
+    // ── Shutter flash ─────────────────────────────────────────
+    function doFlash() {
+      flash.classList.add("active");
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          flash.classList.remove("active");
+          resolve();
+        }, 180);
+      });
+    }
+
+    // ── Composite frame on top of current canvas ──────────────
+    function compositeFrame() {
+      if (frameImg.complete && frameImg.naturalWidth > 0) {
+        ctx.drawImage(frameImg, 0, 0, CW, CH);
+      }
+    }
+
+    // ── Finalise capture (shared by camera & upload) ──────────
+    function finalise() {
+      compositeFrame();
+      photoDataUrl = canvas.toDataURL("image/png");
+      mode = "captured";
+      secondary.setAttribute("aria-hidden", "false");
+    }
+
+    // ── Capture from camera ───────────────────────────────────
+    async function capturePhoto() {
+      btnShutter.disabled = true;
+      btnUpload.disabled = true;
+
+      await runCountdown(3);
+      await doFlash();
+
+      // Draw one clean frame then stop the live loop
+      cancelAnimationFrame(rafId);
+      ctx.clearRect(0, 0, CW, CH);
+      drawIntoCircle(video);
+
+      finalise();
+
+      btnShutter.disabled = false;
+      btnUpload.disabled = false;
+    }
+
+    // ── Upload & composite from file ──────────────────────────
+    function handleUpload(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+
+      cancelAnimationFrame(rafId);
+      mode = "captured"; // stop drawFrame early
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Reset to identity so upload is NOT mirrored
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+          // Cover-fit into the circle
+          ctx.clearRect(0, 0, CW, CH);
+          drawIntoCircle(img);
+
+          doFlash().then(() => {
+            finalise();
+          });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Reset back to live ────────────────────────────────────
+    function retake() {
+      mode = "live";
+      photoDataUrl = null;
+      secondary.setAttribute("aria-hidden", "true");
+
+      ctx.clearRect(0, 0, CW, CH);
+      drawFrame();
+    }
+
+    // ── Download ──────────────────────────────────────────────
+    function download() {
+      if (!photoDataUrl) return;
+      const a = document.createElement("a");
+      a.href = photoDataUrl;
+      a.download = "eu-vou-parar-summit-26.png";
+      a.click();
+    }
+
+    // ── Share (Web Share API) ─────────────────────────────────
+    async function share() {
+      if (!photoDataUrl) return;
+
+      if (navigator.share && navigator.canShare) {
+        try {
+          const blob = await (await fetch(photoDataUrl)).blob();
+          const file = new File([blob], "eu-vou-parar-summit-26.png", { type: "image/png" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: "#EuVou ao PARAR Summit 26",
+              text: "Eu vou ao PARAR Summit 26! O maior evento de gestão de frotas da América Latina. 🚀 #PararSummit26 #EuVou",
+            });
+            return;
+          }
+        } catch {
+          // fall through to download
+        }
+      }
+      // Fallback: just download
+      download();
+    }
+
+    // ── Wire up buttons ───────────────────────────────────────
+    btnShutter.addEventListener("click", capturePhoto);
+    btnDownload.addEventListener("click", download);
+    btnShare.addEventListener("click", share);
+    btnRetake.addEventListener("click", retake);
+
+    btnUpload.addEventListener("click", () => inputUpload.click());
+    inputUpload.addEventListener("change", () => {
+      if (inputUpload.files && inputUpload.files[0]) {
+        handleUpload(inputUpload.files[0]);
+        // Reset input so the same file can be re-selected
+        inputUpload.value = "";
+      }
+    });
+
+    // ── Boot ──────────────────────────────────────────────────
+    startCamera();
+  })();
+</script>
