@@ -1133,14 +1133,14 @@ import Header from "../components/Header.astro";
 
       btnShare.classList.remove("is-attention");
 
-      if (!window.matchMedia("(pointer: coarse)").matches) {
+      const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+      if (!isTouchDevice) {
         download();
-        return;
       }
 
-      showToast();
+      if (isTouchDevice) showToast();
 
-      if (navigator.share && navigator.canShare) {
+      if (isTouchDevice && navigator.share && navigator.canShare) {
         try {
           const blob = await (await fetch(photoDataUrl)).blob();
           const file = new File([blob], "eu-vou-parar-summit-26.png", { type: "image/png" });
@@ -1158,9 +1158,18 @@ import Header from "../components/Header.astro";
         } catch (error) {
           if (error instanceof DOMException && error.name === "AbortError") return;
         }
+      } else if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "#EuVou ao PARAR Summit 26",
+            text: "Sou presença confirmada no PARAR Summit 26 | O maior e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvoupararsummit @institutoparar www.pararsummit.com.br",
+          });
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+        }
       }
 
-      download();
+      if (isTouchDevice) download();
     }
 
     // ── Wire up buttons ───────────────────────────────────────
