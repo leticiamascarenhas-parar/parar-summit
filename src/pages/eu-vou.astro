@@ -13,7 +13,7 @@ import Header from "../components/Header.astro";
         <p class="euvou-eyebrow">#EuVou</p>
         <h1 class="euvou-title">Já garantiu seu lugar no<br /><span>PARAR Summit 26?</span></h1>
         <p class="euvou-subtitle">
-          Crie sua foto com a nossa moldura oficial, use a hashtag #EUVOUNOPARARSUMMIT, marque o perfil do Instituto PARAR e comece a se conectar com outros participantes antes mesmo do evento começar.
+          Crie sua foto com a nossa moldura oficial, marque o perfil do Instituto PARAR e comece a se conectar com outros participantes antes mesmo do evento começar.
         </p>
       </div>
 
@@ -43,15 +43,6 @@ import Header from "../components/Header.astro";
             alt="Moldura PARAR Summit 26"
             aria-hidden="true"
           />
-
-          <button
-            id="btn-replace-photo"
-            class="btn-replace-photo"
-            type="button"
-            hidden
-          >
-            Enviar outra foto
-          </button>
 
           <!-- No-camera fallback message -->
           <div class="booth-no-camera" id="booth-no-camera" aria-live="polite">
@@ -246,28 +237,6 @@ import Header from "../components/Header.astro";
 
   .booth-stage:active { cursor: grabbing; }
 
-  .btn-replace-photo {
-    position: absolute;
-    left: 50%;
-    bottom: 20px;
-    z-index: 6;
-    transform: translateX(-50%);
-    padding: 11px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    background: rgba(5, 33, 48, 0.88);
-    color: #ffffff;
-    font-family: "Raleway", sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .btn-replace-photo:hover { background: #074157; }
-
   .booth-video,
   .booth-canvas {
     position: absolute;
@@ -420,6 +389,11 @@ import Header from "../components/Header.astro";
     animation: shutter-pulse 2.4s ease-in-out infinite;
   }
 
+  .btn-shutter.is-uploaded .shutter-ring,
+  .btn-shutter.is-captured .shutter-ring {
+    animation: none;
+  }
+
   @keyframes shutter-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(0,194,100,0.4), 0 8px 24px rgba(0,194,100,0.3); }
     50%       { box-shadow: 0 0 0 10px rgba(0,194,100,0), 0 8px 24px rgba(0,194,100,0.2); }
@@ -557,6 +531,25 @@ import Header from "../components/Header.astro";
 
   .btn-share:hover { background: rgba(255,255,255,0.18); }
 
+  .btn-share.is-attention {
+    animation: share-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes share-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(0, 194, 100, 0.55);
+      transform: translateY(0);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(0, 194, 100, 0);
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-share.is-attention { animation: none; }
+  }
+
   .btn-retake {
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.55);
@@ -615,8 +608,8 @@ import Header from "../components/Header.astro";
     const canvas      = document.getElementById("booth-canvas");
     const frameImg    = document.getElementById("booth-frame");
     const btnShutter  = document.getElementById("btn-shutter");
+    const shutterLabel = btnShutter?.querySelector(".btn-shutter-label");
     const btnUpload   = document.getElementById("btn-upload");
-    const btnReplace  = document.getElementById("btn-replace-photo");
     const inputUpload = document.getElementById("input-upload");
     const btnDownload = document.getElementById("btn-download");
     const btnShare    = document.getElementById("btn-share");
@@ -631,7 +624,8 @@ import Header from "../components/Header.astro";
       !(canvas instanceof HTMLCanvasElement) ||
       !(frameImg instanceof HTMLImageElement) ||
       !(stage instanceof HTMLElement) ||
-      !(btnReplace instanceof HTMLButtonElement)
+      !(btnShutter instanceof HTMLButtonElement) ||
+      !(shutterLabel instanceof HTMLElement)
     ) return;
 
     const ctx = canvas.getContext("2d");
@@ -844,22 +838,14 @@ import Header from "../components/Header.astro";
       setUploadZoom(uploadZoom - event.deltaY * 0.002);
     }, { passive: false });
 
-    stage.addEventListener("click", (event) => {
-      if (!uploadedImage || mode !== "captured") return;
-      if (event.target instanceof Element && event.target.closest("#btn-replace-photo")) return;
-      if (!(event instanceof MouseEvent) || !isInsidePhotoCircle(event.clientX, event.clientY)) return;
-
-      btnReplace.hidden = false;
-    });
-
-    btnReplace.addEventListener("click", () => inputUpload.click());
-
     // ── Finalise capture (shared by camera & upload) ──────────
     function finalise() {
       compositeFrame();
       photoDataUrl = canvas.toDataURL("image/png");
       mode = "captured";
+      btnShutter.classList.add("is-captured");
       secondary.setAttribute("aria-hidden", "false");
+      btnShare.classList.add("is-attention");
     }
 
     // ── Capture from camera ───────────────────────────────────
@@ -896,7 +882,9 @@ import Header from "../components/Header.astro";
           uploadZoom = 1;
           uploadOffsetX = 0;
           uploadOffsetY = 0;
-          btnReplace.hidden = true;
+          btnShutter.classList.add("is-uploaded");
+          btnShutter.setAttribute("aria-label", "Abrir a câmera");
+          shutterLabel.textContent = "Abrir a câmera";
 
           renderUploadedPhoto();
 
@@ -915,7 +903,11 @@ import Header from "../components/Header.astro";
       photoDataUrl = null;
       uploadedImage = null;
       pointers.clear();
-      btnReplace.hidden = true;
+      btnShutter.classList.remove("is-uploaded");
+      btnShutter.classList.remove("is-captured");
+      btnShutter.setAttribute("aria-label", "Tirar foto");
+      shutterLabel.textContent = "Tirar foto";
+      btnShare.classList.remove("is-attention");
       secondary.setAttribute("aria-hidden", "true");
 
       ctx.clearRect(0, 0, CW, CH);
@@ -935,6 +927,8 @@ import Header from "../components/Header.astro";
     async function share() {
       if (!photoDataUrl) return;
 
+      btnShare.classList.remove("is-attention");
+
       if (navigator.share && navigator.canShare) {
         try {
           const blob = await (await fetch(photoDataUrl)).blob();
@@ -943,7 +937,7 @@ import Header from "../components/Header.astro";
             await navigator.share({
               files: [file],
               title: "#EuVou ao PARAR Summit 26",
-              text: "Eu vou ao PARAR Summit 26! O maior evento e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvounopararsummit @institutoparar https://www.pararsummit.com.br/",
+              text: "Eu vou ao PARAR Summit 26! O maior e mais relevante evento em Gestão de Frotas da América Latina. 🚀 #euvoupararsummit @institutoparar www.pararsummit.com.br",
             });
             return;
           }
@@ -956,10 +950,20 @@ import Header from "../components/Header.astro";
     }
 
     // ── Wire up buttons ───────────────────────────────────────
-    btnShutter.addEventListener("click", capturePhoto);
+    btnShutter.addEventListener("click", () => {
+      if (uploadedImage) {
+        retake();
+        return;
+      }
+
+      capturePhoto();
+    });
     btnDownload.addEventListener("click", download);
     btnShare.addEventListener("click", share);
-    btnRetake.addEventListener("click", retake);
+    btnRetake.addEventListener("click", () => {
+      btnShare.classList.remove("is-attention");
+      retake();
+    });
 
     btnUpload.addEventListener("click", () => inputUpload.click());
     inputUpload.addEventListener("change", () => {
