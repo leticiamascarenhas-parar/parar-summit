@@ -1001,12 +1001,43 @@ import Header from "../components/Header.astro";
     }
 
     // ── Download ──────────────────────────────────────────────
-    function download() {
+    async function download() {
       if (!photoDataUrl) return;
+
+      const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+      if (isTouchDevice && navigator.share && navigator.canShare) {
+        try {
+          const blob = await (await fetch(photoDataUrl)).blob();
+          const file = new File([blob], "eu-vou-parar-summit-26.png", { type: "image/png" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: "Foto #EuVou ao PARAR Summit 26",
+            });
+            return;
+          }
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+        }
+      }
+
       const a = document.createElement("a");
       a.href = photoDataUrl;
       a.download = "eu-vou-parar-summit-26.png";
       a.click();
+    }
+
+    async function copyImageToClipboard(blob) {
+      if (!navigator.clipboard || !window.ClipboardItem) return false;
+
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ [blob.type]: blob }),
+        ]);
+        return true;
+      } catch {
+        return false;
+      }
     }
 
     // ── Share (Web Share API) ─────────────────────────────────
@@ -1019,6 +1050,9 @@ import Header from "../components/Header.astro";
         try {
           const blob = await (await fetch(photoDataUrl)).blob();
           const file = new File([blob], "eu-vou-parar-summit-26.png", { type: "image/png" });
+          // LinkedIn may accept the share text but silently discard files.
+          // Keeping a copy lets the user paste the image into its composer.
+          await copyImageToClipboard(blob);
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               files: [file],
