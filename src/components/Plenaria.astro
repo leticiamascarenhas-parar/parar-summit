@@ -1,22 +1,90 @@
 ---
 import SpeakerCard from "./SpeakerCard.astro";
+import Bandeira from "./Bandeira.astro";
 import { speakers } from "../data/speakers";
 ---
 
 <section id="plenaria" class="plenaria-section">
   <div class="plenaria-inner">
 
-    <img
-      class="plenaria-title"
-      src="/images/plenaria/titulo-plenaria.png"
-      alt="Plenária Principal"
-    />
+    <div class="plenaria-header">
+      <span class="plenaria-kicker">PARAR SUMMIT 26</span>
+      <h2 class="plenaria-title">Plenária <span>Principal</span></h2>
+    </div>
 
     <div class="plenaria-stage">
       <div class="plenaria-cards">
-        {speakers.map((speaker) => (
-          <SpeakerCard {...speaker} />
-        ))}
+        {speakers.map((speaker, index) => {
+          if (speaker.tipo !== "mesa" || !speaker.participantes?.length) {
+            return <SpeakerCard {...speaker} />;
+          }
+
+          // Mesa de conteúdo: um card por participante + um painel que cobre o grupo inteiro
+          const panelId = `mesa-panel-${index}`;
+          const quando = (speaker.dia || speaker.horario) && (
+            <div class="mesa-when">
+              {speaker.dia && (
+                <span class="mesa-when-day">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                  {speaker.dia}
+                </span>
+              )}
+              {speaker.horario && (
+                <span class="mesa-when-time">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  {speaker.horario}
+                </span>
+              )}
+            </div>
+          );
+
+          return (
+            <div class="mesa-group">
+              <div class="mesa-group-header">
+                <div class="mesa-group-label">
+                  <span class="mesa-tag">Mesa de debate</span>
+                  <span class="mesa-group-tema">{speaker.palestra}</span>
+                </div>
+              </div>
+
+              <div class="mesa-group-body">
+                <div class="mesa-group-cards">
+                  {speaker.participantes.map((p) => (
+                    <SpeakerCard {...p} mesa={speaker.palestra} mesaPanelId={panelId} dia={speaker.dia} horario={speaker.horario} />
+                  ))}
+                </div>
+
+                <div class="mesa-panel" id={panelId} role="region" aria-label={`Mesa de debate: ${speaker.palestra}`} inert>
+                  <div class="mesa-panel-header">
+                    <span>MESA DE DEBATE</span>
+                    <button class="mesa-panel-close" type="button" aria-label="Fechar mesa de debate">×</button>
+                  </div>
+
+                  <div class="mesa-panel-content">
+                    <div class="mesa-panel-info">
+                      {quando}
+                      <h3>{speaker.palestra}</h3>
+                      {speaker.detalhes && <p>{speaker.detalhes}</p>}
+                    </div>
+
+                    <ul class="mesa-panel-participantes" data-count={speaker.participantes.length}>
+                      {speaker.participantes.map((p) => (
+                        <li>
+                          <img src={p.foto} alt="" loading="lazy" />
+                          <div>
+                            <strong>{p.nome}<Bandeira pais={p.bandeira} /></strong>
+                            {p.mediador && <span class="mesa-mediador">Mediação</span>}
+                            {p.cargo && <small>{p.cargo}</small>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div class="plenaria-nav" aria-label="Navegação da plenária">
@@ -46,70 +114,80 @@ import { speakers } from "../data/speakers";
 </section>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+
   .plenaria-section {
+    --pl-navy: #004153;
+    --pl-green: #08D16E;
+    --pl-green-dark: #08D16E;
     position: relative;
     isolation: isolate;
     overflow: hidden;
-
-    padding: 76px 20px 90px;
-
-    background:
-      radial-gradient(
-        circle at 15% 10%,
-        rgba(0, 194, 100, 0.07),
-        transparent 32%
-      ),
-      radial-gradient(
-        circle at 88% 18%,
-        rgba(0, 212, 109, 0.06),
-        transparent 28%
-      ),
-      #f6f8f7;
-
-    font-family: "Raleway", sans-serif;
+    padding: 90px 20px 90px;
+    background: #f6f8f7;
+    font-family: "Montserrat", "Raleway", sans-serif;
   }
 
+  /* Linhas curvas bem sutis, mesmo padrão das outras seções, em versão clara */
   .plenaria-section::before {
     content: "";
-
     position: absolute;
+    inset: 0;
     z-index: -1;
-
-    width: 760px;
-    height: 260px;
-
-    left: 50%;
-    top: -90px;
-
-    transform: translateX(-50%);
-
-    background:
-      radial-gradient(
-        ellipse,
-        rgba(0, 194, 100, 0.10),
-        transparent 68%
-      );
-
-    filter: blur(12px);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350' viewBox='0 0 1080 1350' fill='none' stroke='rgba(0,65,83,0.07)' stroke-width='2'><path d='M-60 1400 L-60 520 A230 230 0 0 1 400 520 L400 1400'/><path d='M20 1400 L20 560 A150 150 0 0 1 320 560 L320 1400'/><path d='M600 -60 L600 640 A230 230 0 0 0 1060 640 L1060 -60'/><path d='M680 -60 L680 600 A150 150 0 0 0 980 600 L980 -60'/><path d='M860 1400 L860 1080 A200 200 0 0 1 1260 1080 L1260 1400'/></svg>");
+    background-size: 1080px 1350px;
+    background-position: center top;
     pointer-events: none;
   }
 
   .plenaria-inner {
     position: relative;
     z-index: 1;
-
     max-width: 1600px;
     margin: 0 auto;
   }
 
-  .plenaria-title {
-    width: min(760px, 90%);
+  /* Título em código, com o "+" verde */
+  .plenaria-header {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 48px;
+    padding-left: 40px;
+  }
+
+  .plenaria-header::before,
+  .plenaria-header::after {
+    content: "";
+    position: absolute;
+    background: var(--pl-green);
+  }
+  .plenaria-header::before { left: 0; top: 8px; width: 26px; height: 8px; }
+  .plenaria-header::after  { left: 9px; top: -1px; width: 8px; height: 26px; }
+
+  .plenaria-kicker {
     display: block;
+    margin-bottom: 12px;
+    color: var(--pl-green-dark);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 6px;
+  }
 
-    margin: 0 auto 60px;
+  .plenaria-title {
+    margin: 0;
+    color: var(--pl-navy);
+    font-size: clamp(36px, 5.4vw, 76px);
+    line-height: 0.98;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
 
-    filter:
-      drop-shadow(0 8px 18px rgba(6, 72, 82, 0.08));
+  .plenaria-title span {
+    display: inline-block;
+    color: var(--pl-green-dark);
+    padding-bottom: 6px;
+    border-bottom: 5px solid var(--pl-green);
   }
 
   .plenaria-stage {
@@ -121,9 +199,8 @@ import { speakers } from "../data/speakers";
     align-items: center;
     justify-content: flex-end;
     gap: 16px;
-
-    margin-top: 8px;
-    padding: 0 6px 0;
+    margin-top: 4px;
+    padding: 0 60px;
   }
 
   .plenaria-dots {
@@ -132,49 +209,37 @@ import { speakers } from "../data/speakers";
     gap: 8px;
   }
 
-  /* Ensure dots are visible by default */
-  .plenaria-dots {
-    display: none;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Reset native button styles so our circular dot styling applies */
   .plenaria-dots .plenaria-dot {
     -webkit-appearance: none;
     appearance: none;
     border: none;
-    background: none;
     padding: 0;
     margin: 0;
-    outline: none;
     cursor: pointer;
     box-sizing: border-box;
     display: inline-block;
     vertical-align: middle;
-  }
-
-  /* Explicit circular dot sizing and colors */
-  .plenaria-dots .plenaria-dot {
     width: 10px;
     height: 10px;
-    border-radius: 50%;
-    background-color: #d1d5d5; /* inactive - light gray */
-    transition: transform 0.18s ease, background-color 0.18s ease;
+    border-radius: 2px;
+    background-color: rgba(0, 65, 83, 0.2);
+    transition: transform 0.18s ease, background-color 0.18s ease, width 0.18s ease;
     flex: 0 0 auto;
   }
 
-  .plenaria-dots .plenaria-dot:hover,
-  .plenaria-dots .plenaria-dot:focus {
-    transform: scale(1.08);
-    background-color: #b8bebd;
-    box-shadow: 0 0 0 4px rgba(6,72,82,0.06);
+  .plenaria-dots .plenaria-dot:hover {
+    background-color: rgba(0, 65, 83, 0.4);
+  }
+
+  .plenaria-dots .plenaria-dot:focus-visible {
+    outline: 2px solid var(--pl-navy);
+    outline-offset: 3px;
   }
 
   .plenaria-dots .plenaria-dot.is-active,
   .plenaria-dots .plenaria-dot[aria-current="true"] {
-    background-color: #064852; /* active - dark teal/navy */
-    transform: scale(1.14);
+    width: 24px;
+    background-color: var(--pl-green);
   }
 
   .plenaria-arrow-group {
@@ -183,29 +248,29 @@ import { speakers } from "../data/speakers";
     gap: 10px;
   }
 
+  /*
+    SOMBRA CORRIGIDA: o container rola na horizontal e corta tudo que passa da borda.
+    A sombra antiga era maior que o espaço disponível e aparecia "recortada" em um retângulo.
+    Agora: mais respiro em cima/embaixo, sombra menor e as bordas laterais com fade suave.
+  */
   .plenaria-cards {
     position: relative;
     z-index: 2;
-
     display: flex;
-    align-items: center;
-
-    gap: 32px;
-
+    /* flex-end: a faixa da mesa fica acima dos cards dela, sem desalinhar a base dos outros */
+    align-items: flex-end;
+    gap: 28px;
     flex-wrap: nowrap;
-
     overflow-x: auto;
     overflow-y: hidden;
-
-    padding: 16px 60px 34px;
-
+    padding: 28px 60px 48px;
     scroll-behavior: smooth;
     scroll-snap-type: x proximity;
-
     scrollbar-width: none;
     -ms-overflow-style: none;
-
     cursor: grab;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
   }
 
   .plenaria-cards:active {
@@ -221,49 +286,320 @@ import { speakers } from "../data/speakers";
     scroll-snap-align: center;
   }
 
-  .plenaria-arrow {
-    z-index: 20;
+  /* MESA DE DEBATE: cards individuais agrupados + painel largo por cima */
 
-    width: 38px;
-    height: 38px;
+  .mesa-group {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
+  .mesa-group-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    /* a faixa não define a largura do grupo: quem manda são os cards; título longo quebra linha */
+    width: 0;
+    min-width: 100%;
+  }
+
+  /* linha verde que "abraça" o grupo, à direita do rótulo */
+  .mesa-group-header::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: var(--pl-green);
+    border-radius: 2px;
+  }
+
+  /* sticky: no celular o rótulo acompanha a rolagem enquanto você passa pelos cards da mesa */
+  .mesa-group-label {
+    position: sticky;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .mesa-tag {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--pl-navy);
+    color: var(--pl-green);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+
+  .mesa-group-tema {
+    color: var(--pl-navy);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  /* cards e painel ocupam a mesma célula do grid: o painel fica por cima sem position absolute
+     (assim o offsetLeft dos cards continua relativo ao carrossel e a navegação não muda) */
+  .mesa-group-body {
+    display: grid;
+  }
+
+  .mesa-group-cards,
+  .mesa-panel {
+    grid-area: 1 / 1;
+  }
+
+  .mesa-group-cards {
+    display: flex;
+    gap: 28px;
+  }
+
+  .mesa-panel {
+    position: relative;
+    z-index: 15;
+    /* não influencia o tamanho do grupo: só ocupa o espaço dos cards, o conteúdo rola por dentro */
+    contain: size;
+    /* nunca mais largo que a área visível do carrossel: o × sempre fica na tela */
+    justify-self: start;
+    width: 100%;
+    max-width: min(940px, calc(100vw - 160px));
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px 32px;
+    border: 2px solid var(--pl-green);
+    border-radius: 14px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top right, rgba(8, 209, 110, 0.18), transparent 38%),
+      var(--pl-navy);
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(0, 65, 83, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.97);
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(.2, .8, .2, 1), visibility 0s linear 0.45s;
+  }
+
+  .mesa-group.is-open .mesa-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(.2, .8, .2, 1), visibility 0s;
+  }
+
+  .mesa-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--pl-green);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.8px;
+  }
+
+  .mesa-panel-close {
+    width: 36px;
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     padding: 0;
-    border: none;
-    border-radius: 50%;
-
-    background: #064852;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    background: transparent;
     color: #ffffff;
-
     font-family: Arial, sans-serif;
     font-size: 24px;
+    font-weight: 300;
     line-height: 1;
-
     cursor: pointer;
-
-    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.16);
-
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease,
-      background 0.25s ease;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
 
-  /* Make sure arrows are visible and interactive */
-  .plenaria-arrow {
+  .mesa-panel-close:hover {
+    background: var(--pl-green);
+    border-color: var(--pl-green);
+    color: var(--pl-navy);
+  }
+
+  .mesa-panel-close:focus-visible {
+    outline: 3px solid var(--pl-green);
+    outline-offset: 3px;
+  }
+
+  .mesa-panel-content {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: 36px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(8, 209, 110, 0.5) transparent;
+  }
+
+  .mesa-panel-info h3 {
+    margin: 0 0 16px;
+    font-size: 26px;
+    line-height: 1.08;
+    font-weight: 900;
+  }
+
+  .mesa-panel-info p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .mesa-when {
     display: inline-flex;
+    margin-bottom: 18px;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .mesa-when-day,
+  .mesa-when-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    color: var(--pl-navy);
+  }
+
+  .mesa-when-day { background: var(--pl-green); }
+  .mesa-when-time { background: #ffffff; }
+
+  .mesa-when svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mesa-panel-participantes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 28px;
+    align-content: start;
+  }
+
+  /* mesa com até 2 pessoas = painel estreito (2 cards): participantes um abaixo do outro */
+  .mesa-panel-participantes[data-count="1"],
+  .mesa-panel-participantes[data-count="2"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mesa-panel-participantes li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .mesa-panel-participantes img {
+    width: 60px;
+    height: 60px;
+    flex: 0 0 60px;
+    border-radius: 50%;
+    border: 2px solid var(--pl-green);
+    object-fit: cover;
+  }
+
+  .mesa-panel-participantes div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .mesa-panel-participantes strong {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .mesa-panel-participantes :global(.bandeira) {
+    width: 24px;
+    height: 16px;
+    border-width: 1.5px;
+    border-radius: 3px;
+  }
+
+  .mesa-panel-participantes small {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .mesa-mediador {
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: var(--pl-green);
+    color: var(--pl-navy);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .plenaria-arrow {
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: var(--pl-navy);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
     opacity: 1;
     visibility: visible;
+    transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s ease, color 0.25s ease;
   }
 
-  .plenaria-arrow:hover {
-    background: #0a5f6c;
+  .plenaria-arrow:hover:not(:disabled) {
+    background: var(--pl-green);
+    color: var(--pl-navy);
   }
 
-  .plenaria-arrow:active {
+  .plenaria-arrow:focus-visible {
+    outline: 3px solid var(--pl-green);
+    outline-offset: 3px;
+  }
+
+  .plenaria-arrow:active:not(:disabled) {
     transform: scale(0.92);
   }
 
@@ -274,29 +610,49 @@ import { speakers } from "../data/speakers";
 
   @media (max-width: 900px) {
     .plenaria-section {
-      padding: 58px 0 70px;
+      padding: 64px 0 70px;
+    }
+
+    /* mobile: título centralizado; o "+" vai para a frente do "PARAR SUMMIT 26" */
+    .plenaria-header {
+      margin: 0 auto 28px;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .plenaria-header::before,
+    .plenaria-header::after {
+      display: none;
+    }
+
+    .plenaria-kicker::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      vertical-align: -3px;
+      background:
+        linear-gradient(var(--pl-green), var(--pl-green)) center / 100% 5px no-repeat,
+        linear-gradient(var(--pl-green), var(--pl-green)) center / 5px 100% no-repeat;
     }
 
     .plenaria-title {
-      width: min(620px, 88%);
-      margin-bottom: 36px;
+      font-size: clamp(32px, 9vw, 48px);
     }
 
     .plenaria-cards {
-      gap: 22px;
-
-      padding:
-        14px
-        max(42px, calc((100vw - 280px) / 2))
-        28px;
-
+      gap: 20px;
+      padding: 22px max(42px, calc((100vw - 280px) / 2)) 40px;
       scroll-snap-type: x mandatory;
       cursor: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
 
     .plenaria-nav {
-      margin-top: 4px;
-      padding: 0 12px 0;
+      justify-content: space-between;
+      padding: 0 20px;
     }
 
     .plenaria-cards :global(.speaker-card) {
@@ -304,27 +660,103 @@ import { speakers } from "../data/speakers";
       min-width: 280px;
       flex-basis: 280px;
     }
+
+    .mesa-group-cards {
+      gap: 20px;
+    }
+
+    .mesa-group-label {
+      left: max(42px, calc((100vw - 280px) / 2));
+      max-width: 280px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mesa-group-tema {
+      font-size: 14px;
+    }
+
+    /* No celular o painel ocupa o espaço de um card (o primeiro da mesa) e rola por dentro */
+    .mesa-panel {
+      justify-self: start;
+      width: 280px;
+      max-width: none;
+      padding: 22px;
+      gap: 16px;
+    }
+
+    .mesa-panel-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-right: -10px;
+      padding-right: 10px;
+    }
+
+    .mesa-panel-info h3 {
+      font-size: 21px;
+      margin-bottom: 10px;
+    }
+
+    .mesa-panel-info p {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .mesa-when {
+      font-size: 12px;
+    }
+
+    .mesa-panel-participantes {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .mesa-panel-participantes li {
+      gap: 12px;
+      padding-top: 12px;
+    }
+
+    .mesa-panel-participantes img {
+      width: 46px;
+      height: 46px;
+      flex-basis: 46px;
+    }
+
+    .mesa-panel-participantes strong {
+      font-size: 14px;
+    }
+
+    .mesa-panel-participantes small {
+      font-size: 11px;
+    }
   }
 
   @media (max-width: 480px) {
     .plenaria-section {
-      padding-top: 48px;
+      padding-top: 52px;
     }
 
-    .plenaria-title {
-      margin-bottom: 28px;
-    }
-
-    .plenaria-arrow {
-      width: 42px;
-      height: 42px;
-      font-size: 30px;
+    .plenaria-kicker {
+      font-size: 12px;
+      letter-spacing: 4px;
     }
 
     .plenaria-arrow {
-      width: 34px;
-      height: 34px;
-      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plenaria-cards {
+      scroll-behavior: auto;
+    }
+
+    .mesa-panel,
+    .mesa-group.is-open .mesa-panel {
+      transition: none;
     }
   }
 </style>
@@ -527,4 +959,100 @@ import { speakers } from "../data/speakers";
   iniciarCarrosselPlenaria();
 
   document.addEventListener('astro:page-load', iniciarCarrosselPlenaria);
+
+  // Mesa de debate: clicar em qualquer card da mesa abre o painel que cobre o grupo
+  function iniciarMesas() {
+    document.querySelectorAll('.plenaria-cards').forEach((container) => {
+      if (!(container instanceof HTMLElement)) return;
+      if (container.dataset.mesasReady === 'true') return;
+      if (!container.querySelector('.mesa-group')) return;
+
+      container.dataset.mesasReady = 'true';
+
+      let ultimoBotao = null;
+
+      function atualizarEscurecimento() {
+        container.classList.toggle(
+          'has-flipped',
+          Boolean(container.querySelector('.speaker-card.flipped, .mesa-group.is-open'))
+        );
+      }
+
+      function definirAberta(group, aberta) {
+        group.classList.toggle('is-open', aberta);
+        group.querySelectorAll('.speaker-card-button').forEach((btn) => {
+          btn.setAttribute('aria-expanded', String(aberta));
+        });
+
+        const panel = group.querySelector('.mesa-panel');
+        if (panel instanceof HTMLElement) panel.inert = !aberta;
+      }
+
+      function fecharMesas(devolverFoco) {
+        const abertas = container.querySelectorAll('.mesa-group.is-open');
+        abertas.forEach((group) => definirAberta(group, false));
+
+        if (devolverFoco && abertas.length && ultimoBotao instanceof HTMLElement) {
+          ultimoBotao.focus({ preventScroll: true });
+        }
+      }
+
+      function abrirMesa(group, botao) {
+        // fecha qualquer card virado antes de abrir o painel
+        container.querySelectorAll('.speaker-card.flipped').forEach((card) => {
+          card.classList.remove('flipped');
+          card.querySelector('.speaker-card-button')?.setAttribute('aria-expanded', 'false');
+        });
+
+        fecharMesas(false);
+        definirAberta(group, true);
+        atualizarEscurecimento();
+        ultimoBotao = botao;
+
+        // centraliza o painel no carrossel
+        const panel = group.querySelector('.mesa-panel');
+        if (panel instanceof HTMLElement) {
+          container.scrollTo({
+            left: panel.offsetLeft + panel.offsetWidth / 2 - container.clientWidth / 2,
+            behavior: 'smooth'
+          });
+          panel.querySelector('.mesa-panel-close')?.focus({ preventScroll: true });
+        }
+      }
+
+      container.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        if (target.closest('.mesa-panel-close')) {
+          fecharMesas(true);
+          atualizarEscurecimento();
+          return;
+        }
+
+        const botao = target.closest('.speaker-card-button');
+        if (!botao) return;
+
+        const group = botao.closest('.mesa-group');
+
+        if (group) {
+          abrirMesa(group, botao);
+        } else {
+          // card comum: o próprio card já virou (SpeakerCard.astro); só fecha a mesa aberta
+          fecharMesas(false);
+          atualizarEscurecimento();
+        }
+      });
+
+      container.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !container.querySelector('.mesa-group.is-open')) return;
+        fecharMesas(true);
+        atualizarEscurecimento();
+      });
+    });
+  }
+
+  iniciarMesas();
+
+  document.addEventListener('astro:page-load', iniciarMesas);
 </script>

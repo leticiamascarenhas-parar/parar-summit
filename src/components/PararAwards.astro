@@ -3,10 +3,17 @@
 // Uso básico: <PararAwards />
 // Uso customizado: veja os Props abaixo
 
+export interface Sponsor {
+  name: string;
+  logo: string;
+  href?: string;
+}
+
 export interface Category {
   icon: "truck" | "users" | "shield";
   title: string;
   desc: string;
+  sponsors?: Sponsor[];
 }
 
 interface Props {
@@ -29,16 +36,31 @@ const {
       icon: "truck",
       title: "A Melhor Frota do Brasil",
       desc: "Reconhece a operação com os melhores indicadores de eficiência e resultado.",
+      sponsors: [
+        { name: "GWM", logo: "https://institutoparar.com.br/wp-content/uploads/2025/09/GWM-LOGO.png", href: "https://www.gwmmotors.com.br/pt" },
+        { name: "Sem Parar", logo: "https://institutoparar.com.br/wp-content/uploads/2025/07/5.png", href: "https://www.sempararempresas.com.br/" },
+        { name: "Pró-Frotas", logo: "https://institutoparar.com.br/wp-content/uploads/2026/09/PRO-FROTAS-3.png", href: "https://www.profrotas.com.br/" },
+      ],
     },
     {
       icon: "users",
       title: "O Melhor Gestor de Frotas do Brasil",
       desc: "Celebra a liderança que transforma pessoas, processos e desempenho.",
+      sponsors: [
+        { name: "Monaco", logo: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT-8.png", href: "https://monacobr.com.br/" },
+        { name: "Localiza", logo: "https://institutoparar.com.br/wp-content/uploads/2025/09/LOGOS-LP-PARAR-SUMMIT-18.png", href: "https://frotas.localiza.com/empresas?utm_source=site-evento-parar&utm_medium=botao&utm_campaign=ll-trade_gf_evento-parar-summit_topo_site-evento-parar_botao_alcance" },
+        { name: "Veloe Go", logo: "https://institutoparar.com.br/wp-content/uploads/2026/08/VELOE.png", href: "https://veloe.com.br/veloego" },
+      ],
     },
     {
       icon: "shield",
       title: "A Frota Mais Segura do Brasil",
       desc: "Premia a excelência em segurança viária e prevenção de acidentes.",
+      sponsors: [
+        { name: "Ticket Log", logo: "https://institutoparar.com.br/wp-content/uploads/2025/07/LOGOS-LP-PARAR-SUMMIT.png", href: "https://www.ticketlog.com.br/" },
+        { name: "VEIC", logo: "https://institutoparar.com.br/wp-content/uploads/2026/07/VEIC-1.png", href: "https://veic.com.br/" },
+        { name: "Unidas", logo: "https://institutoparar.com.br/wp-content/uploads/2026/05/logo-unidas-1.png", href: "https://frotas.unidas.com.br/" },
+      ],
     },
   ],
 } = Astro.props;
@@ -96,6 +118,21 @@ const icons: Record<Category["icon"], string> = {
             <div>
               <h3>{c.title}</h3>
               <p>{c.desc}</p>
+
+              {c.sponsors && c.sponsors.length > 0 && (
+                <div class="pa-sponsors">
+                  <span class="pa-sponsors-label">Patrocínio</span>
+                  <ul class="pa-sponsors-logos">
+                    {c.sponsors.map((s) => (
+                      <li>
+                        <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.name}>
+                          <img src={s.logo} alt={s.name} loading="lazy" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </li>
         ))}
@@ -140,7 +177,7 @@ const icons: Record<Category["icon"], string> = {
     display: grid;
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
     gap: 72px;
-    align-items: end;
+    align-items: center; /* centraliza o texto em relação às categorias */
   }
 
   /* ---------- Coluna esquerda ---------- */
@@ -233,7 +270,7 @@ const icons: Record<Category["icon"], string> = {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
   }
 
   .pa-cat-card {
@@ -279,6 +316,67 @@ const icons: Record<Category["icon"], string> = {
     color: var(--ink-soft);
   }
 
+  .pa-cat-card > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ---------- Patrocinadores da categoria ---------- */
+  .pa-sponsors {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .pa-sponsors-label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .pa-sponsors-logos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  /* fundo branco: as logos são feitas para fundo claro */
+  .pa-sponsors-logos a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pa-sponsors-logos a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+  }
+
+  .pa-sponsors-logos a:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .pa-sponsors-logos img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
   /* ---------- Responsivo ---------- */
   @media (max-width: 980px) {
     .pa-inner {
@@ -319,6 +417,10 @@ const icons: Record<Category["icon"], string> = {
       text-align: center;
       justify-content: center;
     }
+
+    .pa-cat-card > div {
+      width: 100%;
+    }
   }
 
   @media (max-width: 520px) {
@@ -330,6 +432,13 @@ const icons: Record<Category["icon"], string> = {
     }
     .pa-cat-heading h2 {
       font-size: 22px;
+    }
+    .pa-sponsors-logos {
+      gap: 8px;
+    }
+    .pa-sponsors-logos a {
+      height: 46px;
+      padding: 6px 8px;
     }
   }
 </style>

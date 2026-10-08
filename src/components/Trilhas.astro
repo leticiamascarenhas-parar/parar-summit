@@ -5,11 +5,11 @@ import TrilhaCard from "./TrilhaCard.astro";
 
 <section class="trilhas-section" id="trilhas">
   <div class="trilhas-header">
-    <img
-      src="/images/trilhas/titulo/titulo-trilhas.png"
-      alt="Trilhas Simultâneas"
-      class="titulo-trilhas"
-    />
+    <div class="trilhas-title-block">
+      <span class="trilhas-new">NEW</span>
+      <span class="trilhas-kicker">PARAR SUMMIT 26</span>
+      <h2 class="titulo-trilhas">Trilhas <span>Simultâneas</span></h2>
+    </div>
   </div>
 
   <div class="tabs-wrapper">
@@ -66,6 +66,13 @@ import TrilhaCard from "./TrilhaCard.astro";
             <TrilhaCard
               {...palestra}
               trilha={trilha.nome}
+              colegasDeMesa={
+                palestra.mesa
+                  ? trilha.palestras
+                      .filter((p) => p.mesa === palestra.mesa && p !== palestra)
+                      .map((p) => p.palestrante)
+                  : []
+              }
             />
           ))}
         </div>
@@ -85,47 +92,31 @@ import TrilhaCard from "./TrilhaCard.astro";
 </section>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+
   .trilhas-section {
+    --tr-navy: #004153;
+    --tr-green: #08D16E;
+    --tr-white: #FFFFFF;
     position: relative;
     overflow: hidden;
-    padding: 70px 20px 90px;
-    background:
-      radial-gradient(
-        circle at 8% 22%,
-        rgba(0, 194, 100, 0.16),
-        transparent 32%
-      ),
-      radial-gradient(
-        circle at 92% 78%,
-        rgba(6, 72, 82, 0.13),
-        transparent 35%
-      ),
-      linear-gradient(
-        135deg,
-        #f9fdfc 0%,
-        #e4f2f2 48%,
-        #f3faf8 100%
-      );
-    font-family: "Raleway", sans-serif;
+    padding: 110px 20px 100px;
+    background: var(--tr-navy);
+    border-top: 6px solid var(--tr-green);
+    border-bottom: 6px solid var(--tr-green);
+    font-family: "Montserrat", "Raleway", sans-serif;
   }
 
+  /* Linhas curvas sutis, igual ao Test Drive */
   .trilhas-section::before {
     content: "";
     position: absolute;
-    left: 50%;
-    top: 80px;
+    inset: 0;
     z-index: 0;
-    width: 980px;
-    height: 700px;
-    transform: translateX(-50%);
-    background:
-      radial-gradient(
-        ellipse at center,
-        rgba(0, 194, 100, 0.18) 0%,
-        rgba(0, 194, 100, 0.08) 34%,
-        transparent 70%
-      );
-    filter: blur(45px);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350' viewBox='0 0 1080 1350' fill='none' stroke='rgba(8,209,110,0.18)' stroke-width='2'><path d='M-60 1400 L-60 520 A230 230 0 0 1 400 520 L400 1400'/><path d='M20 1400 L20 560 A150 150 0 0 1 320 560 L320 1400'/><path d='M600 -60 L600 640 A230 230 0 0 0 1060 640 L1060 -60'/><path d='M680 -60 L680 600 A150 150 0 0 0 980 600 L980 -60'/><path d='M860 1400 L860 1080 A200 200 0 0 1 1260 1080 L1260 1400'/></svg>");
+    background-size: 1080px 1350px;
+    background-position: center top;
+    background-repeat: repeat;
     pointer-events: none;
   }
 
@@ -136,19 +127,70 @@ import TrilhaCard from "./TrilhaCard.astro";
     z-index: 1;
   }
 
+  /* Cabeçalho: bloco verde inclinado com "+" */
   .trilhas-header {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: min(1200px, 100%);
+    margin: 0 auto 56px;
+  }
+
+  .trilhas-header::before,
+  .trilhas-header::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    background: var(--tr-white);
+  }
+  .trilhas-header::before { left: -18px; top: -22px; width: 64px; height: 20px; }
+  .trilhas-header::after  { left: 4px;  top: -44px; width: 20px; height: 64px; }
+
+  .trilhas-title-block {
+    position: relative;
+    background: var(--tr-green);
+    color: var(--tr-navy);
+    padding: 52px 64px 48px;
+    clip-path: polygon(1.5% 0, 100% 0, 98.5% 100%, 0 100%);
+  }
+
+  .trilhas-new {
+    position: absolute;
+    top: 0;
+    right: 64px;
+    background: var(--tr-navy);
+    color: var(--tr-green);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    padding: 10px 18px;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .trilhas-kicker {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    margin-bottom: 14px;
   }
 
   .titulo-trilhas {
-    width: min(760px, 90%);
-    display: block;
-    margin: 0 auto 42px;
+    margin: 0;
+    font-size: clamp(36px, 5.4vw, 76px);
+    line-height: 0.98;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--tr-navy);
   }
 
+  .titulo-trilhas span {
+    display: inline-block;
+    color: var(--tr-white);
+    padding-bottom: 6px;
+    border-bottom: 5px solid var(--tr-white);
+  }
+
+  /* Abas */
   .tabs-wrapper {
-    width: min(1260px, 100%);
+    width: min(1200px, 100%);
     margin: 0 auto 48px;
     display: flex;
     align-items: center;
@@ -172,15 +214,16 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .tab {
     flex: 0 0 auto;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 20px;
-    border: 1px solid rgba(6, 72, 82, 0.1);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.82);
-    color: #064852;
+    border: 2px solid rgba(8, 209, 110, 0.45);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--tr-white);
     font: inherit;
-    font-size: 11px;
-    font-weight: 900;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     white-space: nowrap;
     cursor: pointer;
@@ -188,39 +231,44 @@ import TrilhaCard from "./TrilhaCard.astro";
       transform 0.25s ease,
       background 0.25s ease,
       color 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
+      border-color 0.25s ease;
   }
 
   .tab:hover {
     transform: translateY(-2px);
-    border-color: rgba(0, 194, 100, 0.5);
+    border-color: var(--tr-green);
   }
 
   .tab.active {
-    background: #064852;
-    color: #00c264;
-    border-color: #00c264;
-    box-shadow: 0 12px 24px rgba(6, 72, 82, 0.14);
+    background: var(--tr-green);
+    color: var(--tr-navy);
+    border-color: var(--tr-green);
+  }
+
+  .tab:focus-visible,
+  .tabs-arrow:focus-visible,
+  .track-arrow:focus-visible {
+    outline: 3px solid var(--tr-white);
+    outline-offset: 3px;
   }
 
   .tabs-arrow {
     flex: 0 0 auto;
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border: 1px solid rgba(6, 72, 82, 0.12);
-    border-radius: 50%;
-    background: #ffffff;
-    color: #064852;
+    border: 0;
+    border-radius: 4px;
+    background: var(--tr-white);
+    color: var(--tr-navy);
     font-family: Arial, sans-serif;
     font-size: 28px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
-    box-shadow: 0 10px 22px rgba(6, 72, 82, 0.1);
     transition:
       transform 0.25s ease,
       background 0.25s ease,
@@ -229,7 +277,7 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .tabs-arrow:hover:not(:disabled) {
     transform: scale(1.06);
-    background: #00c264;
+    background: var(--tr-green);
   }
 
   .tabs-arrow:disabled {
@@ -261,7 +309,7 @@ import TrilhaCard from "./TrilhaCard.astro";
     display: flex;
   }
 
-  /* --- Setas Circulares --- */
+  /* --- Setas dos cards (mobile) --- */
   .track-arrow {
     position: absolute;
     top: 50%;
@@ -272,35 +320,31 @@ import TrilhaCard from "./TrilhaCard.astro";
     align-items: center;
     justify-content: center;
     padding: 0;
-    border: 1.5px solid rgba(0, 194, 100, 0.5);
-    border-radius: 50%;
-    background: rgba(6, 72, 82, 0.95);
-    color: #00c264;
+    border: 0;
+    border-radius: 4px;
+    background: var(--tr-green);
+    color: var(--tr-navy);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
     cursor: pointer;
     transform: translateY(-50%) scale(1);
     transition:
       transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
       background 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
+      color 0.25s ease;
   }
 
   .track-arrow:hover:not(:disabled),
   .track-arrow:active:not(:disabled) {
     transform: translateY(-50%) scale(1.12);
-    background: #00c264;
-    color: #061827;
-    border-color: #00c264;
-    box-shadow: 0 0 20px rgba(0, 194, 100, 0.7);
+    background: var(--tr-white);
+    color: var(--tr-navy);
   }
 
   .track-arrow svg {
     width: 20px;
     height: 20px;
     stroke: currentColor;
-    stroke-width: 2.5;
+    stroke-width: 2.8;
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -321,22 +365,30 @@ import TrilhaCard from "./TrilhaCard.astro";
     filter: saturate(0.65);
   }
 
-  /* --- Mobile Layout & Alignment --- */
+  /* --- Mobile --- */
   @media (max-width: 900px) {
     .trilhas-section {
-      padding: 55px 0 68px;
+      padding: 80px 0 68px;
     }
 
-    .trilhas-section::before {
-      width: 720px;
-      height: 540px;
-      top: 60px;
-      filter: blur(36px);
+    .trilhas-header {
+      width: auto;
+      margin: 0 20px 36px;
+    }
+
+    .trilhas-title-block {
+      padding: 48px 28px 34px;
+      clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%);
+    }
+
+    .trilhas-new {
+      right: 28px;
+      font-size: 12px;
+      padding: 8px 14px;
     }
 
     .titulo-trilhas {
-      width: min(560px, 88%);
-      margin-bottom: 30px;
+      font-size: clamp(34px, 10vw, 48px);
     }
 
     .tabs-wrapper {
@@ -352,18 +404,17 @@ import TrilhaCard from "./TrilhaCard.astro";
     }
 
     .tabs-arrow {
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       font-size: 25px;
     }
 
     .tab {
-      min-height: 38px;
+      min-height: 40px;
       padding: 0 16px;
-      font-size: 10px;
+      font-size: 11px;
     }
 
-    /* As setas aparecem flutuando nas bordas no mobile */
     .track-shell.active.has-many .track-arrow.visible {
       display: inline-flex !important;
     }
@@ -374,7 +425,7 @@ import TrilhaCard from "./TrilhaCard.astro";
       overflow-y: hidden;
       overscroll-behavior-x: contain;
       gap: 16px;
-      
+
       /* Card = 290px; 50vw - 145px centraliza o primeiro e o último card exatamente na tela */
       padding: 12px calc(50vw - 145px) 28px;
       scroll-padding-inline: calc(50vw - 145px);
@@ -400,12 +451,7 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   @media (max-width: 480px) {
     .trilhas-section {
-      padding-top: 48px;
-    }
-
-    .titulo-trilhas {
-      width: min(500px, 90%);
-      margin-bottom: 26px;
+      padding-top: 72px;
     }
 
     .tabs-wrapper {
@@ -413,21 +459,28 @@ import TrilhaCard from "./TrilhaCard.astro";
     }
 
     .tabs-arrow {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       font-size: 23px;
     }
 
     .tab {
-      min-height: 36px;
+      min-height: 38px;
       padding: 0 14px;
-      font-size: 9px;
+      font-size: 10px;
     }
   }
 
   @media (min-width: 901px) {
     .track-arrow {
       display: none !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tabs,
+    .track.active {
+      scroll-behavior: auto;
     }
   }
 </style>

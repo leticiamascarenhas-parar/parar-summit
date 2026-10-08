@@ -1,17 +1,13 @@
 <section class="patrocinio-section" id="patrocinio">
-  <!-- Grid e Efeitos de Luz de Fundo (Estilo Tech) -->
-  <div class="patrocinio-grid"></div>
-  <div class="patrocinio-glow patrocinio-glow-1"></div>
-  <div class="patrocinio-glow patrocinio-glow-2"></div>
+  <!-- Linhas curvas de fundo (padrão PARAR Summit 26) -->
+  <div class="patrocinio-lines" aria-hidden="true"></div>
 
   <div class="patrocinio-container">
-    <div class="patrocinio-tag">
-      OPORTUNIDADE PARA MARCAS
-    </div>
+    <span class="patrocinio-kicker">OPORTUNIDADE PARA MARCAS</span>
 
     <h2>
-      VENHA SER UM EXPOSITOR NO EVENTO MAIS RELEVANTE EM
-      <span>GESTÃO DE FROTAS DA AMÉRICA LATINA</span>
+      Venha ser um expositor no evento mais relevante em
+      <span>Gestão de frotas da América Latina</span>
     </h2>
 
     <p>
@@ -59,137 +55,131 @@
 </section>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+
   .patrocinio-section {
+    --pt-navy: #004153;
+    --pt-green: #08D16E;
+    --pt-white: #ffffff;
+
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     padding: 100px 24px;
-    background: #06171b; /* Fundo ligeiramente mais escuro para destacar o neon */
-    font-family: "Raleway", sans-serif;
+    background: var(--pt-green);
+    color: var(--pt-navy);
+    font-family: "Montserrat", "Raleway", sans-serif;
   }
 
-  /* Malha de Grade Vetorial (Efeito Tech) */
-  .patrocinio-grid {
+  /* Linhas curvas sutis em azul, mesmo desenho das outras seções */
+  .patrocinio-lines {
     position: absolute;
     inset: 0;
-    background-image: 
-      linear-gradient(rgba(0, 194, 100, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 194, 100, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    background-position: center;
-    mask-image: radial-gradient(circle, black 40%, transparent 80%);
-    -webkit-mask-image: radial-gradient(circle, black 40%, transparent 80%);
+    z-index: -1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350' viewBox='0 0 1080 1350' fill='none' stroke='rgba(0,65,83,0.12)' stroke-width='2'><path d='M-60 1400 L-60 520 A230 230 0 0 1 400 520 L400 1400'/><path d='M20 1400 L20 560 A150 150 0 0 1 320 560 L320 1400'/><path d='M600 -60 L600 640 A230 230 0 0 0 1060 640 L1060 -60'/><path d='M680 -60 L680 600 A150 150 0 0 0 980 600 L980 -60'/><path d='M860 1400 L860 1080 A200 200 0 0 1 1260 1080 L1260 1400'/></svg>");
+    background-size: 1080px 1350px;
+    background-position: center top;
     pointer-events: none;
-    z-index: 1;
   }
 
   .patrocinio-container {
-    position: relative;
-    z-index: 2;
     width: min(1120px, 100%);
     margin: 0 auto;
     text-align: center;
   }
 
-  /* Badge com efeito de vidro (Glassmorphism) */
-  .patrocinio-tag {
-    width: fit-content;
-    margin: 0 auto 32px;
-    padding: 8px 20px;
-
-    border: 1px solid rgba(0, 194, 100, 0.3);
-    border-radius: 999px;
-
-    background: rgba(0, 194, 100, 0.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #00ff84;
-
-    font-size: 11px;
+  /* Kicker com o "+" na frente, como nos títulos das outras seções */
+  .patrocinio-kicker {
+    display: block;
+    margin-bottom: 20px;
+    color: var(--pt-navy);
+    font-size: 14px;
     font-weight: 800;
-    letter-spacing: 2px;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    letter-spacing: 6px;
+  }
+
+  .patrocinio-kicker::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    vertical-align: -3px;
+    background:
+      linear-gradient(var(--pt-white), var(--pt-white)) center / 100% 6px no-repeat,
+      linear-gradient(var(--pt-white), var(--pt-white)) center / 6px 100% no-repeat;
   }
 
   .patrocinio-container h2 {
-    max-width: 880px;
+    max-width: 900px;
     margin: 0 auto;
-
-    color: #ffffff;
-
-    font-size: clamp(28px, 3.8vw, 46px);
-    line-height: 1.1;
+    color: var(--pt-navy);
+    font-size: clamp(30px, 4vw, 52px);
+    line-height: 1.02;
     font-weight: 900;
-    letter-spacing: -1px;
     text-transform: uppercase;
   }
 
+  /* destaque em branco com sublinhado, igual ao título das Trilhas */
   .patrocinio-container h2 span {
-    display: block;
+    display: inline-block;
     margin-top: 10px;
-    color: #00ff84;
-    text-shadow: 0 0 35px rgba(0, 255, 132, 0.35);
+    padding-bottom: 6px;
+    border-bottom: 5px solid var(--pt-white);
+    color: var(--pt-white);
   }
 
   .patrocinio-container > p {
     max-width: 620px;
-    margin: 24px auto 0;
-
-    color: #a3c2c9;
-
+    margin: 28px auto 0;
+    color: var(--pt-navy);
     font-size: 18px;
     line-height: 1.6;
+    font-weight: 600;
   }
 
   .patrocinio-actions {
-    margin-top: 48px;
-
+    margin-top: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
   }
 
-  /* Botão principal com Glow Pulsante */
   .patrocinio-button {
-    min-height: 60px;
-    padding: 0 36px;
-
+    min-height: 58px;
+    padding: 0 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-
-    border-radius: 999px;
-    border: 1px solid rgba(0, 255, 132, 0.5);
-
-    background: #00ff84;
-    color: #06171b;
-
+    border: 2px solid var(--pt-navy);
+    border-radius: 6px;
+    background: var(--pt-navy);
+    color: var(--pt-white);
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 1px;
     text-decoration: none;
-
-    box-shadow: 
-      0 12px 30px rgba(0, 255, 132, 0.25),
-      0 0 60px rgba(0, 255, 132, 0.1);
-
+    box-shadow: 0 12px 26px rgba(0, 65, 83, 0.28);
     transition:
-      transform 0.25s cubic-bezier(0.2, 1, 0.3, 1),
-      box-shadow 0.25s ease,
+      transform 0.25s ease,
       background-color 0.25s ease,
-      border-color 0.25s ease,
-      color 0.25s ease;
+      color 0.25s ease,
+      box-shadow 0.25s ease;
   }
 
   .patrocinio-button:hover {
-    transform: translateY(-4px) scale(1.02);
-    background: transparent;
-    color: #00ff84;
-    border-color: #00ff84;
-    box-shadow: 
-      0 20px 40px rgba(16, 30, 86, 0.3),
-      0 0 40px rgba(12, 32, 59, 0.15);
+    transform: translateY(-3px);
+    background: var(--pt-white);
+    color: var(--pt-navy);
+    box-shadow: 0 18px 34px rgba(0, 65, 83, 0.3);
+  }
+
+  .patrocinio-button:focus-visible,
+  .patrocinio-email:focus-visible {
+    outline: 3px solid var(--pt-white);
+    outline-offset: 4px;
   }
 
   .whatsapp-icon {
@@ -206,72 +196,35 @@
   }
 
   .patrocinio-email {
-    color: #a3c2c9;
+    color: var(--pt-navy);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
-    border-bottom: 1px solid rgba(163, 194, 201, 0.2);
-    padding-bottom: 4px;
-
-    transition:
-      color 0.25s ease,
-      border-color 0.25s ease;
+    border-bottom: 2px solid rgba(0, 65, 83, 0.35);
+    padding-bottom: 3px;
+    transition: border-color 0.25s ease;
   }
 
   .patrocinio-email:hover {
-    color: #00ff84;
-    border-color: rgba(0, 255, 132, 0.6);
+    border-color: var(--pt-navy);
   }
 
   .patrocinio-video-wrapper {
     width: min(860px, 100%);
-    margin: 40px auto 0;
+    margin: 48px auto 0;
+    padding: 8px;
+    border-radius: 18px;
+    background: var(--pt-navy);
+    box-shadow: 0 24px 50px rgba(0, 65, 83, 0.35);
+    box-sizing: border-box;
   }
 
   .patrocinio-video {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
-    margin: 0 auto;
     border: 0;
-    border-radius: 16px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Elementos de Luz Difusa (Aura Glow) */
-  .patrocinio-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px); /* Aumentado consideravelmente para suavizar a luz */
-    pointer-events: none;
-    opacity: 0.7;
-    z-index: 1;
-  }
-
-  .patrocinio-glow-1 {
-    width: 500px;
-    height: 500px;
-    left: -200px;
-    top: -200px;
-
-    background: radial-gradient(
-      circle,
-      rgba(7, 42, 85, 0.15),
-      transparent 70%
-    );
-  }
-
-  .patrocinio-glow-2 {
-    width: 600px;
-    height: 600px;
-    right: -250px;
-    bottom: -250px;
-
-    background: radial-gradient(
-      circle,
-      rgba(0, 146, 218, 0.15),
-      transparent 70%
-    );
+    border-radius: 12px;
   }
 
   @media (max-width: 768px) {
@@ -279,9 +232,13 @@
       padding: 80px 20px;
     }
 
+    .patrocinio-kicker {
+      font-size: 12px;
+      letter-spacing: 4px;
+    }
+
     .patrocinio-container h2 {
-      font-size: clamp(30px, 9vw, 40px);
-      letter-spacing: -1px;
+      font-size: clamp(28px, 8.5vw, 40px);
     }
 
     .patrocinio-container > p {
@@ -290,7 +247,7 @@
     }
 
     .patrocinio-actions {
-      margin-top: 40px;
+      margin-top: 32px;
     }
 
     .patrocinio-button {
@@ -302,6 +259,16 @@
 
     .patrocinio-email {
       font-size: 14px;
+    }
+
+    .patrocinio-video-wrapper {
+      margin-top: 36px;
+      padding: 5px;
+      border-radius: 14px;
+    }
+
+    .patrocinio-video {
+      border-radius: 10px;
     }
   }
 </style>

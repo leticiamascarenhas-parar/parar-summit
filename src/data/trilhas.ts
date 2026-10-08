@@ -5,6 +5,7 @@ export const trilhas = [
     palestras: [
       {
         id: 1,
+        mesa: "conectividade",
         titulo: "Como a conectividade transforma a Gestão de Frotas",
         palestrante: "Sérgio Jábali",
         cargo: "CTO da Golfleet e professor do Instituto PARAR",
@@ -15,6 +16,7 @@ export const trilhas = [
       
       {
         id: 2,
+        mesa: "conectividade",
         titulo: "Como a conectividade transforma a Gestão de Frotas",
         palestrante: "Carlos Campos",
         cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
@@ -25,6 +27,7 @@ export const trilhas = [
 
       {
         id: 3,
+        mesa: "conectividade",
         titulo: "Como a conectividade transforma a Gestão de Frotas",
         palestrante: "Eduardo Resende",
         cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
@@ -45,7 +48,7 @@ export const trilhas = [
         palestrante: "Stanley Plácido",
         cargo: "Diretor de Mobilidade Interna na Secretaria de Gestão e Governo Digital do Estado de São Paulo",
         foto: "/images/trilhas/stanley-placido.jpeg",
-        horario: "20/10 às 09h00",
+        horario: "20/10 às 14h30",
         sala: "sala: Lab 4",
       },
       
@@ -55,29 +58,13 @@ export const trilhas = [
         palestrante: "Daniela Diniz",
         cargo: "Advogada especialista em Licitações e Contratos Administrativos",
         foto: "/images/trilhas/daniela-diniz.webp",
-        horario: "21/10 às 09h00",
+        horario: "21/10 às 15h45",
         sala: "sala: Lab 4",
       } 
     ]
   },
-
-  {
-    id: "politica-de-frotas",
-    nome: "Política de Frotas",
-    palestras: [
-      {
-        id: 1,
-        titulo: "Política de Frotas: Alta Performance com Segurança Jurídica",
-        palestrante: "Carlos Tudisco",
-        cargo: "COO da Golfleet e professor do Instituto PARAR",
-        foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
-        horario: "20/10 às 13h45",
-        sala: "sala: Hub 2",
-      }
-    ]
-  },
   
-   {
+  {
     id: "gestao-e-lideranca",
     nome: "Gestão e Liderança",
     palestras: [
@@ -98,17 +85,8 @@ export const trilhas = [
     nome: "Frotas Mistas e Pesadas",
     palestras: [
       {
-        id: 1,
-        titulo: "O Transporte Rodoviário de Cargas mudou: os principais desafios e tendências",
-        palestrante: "Eduardo Souza",
-        cargo: "Head de Operações, Logística e Comex | Conselheiro SAE Brasil | Prof. Inst. PARAR",
-        foto: "/images/trilhas/eduardo-souza.jpeg",
-        horario: "20/10 às 13h40",
-        sala: "sala: Lab 5",
-      },
-
-      {
         id: 2,
+        mesa: "transporte-rodoviario", // cards com o mesmo "mesa" abrem juntos
         titulo: "O Transporte Rodoviário de Cargas mudou: os principais desafios e tendências",
         palestrante: "Márcio Lino",
         cargo: "Gerente de Mobilidade da Copasa | Prof. Inst. PARAR",
@@ -119,6 +97,7 @@ export const trilhas = [
       
       {
         id: 3,
+        mesa: "transporte-rodoviario",
         titulo: "O Transporte Rodoviário de Cargas mudou: os principais desafios e tendências",
         palestrante: "Mauricio Franco",
         cargo: "CEO da Carga Online | Prof. Inst. PARAR",
@@ -142,32 +121,6 @@ export const trilhas = [
         horario: "21/10 às 15h05",
         sala: "sala: Lab 5",
       }
-    ]
-  },
-
-  {
-    id: "inovacao",
-    nome: "Inovação",
-    palestras: [
-      {
-        id: 1,
-        titulo: "Frota do Futuro: o impacto da IA e outras tecnologias no dia a dia do gestor",
-        palestrante: "Chris Donaldson",
-        cargo: "Diretor de Vendas na HERE Technologies",
-        foto: "/images/trilhas/chris-donaldson.webp",
-        horario: "20/10 às 13h40",
-        sala: "sala: Hub 2",
-      },
-
-      {
-        id: 2,
-        titulo: "Frota do Futuro: o impacto da IA e outras tecnologias no dia a dia do gestor",
-        palestrante: "Sérgio Jábali",
-        cargo: "CTO da Golfleet e professor do Instituto PARAR",
-        foto: "/images/trilhas/titulo/sergio-jabali.webp",
-        horario: "20/10 às 14h45",
-        sala: "sala: Lab 4",
-      },
     ]
   },
 
@@ -197,7 +150,7 @@ export const trilhas = [
         palestrante: "Wiliam Magalhães",
         cargo: "Especialista em Manutenção",
         foto: "/images/speakers/william-magalhaes.jpeg",
-        horario: "21/10 às 15h45",
+        horario: "21/10 às 15h00",
         sala: "sala: Hub 2",
       }
     ]
@@ -218,30 +171,13 @@ export const trilhas = [
       },
     ]
   },
-
-  {
-    id: "eficiencia-operacional",
-    nome: "Eficiência Operacional",
-    palestras: [
-      {
-        id: 1,
-        titulo: "",
-        palestrante: "",
-        cargo: "",
-        foto: "/images/trilhas/em-breve.png",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
-      },
-    ]
-  },
- 
   {
     id: "frotas-eletricas",
     nome: "Frotas Elétricas",
     palestras: [
       {
         id: 1,
-        titulo: "",
+        titulo: "Eletrificação de frotas: o que o gestor ainda precisa saber?",
         palestrante: "",
         cargo: "",
         foto: "/images/trilhas/em-breve.png",

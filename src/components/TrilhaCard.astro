@@ -8,6 +8,9 @@ interface Props {
   sala: string;
   descricao?: string;
   trilha: string;
+  // cards com o mesmo "mesa" (na mesma trilha) fazem parte da mesma mesa de conteúdo e abrem juntos
+  mesa?: string;
+  colegasDeMesa?: string[];
 }
 
 const {
@@ -18,11 +21,13 @@ const {
   horario,
   sala,
   descricao,
-  trilha
+  trilha,
+  mesa,
+  colegasDeMesa = []
 } = Astro.props;
 ---
 
-<article class="trilha-card">
+<article class="trilha-card" data-mesa={mesa}>
   <button
     class="trilha-card-button"
     type="button"
@@ -30,6 +35,8 @@ const {
   >
     <div class="trilha-card-photo">
       <img src={foto} alt={palestrante} loading="lazy" decoding="async" />
+
+      {mesa && <span class="mesa-chip">Mesa de conteúdo</span>}
 
       <span class="details-icon" aria-hidden="true">+</span>
     </div>
@@ -45,7 +52,11 @@ const {
       <div class="trilha-card-details">
         <div class="details-divider"></div>
 
-        <span class="details-label">PALESTRA</span>
+        <span class="details-label">{mesa ? "MESA DE CONTEÚDO" : "PALESTRA"}</span>
+
+        {colegasDeMesa.length > 0 && (
+          <p class="mesa-colegas">Com: <strong>{colegasDeMesa.join(", ")}</strong></p>
+        )}
 
         <div class="details-tags">
           <span>{trilha}</span>
@@ -265,6 +276,43 @@ const {
     font-weight: 500;
   }
 
+  /* MESA DE CONTEÚDO */
+
+  .mesa-chip {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+
+    padding: 7px 10px;
+    border-radius: 6px;
+    background: #004153;
+    color: #08D16E;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+  }
+
+  .mesa-colegas {
+    margin: 0 0 12px;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 12.5px;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .mesa-colegas strong {
+    color: #ffffff;
+    font-weight: 800;
+  }
+
   .trilha-card.selected {
     z-index: 10;
     height: auto; /* Permite expandir ao abrir */
@@ -349,9 +397,20 @@ const {
           track.classList.remove('has-selected');
 
           if (!estavaAberto) {
-            card.classList.add('selected');
+            // mesa de conteúdo: abre junto todos os cards da mesma mesa
+            const mesa = card.dataset.mesa;
+            const cardsParaAbrir = mesa
+              ? Array.from(track.querySelectorAll<HTMLElement>('.trilha-card')).filter(
+                  (item) => item.dataset.mesa === mesa
+                )
+              : [card];
+
+            cardsParaAbrir.forEach((item) => {
+              item.classList.add('selected');
+              item.querySelector('.trilha-card-button')?.setAttribute('aria-expanded', 'true');
+            });
+
             track.classList.add('has-selected');
-            button.setAttribute('aria-expanded', 'true');
           }
         });
       });

@@ -1,54 +1,110 @@
 ---
+import Bandeira from "./Bandeira.astro";
+
 const {
   nome,
   cargo,
   descricao,
   foto,
   palestra,
-  detalhes
+  detalhes,
+  dia,
+  horario,
+  mesa,
+  mesaPanelId,
+  mediador,
+  bandeira
 } = Astro.props;
+
+// mesa = tema da mesa de debate. Esses cards não viram: abrem o painel da mesa (ver Plenaria.astro)
+const ariaLabel = mesa
+  ? `Ver participantes da mesa ${mesa}`
+  : `Ver palestra de ${nome}`;
 ---
 
-<article class="speaker-card">
+<article class="speaker-card" data-mesa={mesa ? "true" : undefined}>
   <button
     class="speaker-card-button"
     type="button"
-    aria-label={`Ver palestra de ${nome}`}
+    aria-label={ariaLabel}
     aria-expanded="false"
+    aria-controls={mesaPanelId}
   >
     <div class="speaker-card-inner">
 
       <!-- FRENTE -->
       <div class="speaker-card-face speaker-card-front">
         <div class="speaker-photo">
-          <img src={foto} alt={nome} />
+          <img src={foto} alt={nome} loading="lazy" />
 
           <div class="photo-gradient"></div>
 
+          {bandeira && (
+            <span class="speaker-flag">
+              <Bandeira pais={bandeira} />
+            </span>
+          )}
+
+          {(dia || horario) && (
+            <div class="speaker-when">
+              {dia && (
+                <span class="when-day">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                  {dia}
+                </span>
+              )}
+              {horario && (
+                <span class="when-time">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  {horario}
+                </span>
+              )}
+            </div>
+          )}
+
           <div class="speaker-summary">
-            <span class="speaker-label">PLENÁRIA PRINCIPAL</span>
-
+            <span class="speaker-label">
+              {mesa ? "MESA DE DEBATE" : "PALESTRANTE"}
+              {mediador && <span class="speaker-mediador">Mediação</span>}
+            </span>
             <h3>{nome}</h3>
-
             <p>{cargo}</p>
           </div>
 
           <span class="speaker-action">
-            <span>Ver palestra</span>
+            <span>{mesa ? "Ver mesa" : "Ver palestra"}</span>
             <span class="speaker-arrow" aria-hidden="true">→</span>
           </span>
         </div>
       </div>
 
       <!-- VERSO -->
+      {!mesa && (
       <div class="speaker-card-face speaker-card-back">
         <div class="back-header">
-          <span>PALESTRA</span>
+          <span class="back-label">PALESTRA {bandeira && <Bandeira pais={bandeira} />}</span>
 
           <span class="back-close" aria-hidden="true">×</span>
         </div>
 
         <div class="back-content">
+          {(dia || horario) && (
+            <div class="speaker-when speaker-when--back">
+              {dia && (
+                <span class="when-day">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                  {dia}
+                </span>
+              )}
+              {horario && (
+                <span class="when-time">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  {horario}
+                </span>
+              )}
+            </div>
+          )}
+
           <h3>{palestra}</h3>
 
           {detalhes && <p class="palestra-detalhes">{detalhes}</p>}
@@ -56,6 +112,7 @@ const {
 
         <small>Clique para voltar</small>
       </div>
+      )}
 
     </div>
   </button>
@@ -70,7 +127,7 @@ const {
     perspective: 1500px;
     -webkit-perspective: 1500px; /* Adicionado para Safari/iOS */
 
-    font-family: "Raleway", sans-serif;
+    font-family: "Montserrat", "Raleway", sans-serif;
 
     transition:
       opacity 0.4s ease,
@@ -84,7 +141,7 @@ const {
 
     padding: 0;
     border: 0;
-    border-radius: 24px;
+    border-radius: 14px;
 
     background: transparent;
     color: inherit;
@@ -118,21 +175,22 @@ const {
 
     overflow: hidden;
 
-    border: 2px solid #00c264;
-    border-radius: 24px;
+    border: 2px solid #08D16E;
+    border-radius: 14px;
 
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden; /* OBRIGATÓRIO para iOS */
 
     box-sizing: border-box;
 
-    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.22);
+    /* sombra mais curta e suave, cabe no espaço do carrossel */
+    box-shadow: 0 12px 26px rgba(0, 65, 83, 0.18);
   }
 
   /* FRENTE */
 
   .speaker-card-front {
-    background: #061827;
+    background: #004153;
     transform: rotateY(0deg) translateZ(1px); /* translateZ força a separação 3D no WebKit */
     -webkit-transform: rotateY(0deg) translateZ(1px);
   }
@@ -144,7 +202,7 @@ const {
     height: 100%;
 
     overflow: hidden;
-    background: #061827;
+    background: #004153;
   }
 
   .speaker-photo img {
@@ -166,9 +224,9 @@ const {
     background:
       linear-gradient(
         to top,
-        rgba(2, 32, 39, 0.98) 0%,
-        rgba(2, 32, 39, 0.82) 25%,
-        rgba(2, 32, 39, 0.15) 58%,
+        rgba(0, 50, 64, 0.98) 0%,
+        rgba(0, 50, 64, 0.85) 28%,
+        rgba(0, 50, 64, 0.15) 60%,
         transparent 78%
       );
   }
@@ -188,11 +246,11 @@ const {
     display: block;
     margin-bottom: 11px;
 
-    color: #00c264;
+    color: #08D16E;
 
     font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1.6px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
   }
 
   .speaker-summary h3 {
@@ -201,21 +259,21 @@ const {
 
     color: #ffffff;
 
-    font-size: 29px;
-    line-height: 0.98;
+    font-size: 28px;
+    line-height: 1;
     font-weight: 900;
-    letter-spacing: -0.7px;
+    letter-spacing: -0.3px;
     text-transform: uppercase;
   }
 
   .speaker-summary p {
     margin: 0;
 
-    color: rgba(255, 255, 255, 0.74);
+    color: rgba(255, 255, 255, 0.82);
 
     font-size: 13px;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .speaker-action {
@@ -234,11 +292,11 @@ const {
 
     border-top: 1px solid rgba(255, 255, 255, 0.18);
 
-    color: #00c264;
+    color: #08D16E;
 
     font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.8px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
   }
 
@@ -262,10 +320,10 @@ const {
     background:
       radial-gradient(
         circle at top right,
-        rgba(0, 194, 100, 0.18),
+        rgba(8, 209, 110, 0.18),
         transparent 38%
       ),
-      #061827;
+      #004153;
 
     color: #ffffff;
     overflow: hidden;
@@ -276,7 +334,7 @@ const {
     align-items: center;
     justify-content: space-between;
 
-    color: #00c264;
+    color: #08D16E;
   }
 
   .back-header > span:first-child {
@@ -293,8 +351,8 @@ const {
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
 
     color: #ffffff;
 
@@ -304,12 +362,34 @@ const {
 
   .back-content {
     flex: 1;
+    min-height: 0; /* deixa o flex encolher para o overflow funcionar */
 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 18px;
-    padding-right: 4px;
+
+    /* texto longo rola por dentro do card */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -10px 10px 0;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(8, 209, 110, 0.6) transparent;
+  }
+
+  .back-content > * {
+    flex-shrink: 0;
+  }
+
+  .back-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .back-content::-webkit-scrollbar-thumb {
+    background: rgba(8, 209, 110, 0.6);
+    border-radius: 4px;
   }
 
   .back-content > h3 {
@@ -325,7 +405,7 @@ const {
   .palestra-detalhes {
     margin: 0;
 
-    color: rgba(255, 255, 255, 0.74);
+    color: rgba(255, 255, 255, 0.82);
 
     font-size: 14px;
     line-height: 1.55;
@@ -333,10 +413,118 @@ const {
 
 
   .speaker-card-back small {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.65);
 
     font-size: 10px;
     text-align: center;
+  }
+
+  /* DIA E HORÁRIO */
+
+  .speaker-when {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 3;
+
+    display: flex;
+    align-items: stretch;
+
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .when-day,
+  .when-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+  }
+
+  .when-day {
+    background: #08D16E;
+    color: #004153;
+  }
+
+  .when-time {
+    background: #ffffff;
+    color: #004153;
+  }
+
+  .speaker-when svg {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* No verso, o selo fica no fluxo do texto (não flutuando sobre a foto) */
+  .speaker-when--back {
+    position: static;
+    align-self: flex-start;
+    margin-top: 18px;
+    box-shadow: none;
+  }
+
+  /* BANDEIRA (canto superior direito, o selo de dia/horário fica à esquerda) */
+
+  .speaker-flag {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    line-height: 0;
+    border-radius: 4px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .speaker-flag :global(.bandeira) {
+    width: 36px;
+    height: 24px;
+  }
+
+  /* no verso, ao lado do rótulo PALESTRA */
+  .back-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .back-label :global(.bandeira) {
+    width: 24px;
+    height: 16px;
+    border-width: 1.5px;
+    border-radius: 3px;
+  }
+
+  /* MESA DE DEBATE */
+
+  .speaker-mediador {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 6px;
+    border-radius: 3px;
+
+    background: #08D16E;
+    color: #004153;
+
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    vertical-align: 1px;
   }
 
   /* INTERAÇÃO */
@@ -383,6 +571,19 @@ const {
 
     .speaker-summary h3 {
       font-size: 25px;
+    }
+
+
+
+    .speaker-when {
+      top: 14px;
+      left: 14px;
+      font-size: 12px;
+    }
+
+    .when-day,
+    .when-time {
+      padding: 8px 10px;
     }
 
     .speaker-action {
@@ -439,6 +640,9 @@ const {
       if (card.getAttribute('data-ready') === 'true') return;
 
       card.setAttribute('data-ready', 'true');
+
+      // Cards de mesa não viram: quem abre o painel da mesa é o script da Plenaria.astro
+      if (card.hasAttribute('data-mesa')) return;
 
       const button = card.querySelector('.speaker-card-button');
 

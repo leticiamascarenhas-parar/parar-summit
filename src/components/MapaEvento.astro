@@ -13,7 +13,6 @@ interface LocalMapa {
 }
 
 const mapImg = "/images/mapa/mapa-summit.png";
-const tituloImg = "/images/mapa/titulo-mapa.png";
 
 const places = (locaisMapa as LocalMapa[]).map((local) => ({
   id: local.id,
@@ -30,8 +29,10 @@ const first = places[0];
 <section id="mapa-evento" class="evt-map">
   <div class="evt-map__content">
     <header class="evt-map__header">
-      <span class="evt-map__eyebrow">conheça o</span>
-      <img class="evt-map__titulo" src={tituloImg} alt="Mapa do evento" />
+      <div class="evt-map__heading">
+        <span class="evt-map__kicker">PARAR SUMMIT 26</span>
+        <h2 class="evt-map__title">Mapa do <span>Evento</span></h2>
+      </div>
 
 <div class="evt-map__text">
         <p>O <strong>PARAR Summit 26</strong> chega com uma grande novidade: as <strong>trilhas de conteúdo simultâneas</strong>! Você escolhe exatamente o que deseja assistir. Para isso, preparamos o palco principal e mais 3 salas exclusivas: o <strong>Lab 4, Lab 5 e Hub 2</strong>.</p>
@@ -168,6 +169,8 @@ function clampTooltip() {
 </script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+
   .evt-map {
     --bg: #b7e2d8;
     --teal: #064852;
@@ -203,32 +206,63 @@ function clampTooltip() {
     align-items: center;
   }
 
-  .evt-map__eyebrow {
-    display: inline-block;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 15px;
-    color: #064852;
-    margin: 0 auto 14px;
+  /* Título no mesmo padrão da Plenária e das Trilhas, com o "+" verde */
+  .evt-map__heading {
+    position: relative;
     width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 28px;
+    padding-left: 40px;
+    text-align: left;
+    font-family: "Montserrat", "Raleway", sans-serif;
   }
 
-  .evt-map__titulo {
+  .evt-map__heading::before,
+  .evt-map__heading::after {
+    content: "";
+    position: absolute;
+    background: #08D16E;
+  }
+  .evt-map__heading::before { left: 0; top: 8px; width: 26px; height: 8px; }
+  .evt-map__heading::after  { left: 9px; top: -1px; width: 8px; height: 26px; }
+
+  .evt-map__kicker {
     display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 0 auto 22px;
-    align-self: center;
+    margin-bottom: 12px;
+    color: #00c264;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 6px;
+  }
+
+  .evt-map__title {
+    margin: 0;
+    color: #004153;
+    font-size: clamp(36px, 4.6vw, 64px);
+    line-height: 0.98;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .evt-map__title span {
+    display: inline-block;
+    color: #00c264;
+    padding-bottom: 6px;
+    border-bottom: 5px solid #08D16E;
   }
 
   .evt-map__text p {
+    font-family: "Montserrat", "Raleway", sans-serif;
     font-size: 15px;
+    font-weight: 500;
     line-height: 1.7;
-    color: #064852;
+    color: #004153;
     margin: 0;
     margin-top: 13px;
+  }
 
+  .evt-map__text strong {
+    font-weight: 800;
   }
 
   /* ---------- mapa ---------- */
@@ -424,9 +458,8 @@ function clampTooltip() {
       align-items: flex-start;
     }
 
-    .evt-map__titulo {
-      margin: 0 0 22px;
-      align-self: flex-start;
+    .evt-map__heading {
+      margin: 0 0 28px;
     }
 
     .evt-map__text p {
@@ -482,8 +515,37 @@ function clampTooltip() {
       padding: 56px 18px 64px;
     }
 
-    .evt-map__titulo {
-      max-width: 220px;
+    /* mobile: título centralizado; o "+" vai para a frente do "PARAR SUMMIT 26" */
+    .evt-map__heading {
+      margin: 0 auto 28px;
+      padding-left: 0;
+      text-align: center;
+    }
+
+    .evt-map__heading::before,
+    .evt-map__heading::after {
+      display: none;
+    }
+
+    .evt-map__kicker::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      vertical-align: -3px;
+      background:
+        linear-gradient(#08D16E, #08D16E) center / 100% 5px no-repeat,
+        linear-gradient(#08D16E, #08D16E) center / 5px 100% no-repeat;
+    }
+
+    .evt-map__kicker {
+      font-size: 12px;
+      letter-spacing: 4px;
+    }
+
+    .evt-map__title {
+      font-size: clamp(32px, 9vw, 48px);
     }
 
     .evt-map__menu {
