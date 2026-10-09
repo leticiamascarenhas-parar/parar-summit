@@ -70,7 +70,7 @@ import TrilhaCard from "./TrilhaCard.astro";
                 palestra.mesa
                   ? trilha.palestras
                       .filter((p) => p.mesa === palestra.mesa && p !== palestra)
-                      .map((p) => p.palestrante)
+                      .map((p) => (p.mediador ? `${p.palestrante} (mediador)` : p.palestrante))
                   : []
               }
             />

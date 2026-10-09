@@ -21,8 +21,8 @@ export const locaisMapa = [
     y: 35
   },
   {
-    id: "green-hub",
-    nome: "Green Hub",
+    id: "hub-de-inovacao",
+    nome: "Hub de Inovação",
     descricao: "Espaço de conexão, networking e experiências.",
     x: 85,
     y: 50

@@ -1,4 +1,24 @@
-export const trilhas = [
+export interface Palestra {
+  id: number;
+  titulo: string;
+  palestrante: string;
+  cargo: string;
+  foto: string;
+  horario: string;
+  sala: string;
+  descricao?: string;
+  // cards com o mesmo "mesa" (na mesma trilha) fazem parte da mesma mesa de conteúdo
+  mesa?: string;
+  mediador?: boolean;
+}
+
+export interface Trilha {
+  id: string;
+  nome: string;
+  palestras: Palestra[];
+}
+
+export const trilhas: Trilha[] = [
   {
     id: "conectividade",
     nome: "Conectividade",
@@ -10,7 +30,7 @@ export const trilhas = [
         palestrante: "Sérgio Jábali",
         cargo: "CTO da Golfleet e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/sergio-jabali.webp",
-        horario: "20/10 às 14h45",
+        horario: "20/10 às 14h30",
         sala: "sala: Lab 5",
       },
       
@@ -21,7 +41,7 @@ export const trilhas = [
         palestrante: "Carlos Campos",
         cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
         foto: "/images/trilhas/carlos-campos.webp",
-        horario: "20/10 às 14h45",
+        horario: "20/10 às 14h30",
         sala: "sala: Lab 5",
       },
 
@@ -32,9 +52,37 @@ export const trilhas = [
         palestrante: "Eduardo Resende",
         cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
         foto: "/images/trilhas/eduardo-resende.webp",
-        horario: "20/10 às 14h45",
+        horario: "20/10 às 14h30",
         sala: "sala: Lab 5",
       }
+    ]
+  },
+
+  {
+    id: "inovacao",
+    nome: "Inovação",
+    palestras: [
+      {
+        id: 1,
+        mesa: "inovacao",
+        titulo: "A Era dos carros autônomos está próxima?",
+        palestrante: "Paulo Ferrato",
+        cargo: "CBO da Draiver",
+        foto: "/images/trilhas/paulo-ferrato.png",
+        horario: "20/10 às 09h",
+        sala: "sala: Lab 5",
+      },
+      
+      {
+        id: 2,
+        mesa: "inovacao",
+        titulo: "A Era dos carros autônomos está próxima?",
+        palestrante: "Anderson Santos",
+        cargo: "Diretor Comercial e de Parcerias Near Location",
+        foto: "/images/trilhas/anderson-santos.webp",
+        horario: "20/10 às 09h",
+        sala: "sala: Lab 5",
+      },
     ]
   },
 
@@ -49,7 +97,7 @@ export const trilhas = [
         cargo: "Diretor de Mobilidade Interna na Secretaria de Gestão e Governo Digital do Estado de São Paulo",
         foto: "/images/trilhas/stanley-placido.jpeg",
         horario: "20/10 às 14h30",
-        sala: "sala: Lab 4",
+        sala: "sala: Hub 2",
       },
       
       {
@@ -58,8 +106,8 @@ export const trilhas = [
         palestrante: "Daniela Diniz",
         cargo: "Advogada especialista em Licitações e Contratos Administrativos",
         foto: "/images/trilhas/daniela-diniz.webp",
-        horario: "21/10 às 15h45",
-        sala: "sala: Lab 4",
+        horario: "21/10 às 15h",
+        sala: "sala: Hub 2",
       } 
     ]
   },
@@ -109,6 +157,34 @@ export const trilhas = [
   },
 
   {
+    id: "frotas-eletricas",
+    nome: "Frotas Elétricas",
+    palestras: [
+      {
+        id: 1,
+        mesa: "frotas-eletricas",
+        titulo: "Eletrificação de frotas: o que o gestor ainda precisa saber?",
+        palestrante: "Arthur Rufino",
+        cargo: "CEO da Octa",
+        foto: "/images/trilhas/arthur-rufino.webp",
+        horario: "20/10 às 13h40",
+        sala: "sala: Lab 4",
+      },
+
+      {
+        id: 2,
+        mesa: "frotas-eletricas",
+        titulo: "Eletrificação de frotas: o que o gestor ainda precisa saber?",
+        palestrante: "Pablo Moura",
+        cargo: "Líder de vendas e marketing da GM Fleet",
+        foto: "/images/trilhas/pablo-moura.webp",
+        horario: "20/10 às 13h40",
+        sala: "sala: Lab 4",
+      },
+    ]
+  },
+
+  {
     id: "sustentabilidade",
     nome: "Sustentabilidade",
     palestras: [
@@ -118,7 +194,7 @@ export const trilhas = [
         palestrante: "Renata Camargo",
         cargo: "Gerente de Sustentabilidade da UNICA",
         foto: "/images/trilhas/titulo/renata-unica.jpeg",
-        horario: "21/10 às 15h05",
+        horario: "21/10 às 13h40",
         sala: "sala: Lab 5",
       }
     ]
@@ -134,7 +210,7 @@ export const trilhas = [
         palestrante: "Milad Neto",
         cargo: "Diretor na KLume e professor do Instituto PARAR",
         foto: "/images/trilhas/titulo/milad-neto.jpg",
-        horario: "20/10 às 14h45",
+        horario: "20/10 às 14h30",
         sala: "sala: Lab 4",
       }
     ]
@@ -150,7 +226,7 @@ export const trilhas = [
         palestrante: "Wiliam Magalhães",
         cargo: "Especialista em Manutenção",
         foto: "/images/speakers/william-magalhaes.jpeg",
-        horario: "21/10 às 15h00",
+        horario: "21/10 às 14h20",
         sala: "sala: Hub 2",
       }
     ]
@@ -166,23 +242,8 @@ export const trilhas = [
         palestrante: "Eduardo Marçon",
         cargo: "CEO da SafeD Cursos e Eventos",
         foto: "/images/trilhas/eduardo-marcon.jpeg",
-        horario: "21/10 às 15h05",
+        horario: "21/10 às 09h",
         sala: "sala: Lab 4",
-      },
-    ]
-  },
-  {
-    id: "frotas-eletricas",
-    nome: "Frotas Elétricas",
-    palestras: [
-      {
-        id: 1,
-        titulo: "Eletrificação de frotas: o que o gestor ainda precisa saber?",
-        palestrante: "",
-        cargo: "",
-        foto: "/images/trilhas/em-breve.png",
-        horario: "horário: a definir",
-        sala: "sala: a definir",
       }
     ]
   }

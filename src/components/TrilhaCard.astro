@@ -10,6 +10,7 @@ interface Props {
   trilha: string;
   // cards com o mesmo "mesa" (na mesma trilha) fazem parte da mesma mesa de conteúdo e abrem juntos
   mesa?: string;
+  mediador?: boolean;
   colegasDeMesa?: string[];
 }
 
@@ -23,6 +24,7 @@ const {
   descricao,
   trilha,
   mesa,
+  mediador = false,
   colegasDeMesa = []
 } = Astro.props;
 ---
@@ -36,7 +38,7 @@ const {
     <div class="trilha-card-photo">
       <img src={foto} alt={palestrante} loading="lazy" decoding="async" />
 
-      {mesa && <span class="mesa-chip">Mesa de conteúdo</span>}
+      {mesa && <span class="mesa-chip">{mediador ? "Mediador" : "Mesa de conteúdo"}</span>}
 
       <span class="details-icon" aria-hidden="true">+</span>
     </div>
@@ -52,7 +54,7 @@ const {
       <div class="trilha-card-details">
         <div class="details-divider"></div>
 
-        <span class="details-label">{mesa ? "MESA DE CONTEÚDO" : "PALESTRA"}</span>
+        <span class="details-label">{mesa ? (mediador ? "MESA DE CONTEÚDO · MEDIAÇÃO" : "MESA DE CONTEÚDO") : "PALESTRA"}</span>
 
         {colegasDeMesa.length > 0 && (
           <p class="mesa-colegas">Com: <strong>{colegasDeMesa.join(", ")}</strong></p>
