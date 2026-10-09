@@ -7,6 +7,8 @@ export interface Sponsor {
   name: string;
   logo: string;
   href?: string;
+  // logo com muita área vazia em cima/embaixo: ocupa a largura toda do quadrinho
+  wide?: boolean;
 }
 
 export interface Category {
@@ -39,7 +41,7 @@ const {
       sponsors: [
         { name: "GWM", logo: "https://institutoparar.com.br/wp-content/uploads/2025/09/GWM-LOGO.png", href: "https://www.gwmmotors.com.br/pt" },
         { name: "Sem Parar", logo: "https://institutoparar.com.br/wp-content/uploads/2025/07/5.png", href: "https://www.sempararempresas.com.br/" },
-        { name: "Pró-Frotas", logo: "https://institutoparar.com.br/wp-content/uploads/2026/09/PRO-FROTAS-3.png", href: "https://www.profrotas.com.br/" },
+        { name: "Pró-Frotas", logo: "https://institutoparar.com.br/wp-content/uploads/2026/09/PRO-FROTAS-3.png", href: "https://www.profrotas.com.br/", wide: true },
       ],
     },
     {
@@ -125,7 +127,7 @@ const icons: Record<Category["icon"], string> = {
                   <ul class="pa-sponsors-logos">
                     {c.sponsors.map((s) => (
                       <li>
-                        <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.name}>
+                        <a class:list={{ "is-wide": s.wide }} href={s.href} target="_blank" rel="noopener noreferrer" title={s.name}>
                           <img src={s.logo} alt={s.name} loading="lazy" />
                         </a>
                       </li>
@@ -375,6 +377,19 @@ const icons: Record<Category["icon"], string> = {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+  }
+
+  /* logo larga (ex.: Pró-Frotas): a imagem ocupa a largura toda; o que sobra
+     em cima/embaixo é só área transparente e fica escondido pelo quadrinho */
+  .pa-sponsors-logos a.is-wide {
+    padding-inline: 4px;
+    overflow: hidden;
+  }
+
+  .pa-sponsors-logos a.is-wide img {
+    width: 73%;
+    height: auto;
+    max-height: none;
   }
 
   /* ---------- Responsivo ---------- */
