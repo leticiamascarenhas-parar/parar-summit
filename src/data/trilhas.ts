@@ -50,7 +50,7 @@ export const trilhas: Trilha[] = [
         mesa: "conectividade",
         titulo: "Como a conectividade transforma a Gestão de Frotas",
         palestrante: "Eduardo Resende",
-        cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
+        cargo: "Diretor de Journey & Marketing da Arqia",
         foto: "/images/trilhas/eduardo-resende.webp",
         horario: "20/10 às 14h30",
         sala: "sala: Lab 5",
