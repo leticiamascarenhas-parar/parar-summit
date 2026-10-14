@@ -719,7 +719,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
       const quem = s.palestrantes.length ? ` – ${s.palestrantes.join(", ")}` : "";
       texto += `${horaCurta(s.hora)} · ${s.titulo}${quem} (${s.local})\n`;
     }
-    texto += `\nVeja e monte a sua: ${linkAgenda(itens)}`;
     return texto;
   }
 
