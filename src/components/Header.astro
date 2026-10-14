@@ -15,11 +15,24 @@
 
     <a class="eu-vou-button" href="/eu-vou" id="eu-vou-header-btn"> #EuVou </a>
 
+    <a
+      class="cronograma-button"
+      href="/cronograma"
+    >
+      Cronograma
+    </a>
+
     <nav class="menu" id="main-menu">
-      <a href="#trilhas">Trilhas de conteúdo</a>
-      <a href="#plenaria">Plenária principal</a>
-      <a href="#mapa-evento">Mapa do evento</a>
-      <a href="#patrocinio">Patrocinadores</a>
+      <a
+        class="menu-cronograma"
+        href="/cronograma"
+      >
+        Cronograma completo
+      </a>
+      <a href="/#trilhas">Trilhas de conteúdo</a>
+      <a href="/#plenaria">Plenária principal</a>
+      <a href="/#mapa-evento">Mapa do evento</a>
+      <a href="/#patrocinio">Patrocinadores</a>
     </nav>
 
     <button
@@ -170,6 +183,43 @@
     transform: translateY(-2px);
   }
 
+  .cronograma-button {
+    font-family: "Raleway", sans-serif;
+    min-height: 46px;
+    padding: 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+    color: #074157;
+
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    font-size: 14px;
+    font-weight: 900;
+
+    transition:
+      transform 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .cronograma-button:hover {
+    background: #e6fff2;
+    transform: translateY(-2px);
+  }
+
+  /* item do cronograma no menu: só aparece no menu mobile */
+  .menu .menu-cronograma {
+    display: none;
+  }
+
   .menu {
     justify-self: end;
     margin-left: auto;
@@ -248,12 +298,27 @@
     }
 
     .menu a,
-    .ticket-button {
+    .ticket-button,
+    .cronograma-button {
       font-size: 12px;
     }
 
-    .ticket-button {
+    .ticket-button,
+    .cronograma-button {
       padding-inline: 18px;
+    }
+  }
+
+  /* telas médias: menu sem largura mínima para caber o botão do cronograma */
+  @media (max-width: 1400px) and (min-width: 901px) {
+    .menu {
+      min-width: 0;
+      gap: 8px;
+      padding: 14px 16px;
+    }
+
+    .header-actions {
+      gap: 10px;
     }
   }
 
@@ -304,6 +369,22 @@
       font-weight: 700;
     }
 
+    /* no mobile o cronograma vai para o topo do menu, em destaque */
+    .cronograma-button {
+      display: none;
+    }
+
+    .menu .menu-cronograma {
+      display: block;
+      margin-bottom: 6px;
+      background: #08d16e;
+      color: #074157;
+    }
+
+    .menu .menu-cronograma:hover {
+      background: #0be07a;
+    }
+
     .menu-toggle {
       width: 40px;
       height: 40px;
@@ -323,6 +404,8 @@
       top: calc(100% + 8px);
       left: 16px;
       right: 16px;
+      min-width: 0;
+      box-sizing: border-box;
 
       display: flex;
       flex-direction: column;

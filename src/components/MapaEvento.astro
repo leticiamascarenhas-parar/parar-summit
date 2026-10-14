@@ -102,26 +102,39 @@ const first = places[0];
 
   const placesById = Object.fromEntries(places.map((place) => [place.id, place]));
 
+  let currentPlace = places[0];
+
+// Mantém o balão dentro do mapa. Calcula pela posição final do local (não pela do marcador,
+// que ainda está animando) e usa offsetWidth/Height, que não sofrem efeito do transform.
 function clampTooltip() {
-  if (!card || !tooltip) return;
+  if (!card || !tooltip || !currentPlace) return;
 
-  tooltip.style.setProperty("--offset", "0px");
-  const cardRect = card.getBoundingClientRect();
-  const tooltipRect = tooltip.getBoundingClientRect();
   const padding = 10;
+  const gap = 22;
+  const cardW = card.clientWidth;
+  const cardH = card.clientHeight;
+  const tipW = tooltip.offsetWidth;
+  const tipH = tooltip.offsetHeight;
+  const markerX = (parseFloat(currentPlace.x) / 100) * cardW;
+  const markerY = (parseFloat(currentPlace.y) / 100) * cardH;
 
+  const left = markerX - tipW / 2;
   let offset = 0;
-  if (tooltipRect.left < cardRect.left + padding) {
-    offset = (cardRect.left + padding) - tooltipRect.left;
-  } else if (tooltipRect.right > cardRect.right - padding) {
-    offset = (cardRect.right - padding) - tooltipRect.right;
+  if (left < padding) {
+    offset = padding - left;
+  } else if (left + tipW > cardW - padding) {
+    offset = (cardW - padding) - (left + tipW);
   }
   tooltip.style.setProperty("--offset", `${offset}px`);
+
+  // sem espaço acima do ponto: o balão abre para baixo
+  tooltip.classList.toggle("is-below", markerY - gap - tipH < padding);
 }
 
   function showMapPlace(placeId) {
     const place = placesById[placeId];
     if (!place || !marker || !placeTitle || !placeText || !tooltipContent) return;
+    currentPlace = place;
 
     // Atualiza estados visuais e de acessibilidade (aria-selected)
     menuButtons.forEach((item) => {
@@ -166,6 +179,12 @@ function clampTooltip() {
 
   clampTooltip();
   window.addEventListener("resize", clampTooltip);
+
+  // a altura do mapa só existe depois que a imagem carrega
+  const mapImgEl = card?.querySelector(".evt-map__img");
+  if (mapImgEl instanceof HTMLImageElement && !mapImgEl.complete) {
+    mapImgEl.addEventListener("load", clampTooltip, { once: true });
+  }
 </script>
 
 <style>
@@ -372,6 +391,11 @@ function clampTooltip() {
     animation: evtTooltipIn .35s ease both;
   }
 
+  .evt-map__tooltip.is-below {
+    bottom: auto;
+    top: 22px;
+  }
+
   .evt-map__tooltip-content {
     transition: opacity 0.25s ease-in-out;
   }
@@ -400,8 +424,8 @@ function clampTooltip() {
 
   @keyframes evtTooltipIn {
     /* Surge subindo levemente */
-    from { opacity: 0; transform: translate(-50%, 6px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
+    from { opacity: 0; transform: translate(calc(-50% + var(--offset, 0px)), 6px); }
+    to { opacity: 1; transform: translate(calc(-50% + var(--offset, 0px)), 0); }
   }
 
   /* ---------- lista de locais (Flexbox centralizado) ---------- */

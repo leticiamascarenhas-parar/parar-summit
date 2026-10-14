@@ -665,6 +665,16 @@ import { speakers } from "../data/speakers";
       gap: 20px;
     }
 
+    /* no celular o rótulo é sticky e desliza por cima da linha: a linha vai para baixo do título */
+    .mesa-group-header {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mesa-group-header::after {
+      flex: 0 0 100%;
+    }
+
     .mesa-group-label {
       left: max(42px, calc((100vw - 280px) / 2));
       max-width: 280px;

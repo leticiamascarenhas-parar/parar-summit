@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const imagens = [1, 2, 3];
+---
+
+<Layout>
+  <Header />
+
+  <main class="cronograma-page">
+    <h1 class="cronograma-title">Confira o cronograma completo</h1>
+
+    <div class="cronograma-imagens">
+      {imagens.map((n, i) => (
+        <img
+          src={`/images/cronograma/cronograma-${n}.webp`}
+          alt={`Cronograma completo do PARAR Summit 26 — parte ${n}`}
+          width="1701"
+          height="2386"
+          loading={i === 0 ? "eager" : "lazy"}
+          decoding="async"
+        />
+      ))}
+    </div>
+  </main>
+
+  <Footer variant="verde" />
+</Layout>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap');
+
+  .cronograma-page {
+    padding: 150px 20px 100px;
+    background: #004153;
+    font-family: "Montserrat", "Raleway", sans-serif;
+  }
+
+  .cronograma-title {
+    margin: 0 auto 40px;
+    color: #ffffff;
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+
+  .cronograma-imagens {
+    width: min(900px, 100%);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .cronograma-imagens img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .cronograma-page { padding: 160px 14px 64px; }
+    .cronograma-title { margin-bottom: 24px; }
+    .cronograma-imagens { gap: 14px; }
+  }
+</style>

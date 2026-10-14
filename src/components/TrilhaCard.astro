@@ -8,10 +8,10 @@ interface Props {
   sala: string;
   descricao?: string;
   trilha: string;
-  // cards com o mesmo "mesa" (na mesma trilha) fazem parte da mesma mesa de conteúdo e abrem juntos
   mesa?: string;
   mediador?: boolean;
-  colegasDeMesa?: string[];
+  // mesa de conteúdo: todos os palestrantes da mesa num único card
+  palestrantes?: { palestrante: string; cargo: string; foto: string; mediador?: boolean }[];
 }
 
 const {
@@ -25,45 +25,91 @@ const {
   trilha,
   mesa,
   mediador = false,
-  colegasDeMesa = []
+  palestrantes = []
 } = Astro.props;
+
+const isMesa = palestrantes.length > 1;
+
+// "20/10 às 13h40" → data "20/10", hora "13h40", dia da semana "TER"
+const [data, hora] = horario.split(/\s+às\s+/);
+const [dia, mes] = data.split("/").map(Number);
+const diasSemana = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+const diaSemana = dia && mes ? diasSemana[new Date(2026, mes - 1, dia).getDay()] : "";
+// "sala: Lab 5" → "Lab 5"
+const salaNome = sala.replace(/^sala:\s*/i, "");
 ---
 
-<article class="trilha-card" data-mesa={mesa}>
+<article class:list={["trilha-card", { "mesa-card": isMesa, "mesa-card-larga": palestrantes.length >= 4 }]}>
   <button
     class="trilha-card-button"
     type="button"
     aria-expanded="false"
   >
-    <div class="trilha-card-photo">
-      <img src={foto} alt={palestrante} loading="lazy" decoding="async" />
+    <!-- Faixa de destaque: quando e onde -->
+    <div class="trilha-card-when">
+      <div class="when-date">
+        {diaSemana && <span class="when-weekday">{diaSemana}</span>}
+        <strong>{data}</strong>
+      </div>
 
-      {mesa && <span class="mesa-chip">{mediador ? "Mediador" : "Mesa de conteúdo"}</span>}
+      {hora && <strong class="when-time">{hora}</strong>}
+
+      <span class="when-room">
+        <span class="when-room-label">sala:</span>
+        {salaNome}
+      </span>
+    </div>
+
+    <div class="trilha-card-photo">
+      {isMesa ? (
+        <div class="mesa-fotos">
+          {palestrantes.map((p) => (
+            <img src={p.foto} alt={p.palestrante} loading="lazy" decoding="async" />
+          ))}
+        </div>
+      ) : (
+        <img src={foto} alt={palestrante} loading="lazy" decoding="async" />
+      )}
+
+      {mesa && <span class="mesa-chip">{mediador && !isMesa ? "Mediador" : "Mesa de conteúdo"}</span>}
 
       <span class="details-icon" aria-hidden="true">+</span>
     </div>
 
     <div class="trilha-card-info">
-      <h3>{palestrante}</h3>
-      <p class="cargo">{cargo}</p>
-      
-      <!-- Título em verde e fonte reduzida -->
-      <h4 class="titulo-palestra">{titulo}</h4>
+      {isMesa ? (
+        <>
+          <h4 class="titulo-palestra">{titulo}</h4>
+
+          <ul class="mesa-palestrantes">
+            {palestrantes.map((p) => (
+              <li>
+                <strong>{p.palestrante}</strong>
+                {p.mediador && <em>Mediador</em>}
+                <span>{p.cargo}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <>
+          <h3>{palestrante}</h3>
+          <p class="cargo">{cargo}</p>
+
+          <!-- Título em verde e fonte reduzida -->
+          <h4 class="titulo-palestra">{titulo}</h4>
+        </>
+      )}
 
       <!-- Detalhes abertos após o clique -->
       <div class="trilha-card-details">
         <div class="details-divider"></div>
 
-        <span class="details-label">{mesa ? (mediador ? "MESA DE CONTEÚDO · MEDIAÇÃO" : "MESA DE CONTEÚDO") : "PALESTRA"}</span>
-
-        {colegasDeMesa.length > 0 && (
-          <p class="mesa-colegas">Com: <strong>{colegasDeMesa.join(", ")}</strong></p>
-        )}
+        <span class="details-label">{mesa ? (mediador && !isMesa ? "MESA DE CONTEÚDO · MEDIAÇÃO" : "MESA DE CONTEÚDO") : "EIXO TEMÁTICO"}</span>
 
         <div class="details-tags">
           <span>{trilha}</span>
-          <span>{horario}</span>
-          <span>{sala}</span>
+          <span>sala: {salaNome}</span>
         </div>
 
         {descricao && <p class="descricao">{descricao}</p>}
@@ -79,8 +125,8 @@ const {
     width: 290px;
     min-width: 290px;
     max-width: 290px;
-    /* Altura fixa mantida quando fechado */
-    height: 484px; 
+    /* Altura fixa mantida quando fechado (inclui a faixa de data/sala) */
+    height: 538px;
     flex: 0 0 290px;
     box-sizing: border-box;
 
@@ -116,6 +162,81 @@ const {
       box-shadow 0.35s ease;
   }
 
+  /* FAIXA DE DATA, HORÁRIO E SALA */
+
+  .trilha-card-when {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+
+    min-height: 54px;
+    padding: 8px 16px 8px 18px;
+    box-sizing: border-box;
+
+    background: #00c264;
+    color: #064852;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .when-date {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .when-weekday {
+    margin-bottom: 2px;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+  }
+
+  .when-date strong,
+  .when-time {
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .when-time {
+    padding-left: 14px;
+    border-left: 2px solid rgba(6, 72, 82, 0.35);
+    text-transform: uppercase;
+  }
+
+  .when-room {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    padding: 6px 12px 7px;
+
+    border-radius: 12px;
+    background: #064852;
+    color: #ffffff;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .when-room-label {
+    margin-bottom: 3px;
+
+    color: #00c264;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+
   .trilha-card-photo {
     position: relative;
     height: 250px;
@@ -123,8 +244,8 @@ const {
     overflow: hidden;
     background: #061827;
     border: 3px solid #00c264;
+    border-top: 0;
     border-bottom: 0;
-    border-radius: 22px 22px 0 0;
   }
 
   .trilha-card-photo img {
@@ -299,20 +420,88 @@ const {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
   }
 
-  .mesa-colegas {
-    margin: 0 0 12px;
-
-    color: rgba(255, 255, 255, 0.72);
-
-    font-family: 'Raleway', 'Arial', sans-serif;
-    font-size: 12.5px;
-    line-height: 1.45;
-    font-weight: 600;
+  /* Card único da mesa: mais largo, fotos lado a lado e lista de palestrantes */
+  .trilha-card.mesa-card {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    flex: 0 0 400px;
+    height: auto;
+    min-height: 538px;
   }
 
-  .mesa-colegas strong {
+  /* Mesas com 4+ palestrantes: mais largo para as fotos não ficarem estreitas */
+  .trilha-card.mesa-card-larga {
+    width: 520px;
+    min-width: 520px;
+    max-width: 520px;
+    flex: 0 0 520px;
+  }
+
+  .mesa-fotos {
+    display: flex;
+    gap: 3px;
+    height: 100%;
+    background: #00c264;
+  }
+
+  .trilha-card-photo .mesa-fotos img {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+  }
+
+  .mesa-card .titulo-palestra {
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .mesa-palestrantes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mesa-palestrantes li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 8px;
+    padding-left: 12px;
+    border-left: 2px solid #00c264;
+  }
+
+  .mesa-palestrantes strong {
     color: #ffffff;
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 17px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .mesa-palestrantes em {
+    color: #00c264;
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 10px;
+    font-style: normal;
     font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .mesa-palestrantes span {
+    flex-basis: 100%;
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.72);
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 600;
   }
 
   .trilha-card.selected {
@@ -399,19 +588,8 @@ const {
           track.classList.remove('has-selected');
 
           if (!estavaAberto) {
-            // mesa de conteúdo: abre junto todos os cards da mesma mesa
-            const mesa = card.dataset.mesa;
-            const cardsParaAbrir = mesa
-              ? Array.from(track.querySelectorAll<HTMLElement>('.trilha-card')).filter(
-                  (item) => item.dataset.mesa === mesa
-                )
-              : [card];
-
-            cardsParaAbrir.forEach((item) => {
-              item.classList.add('selected');
-              item.querySelector('.trilha-card-button')?.setAttribute('aria-expanded', 'true');
-            });
-
+            card.classList.add('selected');
+            button.setAttribute('aria-expanded', 'true');
             track.classList.add('has-selected');
           }
         });

@@ -1,6 +1,31 @@
 ---
-import { trilhas } from "../data/trilhas";
+import { trilhas, type Palestra } from "../data/trilhas";
 import TrilhaCard from "./TrilhaCard.astro";
+
+// palestras com o mesmo "mesa" viram um único card com todos os palestrantes
+function agruparPorMesa(palestras: Palestra[]) {
+  const itens: (Palestra & { palestrantes?: Palestra[] })[] = [];
+  const porMesa = new Map<string, Palestra & { palestrantes: Palestra[] }>();
+
+  for (const palestra of palestras) {
+    if (!palestra.mesa) {
+      itens.push(palestra);
+      continue;
+    }
+
+    const existente = porMesa.get(palestra.mesa);
+    if (existente) {
+      existente.palestrantes.push(palestra);
+      continue;
+    }
+
+    const item = { ...palestra, palestrantes: [palestra] };
+    porMesa.set(palestra.mesa, item);
+    itens.push(item);
+  }
+
+  return itens;
+}
 ---
 
 <section class="trilhas-section" id="trilhas">
@@ -62,18 +87,8 @@ import TrilhaCard from "./TrilhaCard.astro";
           class={`track ${index === 0 ? "active" : ""}`}
           data-track={trilha.id}
         >
-          {trilha.palestras.map((palestra) => (
-            <TrilhaCard
-              {...palestra}
-              trilha={trilha.nome}
-              colegasDeMesa={
-                palestra.mesa
-                  ? trilha.palestras
-                      .filter((p) => p.mesa === palestra.mesa && p !== palestra)
-                      .map((p) => (p.mediador ? `${p.palestrante} (mediador)` : p.palestrante))
-                  : []
-              }
-            />
+          {agruparPorMesa(trilha.palestras).map((palestra) => (
+            <TrilhaCard {...palestra} trilha={trilha.nome} />
           ))}
         </div>
 
@@ -88,6 +103,21 @@ import TrilhaCard from "./TrilhaCard.astro";
         </button>
       </div>
     ))}
+  </div>
+
+  <div class="cronograma-cta-wrap">
+    <a
+      class="cronograma-cta"
+      href="https://institutoparar.com.br/wp-content/uploads/2026/10/CRONOGRAMA-OFICIAL-PARAR-SUMMIT-26.pdf"
+      target="_blank"
+      rel="noopener noreferrer"
+      download
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v12M7 10l5 5 5-5M5 20h14" />
+      </svg>
+      <span>Clique e baixe o <strong>cronograma completo</strong></span>
+    </a>
   </div>
 </section>
 
@@ -122,9 +152,87 @@ import TrilhaCard from "./TrilhaCard.astro";
 
   .trilhas-header,
   .tabs-wrapper,
-  .tracks {
+  .tracks,
+  .cronograma-cta-wrap {
     position: relative;
     z-index: 1;
+  }
+
+  /* Botão de download do cronograma, em destaque no fim da seção */
+  .cronograma-cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 64px;
+  }
+
+  .cronograma-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 40px;
+    background: var(--tr-green);
+    color: var(--tr-navy);
+    border-radius: 10px;
+    border: 3px solid var(--tr-white);
+    box-shadow: 0 0 0 0 rgba(8, 209, 110, 0.55), 0 16px 36px rgba(0, 0, 0, 0.3);
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    text-align: left;
+    animation: cronogramaPulse 2.4s ease-out infinite;
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+
+  .cronograma-cta strong {
+    font-weight: 900;
+    color: var(--tr-white);
+    text-shadow: 0 1px 0 rgba(0, 65, 83, 0.35);
+  }
+
+  .cronograma-cta svg {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--tr-navy);
+    stroke: var(--tr-green);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  .cronograma-cta:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: #0be07a;
+  }
+
+  .cronograma-cta:focus-visible {
+    outline: 3px solid var(--tr-white);
+    outline-offset: 4px;
+  }
+
+  @keyframes cronogramaPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(8, 209, 110, 0.55), 0 16px 36px rgba(0, 0, 0, 0.3); }
+    70%  { box-shadow: 0 0 0 18px rgba(8, 209, 110, 0), 0 16px 36px rgba(0, 0, 0, 0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(8, 209, 110, 0), 0 16px 36px rgba(0, 0, 0, 0.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cronograma-cta { animation: none; }
+  }
+
+  @media (max-width: 600px) {
+    .cronograma-cta-wrap { margin-top: 44px; }
+    .cronograma-cta {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 18px 20px;
+      gap: 12px;
+    }
   }
 
   /* Cabeçalho: bloco verde inclinado com "+" */

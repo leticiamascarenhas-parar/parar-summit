@@ -50,10 +50,43 @@ export const trilhas: Trilha[] = [
         mesa: "conectividade",
         titulo: "Como a conectividade transforma a Gestão de Frotas",
         palestrante: "Eduardo Resende",
-        cargo: "Diretor Geral Brasil e VP Vendas LATAM da Emnify",
+        cargo: "Diretor de Journey & Marketing da Arqia",
         foto: "/images/trilhas/eduardo-resende.webp",
         horario: "20/10 às 14h30",
         sala: "sala: Lab 5",
+      },
+
+      {
+        id: 4,
+        mesa: "sem-rastreador",
+        titulo: "Sem rastreador: conectando a frota direto da fábrica",
+        palestrante: "Sérgio Jábali",
+        cargo: "CTO da Golfleet",
+        foto: "/images/trilhas/titulo/sergio-jabali.webp",
+        horario: "21/10 às 13h40",
+        sala: "sala: Hub 2",
+      },
+
+      {
+        id: 5,
+        mesa: "sem-rastreador",
+        titulo: "Sem rastreador: conectando a frota direto da fábrica",
+        palestrante: "Artur Andrade",
+        cargo: "CEO da Mobway",
+        foto: "/images/trilhas/artur-andrade.jpeg",
+        horario: "21/10 às 13h40",
+        sala: "sala: Hub 2",
+      },
+
+      {
+        id: 6,
+        mesa: "sem-rastreador",
+        titulo: "Sem rastreador: conectando a frota direto da fábrica",
+        palestrante: "Felipe Oliveira",
+        cargo: "Liderança comercial de produtos e soluções conectadas da GM para clientes B2B",
+        foto: "/images/trilhas/felipe-oliveira.jpeg",
+        horario: "21/10 às 13h40",
+        sala: "sala: Hub 2",
       }
     ]
   },
@@ -81,6 +114,16 @@ export const trilhas: Trilha[] = [
         cargo: "Diretor Comercial e de Parcerias Near Location",
         foto: "/images/trilhas/anderson-santos.webp",
         horario: "20/10 às 09h",
+        sala: "sala: Lab 5",
+      },
+
+      {
+        id: 4,
+        titulo: "Combustível sob Controle: Estratégia, Economia e Alta Performance",
+        palestrante: "Mauro Kondo",
+        cargo: "Superintendente de Negócios B2B na Veloe",
+        foto: "/images/trilhas/mauro-kondo.jpg",
+        horario: "21/10 às 13h40",
         sala: "sala: Lab 5",
       },
     ]
@@ -178,6 +221,17 @@ export const trilhas: Trilha[] = [
         palestrante: "Pablo Moura",
         cargo: "Líder de vendas e marketing da GM Fleet",
         foto: "/images/trilhas/pablo-moura.webp",
+        horario: "20/10 às 13h40",
+        sala: "sala: Lab 4",
+      },
+
+      {
+        id: 3,
+        mesa: "frotas-eletricas",
+        titulo: "Eletrificação de frotas: o que o gestor ainda precisa saber?",
+        palestrante: "Bianca Santos",
+        cargo: "Head de vendas diretas e parcerias estratégicas da BYD no Brasil",
+        foto: "/images/trilhas/bianca-santos.jpeg",
         horario: "20/10 às 13h40",
         sala: "sala: Lab 4",
       },

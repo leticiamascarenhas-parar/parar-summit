@@ -30,7 +30,7 @@ export const speakers: Speaker[] = [
     descricao: "Palestrante e ex-jogador de futebol.",
     palestra: "Sobreviver",
     dia: "20 OUT",
-    horario: "10H00",
+    horario: "10H30",
     detalhes: "Qual o impacto de um acidente de trabalho? Após sobreviver ao acidente aéreo da Chapecoense em 2016 — ocorrido durante uma viagem a trabalho —, Neto Zampier sobe ao palco do PARAR Summit para compartilhar profundas reflexões sobre gestão de riscos, prevenção e cuidado coletivo."
   },
 
@@ -73,8 +73,8 @@ export const speakers: Speaker[] = [
     foto: "/images/speakers/alejandro-furas.jpeg",
     descricao: "Secretário Geral do Latin NCAP e Global NCAP.",
     palestra: "Latin NCAP: O Impacto da Segurança Veicular na Gestão de Frotas",
-    dia: "20 OUT", // PROVISÓRIO
-    horario: "15H35", // PROVISÓRIO
+    dia: "20 OUT",
+    horario: "15H35",
     bandeira: "uy",
     detalhes: "Ter uma frota segura começa muito antes do veículo ir para a rua. Alejandro Furas analisa o panorama da segurança automotiva e o papel das empresas como forças de mudança no setor."
   },
@@ -101,11 +101,6 @@ export const speakers: Speaker[] = [
         nome: "Wily Martins",
         cargo: "Coordenador de Frota do Grupo Sada",
         foto: "/images/speakers/wily-martins.webp"
-      },
-      {
-        nome: "Roberto Vagner",
-        cargo: "Coordenador de Frota do Grupo Sada",
-        foto: "/images/speakers/roberto.vagner.webp"
       }
     ]
   },
@@ -135,7 +130,7 @@ export const speakers: Speaker[] = [
       {
         nome: "Mike Camnetar",
         cargo: "Gerente de Frotas na General Mills, Ex-Presidente da NAFA e especialista na gestão de ativos e certificação de frotas",
-        foto: "/images/speakers/mike-camnetar.png",
+        foto: "/images/speakers/mike-camnetar.webp",
         bandeira: "us"
       }
     ]
