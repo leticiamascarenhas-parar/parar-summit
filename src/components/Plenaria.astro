@@ -1,6 +1,9 @@
 ---
 import SpeakerCard from "./SpeakerCard.astro";
 import Bandeira from "./Bandeira.astro";
+import EixoTag from "./EixoTag.astro";
+import FavButton from "./FavButton.astro";
+import { idPlenaria } from "../data/agenda";
 import { speakers } from "../data/speakers";
 ---
 
@@ -50,20 +53,24 @@ import { speakers } from "../data/speakers";
               <div class="mesa-group-body">
                 <div class="mesa-group-cards">
                   {speaker.participantes.map((p) => (
-                    <SpeakerCard {...p} mesa={speaker.palestra} mesaPanelId={panelId} dia={speaker.dia} horario={speaker.horario} />
+                    <SpeakerCard {...p} mesa={speaker.palestra} mesaPanelId={panelId} dia={speaker.dia} horario={speaker.horario} eixo={speaker.eixo} />
                   ))}
                 </div>
 
                 <div class="mesa-panel" id={panelId} role="region" aria-label={`Mesa de debate: ${speaker.palestra}`} inert>
                   <div class="mesa-panel-header">
                     <span>MESA DE DEBATE</span>
-                    <button class="mesa-panel-close" type="button" aria-label="Fechar mesa de debate">×</button>
+                    <div class="mesa-panel-acoes">
+                      <FavButton id={idPlenaria(speaker.palestra)} titulo={speaker.palestra} />
+                      <button class="mesa-panel-close" type="button" aria-label="Fechar mesa de debate">×</button>
+                    </div>
                   </div>
 
                   <div class="mesa-panel-content">
                     <div class="mesa-panel-info">
                       {quando}
                       <h3>{speaker.palestra}</h3>
+                      {speaker.eixo && <span class="mesa-panel-eixo"><EixoTag eixo={speaker.eixo} /></span>}
                       {speaker.detalhes && <p>{speaker.detalhes}</p>}
                     </div>
 
@@ -391,6 +398,17 @@ import { speakers } from "../data/speakers";
     visibility: visible;
     transform: none;
     transition: opacity 0.35s ease, transform 0.45s cubic-bezier(.2, .8, .2, 1), visibility 0s;
+  }
+
+  .mesa-panel-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mesa-panel-eixo {
+    display: flex;
+    margin: 4px 0 16px;
   }
 
   .mesa-panel-header {
@@ -1057,6 +1075,17 @@ import { speakers } from "../data/speakers";
       container.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape' || !container.querySelector('.mesa-group.is-open')) return;
         fecharMesas(true);
+        atualizarEscurecimento();
+      });
+
+      // clicar fora do painel aberto fecha a mesa (cliques em cards já são tratados acima)
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (!container.querySelector('.mesa-group.is-open')) return;
+        if (target.closest('.mesa-panel, .speaker-card-button')) return;
+
+        fecharMesas(false);
         atualizarEscurecimento();
       });
     });

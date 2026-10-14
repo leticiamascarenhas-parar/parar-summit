@@ -1,0 +1,51 @@
+---
+// Destaque do eixo temático da palestra (cards de trilhas e da plenária)
+interface Props {
+  eixo: string;
+}
+
+const { eixo } = Astro.props;
+---
+
+<span class="eixo-tag">
+  <span class="eixo-tag-label">Eixo</span>
+  {eixo}
+</span>
+
+<style>
+  .eixo-tag {
+    max-width: 100%;
+    box-sizing: border-box;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px 7px 7px;
+
+    border-radius: 999px;
+    background: #ffffff;
+    color: #064852;
+
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .eixo-tag-label {
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #00c264;
+    color: #064852;
+
+    font-family: 'Raleway', 'Arial', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+  }
+</style>

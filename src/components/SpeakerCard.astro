@@ -1,5 +1,8 @@
 ---
 import Bandeira from "./Bandeira.astro";
+import EixoTag from "./EixoTag.astro";
+import FavButton from "./FavButton.astro";
+import { idPlenaria } from "../data/agenda";
 
 const {
   nome,
@@ -13,13 +16,18 @@ const {
   mesa,
   mesaPanelId,
   mediador,
-  bandeira
+  bandeira,
+  eixo
 } = Astro.props;
 
 // mesa = tema da mesa de debate. Esses cards não viram: abrem o painel da mesa (ver Plenaria.astro)
 const ariaLabel = mesa
   ? `Ver participantes da mesa ${mesa}`
   : `Ver palestra de ${nome}`;
+
+// mesa: todos os cards da mesma mesa salvam a mesma sessão na agenda
+const tituloSessao = mesa ?? palestra;
+const favId = tituloSessao ? idPlenaria(tituloSessao) : undefined;
 ---
 
 <article class="speaker-card" data-mesa={mesa ? "true" : undefined}>
@@ -76,6 +84,14 @@ const ariaLabel = mesa
             <span class="speaker-arrow" aria-hidden="true">→</span>
           </span>
         </div>
+
+        <!-- Faixa do eixo temático: abaixo da foto, sem cobrir o rosto -->
+        {eixo && (
+          <div class="speaker-eixo-band">
+            <span class="eixo-band-label">Eixo</span>
+            <span class="eixo-band-nome">{eixo}</span>
+          </div>
+        )}
       </div>
 
       <!-- VERSO -->
@@ -107,6 +123,8 @@ const ariaLabel = mesa
 
           <h3>{palestra}</h3>
 
+          {eixo && <span class="speaker-eixo speaker-eixo--back"><EixoTag eixo={eixo} /></span>}
+
           {detalhes && <p class="palestra-detalhes">{detalhes}</p>}
         </div>
 
@@ -116,10 +134,13 @@ const ariaLabel = mesa
 
     </div>
   </button>
+
+  {favId && <span class="fav-pos"><FavButton id={favId} titulo={tituloSessao} /></span>}
 </article>
 
 <style>
   .speaker-card {
+    position: relative;
     width: 340px;
     aspect-ratio: 4 / 5.4;
     flex: 0 0 340px;
@@ -190,6 +211,8 @@ const ariaLabel = mesa
   /* FRENTE */
 
   .speaker-card-front {
+    display: flex;
+    flex-direction: column;
     background: #004153;
     transform: rotateY(0deg) translateZ(1px); /* translateZ força a separação 3D no WebKit */
     -webkit-transform: rotateY(0deg) translateZ(1px);
@@ -199,7 +222,8 @@ const ariaLabel = mesa
     position: relative;
 
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
 
     overflow: hidden;
     background: #004153;
@@ -240,6 +264,77 @@ const ariaLabel = mesa
     z-index: 2;
 
     color: #ffffff;
+  }
+
+  /* ESTRELA DA AGENDA: canto superior direito da foto */
+  .fav-pos {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+    line-height: 0;
+    transform: translateZ(20px); /* fica acima das faces 3D no Safari */
+    transition: opacity 0.3s ease;
+  }
+
+  .fav-pos :global(.fav-btn) {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* no verso o canto é do "×" */
+  .speaker-card.flipped .fav-pos {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* FAIXA DO EIXO (base da frente) */
+  .speaker-eixo-band {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 14px;
+
+    background: #004153;
+    border-top: 2px solid #08D16E;
+    color: #ffffff;
+  }
+
+  .eixo-band-label {
+    flex-shrink: 0;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #08D16E;
+    color: #004153;
+
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .eixo-band-nome {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-family: 'Oswald', 'Arial', sans-serif;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .speaker-eixo {
+    display: flex;
+  }
+
+  .speaker-eixo--back {
+    margin: 0 0 18px;
   }
 
   .speaker-label {
@@ -482,7 +577,7 @@ const ariaLabel = mesa
 
   .speaker-flag {
     position: absolute;
-    top: 16px;
+    top: 58px; /* abaixo da estrela da agenda */
     right: 16px;
     z-index: 3;
     line-height: 0;
@@ -686,6 +781,23 @@ const ariaLabel = mesa
       });
     });
   }
+
+  // Clicar fora do card virado desvira (cliques no próprio card já são tratados acima)
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('.speaker-card')) return;
+
+    document.querySelectorAll('.speaker-card.flipped').forEach((card) => {
+      card.classList.remove('flipped');
+      card.querySelector('.speaker-card-button')?.setAttribute('aria-expanded', 'false');
+
+      const container = card.closest('.plenaria-cards');
+      if (container && !container.querySelector('.speaker-card.flipped, .mesa-group.is-open')) {
+        container.classList.remove('has-flipped');
+      }
+    });
+  });
 
   iniciarSpeakerCards();
 

@@ -15,6 +15,8 @@ export type Speaker = {
   detalhes?: string;
   dia?: string;
   horario?: string;
+  // eixo temático da palestra, destacado no card (ex.: "Cultura de Segurança")
+  eixo?: string;
   // bandeira do país do palestrante, no canto superior direito da foto
   bandeira?: "us" | "uy";
   // "mesa" = mesa de debate: vira um grupo de cards (um por participante) com painel compartilhado
@@ -29,6 +31,7 @@ export const speakers: Speaker[] = [
     foto: "/images/speakers/neto-zampier.jpg",
     descricao: "Palestrante e ex-jogador de futebol.",
     palestra: "Sobreviver",
+    eixo: "Gestão e Liderança",
     dia: "20 OUT",
     horario: "10H30",
     detalhes: "Qual o impacto de um acidente de trabalho? Após sobreviver ao acidente aéreo da Chapecoense em 2016 — ocorrido durante uma viagem a trabalho —, Neto Zampier sobe ao palco do PARAR Summit para compartilhar profundas reflexões sobre gestão de riscos, prevenção e cuidado coletivo."
@@ -37,6 +40,7 @@ export const speakers: Speaker[] = [
   {
     tipo: "mesa",
     palestra: "Frota do Futuro: o impacto da IA e outras tecnologias no dia a dia do gestor",
+    eixo: "Inovação",
     dia: "20 OUT",
     horario: "13H40", 
     detalhes: "Uma gestão de condutores eficiente é determinante para os resultados da gestão de frotas.",
@@ -62,6 +66,7 @@ export const speakers: Speaker[] = [
     foto: "/images/speakers/william-magalhaes.jpeg",
     descricao: "Engenheiro, especialista em Engenharia Automotiva e Gestão de Ativos, e técnico em Mecatrônica Volvo Trucks.",
     palestra: "Engenharia da Decisão Aplicada à Gestão de Frotas",
+    eixo: "Gestão e Liderança",
     dia: "20 OUT",
     horario: "14H40",
     detalhes: "O especialista William Magalhães traz práticas essenciais de monitoramento e manutenção que minimizam custos operacionais e protegem o capital. Uma palestra indispensável para gestores que buscam extrair o valor máximo de cada recurso."
@@ -73,6 +78,7 @@ export const speakers: Speaker[] = [
     foto: "/images/speakers/alejandro-furas.jpeg",
     descricao: "Secretário Geral do Latin NCAP e Global NCAP.",
     palestra: "Latin NCAP: O Impacto da Segurança Veicular na Gestão de Frotas",
+    eixo: "Cultura de Segurança",
     dia: "20 OUT",
     horario: "15H35",
     bandeira: "uy",
@@ -82,6 +88,7 @@ export const speakers: Speaker[] = [
   {
     tipo: "mesa",
     palestra: "Seu motorista é seu maior ativo ou seu maior risco?",
+    eixo: "Gestão de Condutores",
     dia: "21 OUT",
     horario: "10H20",
     detalhes: "Uma gestão de condutores eficiente é determinante para os resultados da gestão de frotas pesadas. Aprenda a liderar e valorizar os seus condutores para que eles se tornem agentes estratégicos dentro da sua operação.",
@@ -111,6 +118,7 @@ export const speakers: Speaker[] = [
     foto: "/images/trilhas/titulo/carlos-tudisco.jpeg",
     descricao: "COO da Golfleet e professor do Instituto PARAR",
     palestra: "Política de Frotas: Alta Performance com Segurança Jurídica",
+    eixo: "Política de Frotas",
     dia: "21 OUT",
     horario: "13H45"
   },
@@ -118,6 +126,7 @@ export const speakers: Speaker[] = [
   {
     tipo: "mesa",
     palestra: "Aprendendo com a Gestão de Frotas dos Estados Unidos",
+    eixo: "NAFA",
     dia: "21 OUT",
     horario: "15H05",
     participantes: [
@@ -142,6 +151,7 @@ export const speakers: Speaker[] = [
     foto: "/images/speakers/rogerio-nerssissian.jpeg",
     descricao: "Especialista em Cultura de Segurança, palestrante e embaixador do Instituto PARAR.",
     palestra: "A Jornada da Cultura de Segurança",
+    eixo: "Cultura de Segurança",
     dia: "21 OUT",
     horario: "15H35",
     detalhes: "Erros acontecem, mas as consequências deles podem ser desenhadas. o palestrante e embaixador do Instituto PARAR, Rogério Nersissian, desconstrói a cultura da culpa para ensinar como líderes de frotas podem implementar sistemas resilientes. Uma imersão prática sobre como mapear vulnerabilidades e blindar sua equipe contra incidentes graves."

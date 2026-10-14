@@ -1,0 +1,124 @@
+---
+// Estrela para salvar a sessão na "Minha agenda". Fica fora do botão do card (botão dentro de botão é inválido)
+interface Props {
+  id: string;
+  titulo: string;
+}
+
+const { id, titulo } = Astro.props;
+---
+
+<button
+  class="fav-btn"
+  type="button"
+  data-fav-id={id}
+  aria-pressed="false"
+  aria-label={`Adicionar à minha agenda: ${titulo}`}
+  data-label-add={`Adicionar à minha agenda: ${titulo}`}
+  data-label-remove={`Remover da minha agenda: ${titulo}`}
+  title="Adicionar à minha agenda"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 3.2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17.1 6.6 20l1-6.1-4.4-4.3 6.1-.9z" />
+  </svg>
+</button>
+
+<style>
+  .fav-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: rgba(0, 65, 83, 0.82);
+    color: #ffffff;
+    cursor: pointer;
+
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+    transition:
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .fav-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .fav-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .fav-btn:focus-visible {
+    outline: 3px solid #08d16e;
+    outline-offset: 2px;
+  }
+
+  .fav-btn[aria-pressed="true"] {
+    border-color: #ffc93c;
+    background: #ffc93c;
+    color: #004153;
+  }
+
+  .fav-btn[aria-pressed="true"] svg {
+    fill: currentColor;
+  }
+
+  .fav-btn.pop {
+    animation: fav-pop 0.35s ease;
+  }
+
+  @keyframes fav-pop {
+    50% { transform: scale(1.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fav-btn,
+    .fav-btn.pop {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { alternar, lerAgenda, EVENTO } from "../scripts/agenda";
+
+  function sincronizar() {
+    const ids = lerAgenda();
+    document.querySelectorAll<HTMLButtonElement>(".fav-btn[data-fav-id]").forEach((btn) => {
+      const ativo = ids.includes(btn.dataset.favId ?? "");
+      btn.setAttribute("aria-pressed", String(ativo));
+      btn.setAttribute("aria-label", (ativo ? btn.dataset.labelRemove : btn.dataset.labelAdd) ?? "");
+      btn.title = ativo ? "Remover da minha agenda" : "Adicionar à minha agenda";
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const btn = target.closest<HTMLButtonElement>(".fav-btn[data-fav-id]");
+    if (!btn) return;
+
+    // não deixa o clique virar/abrir o card nem fechar painéis
+    event.stopPropagation();
+    alternar(btn.dataset.favId ?? "");
+
+    btn.classList.remove("pop");
+    void btn.offsetWidth;
+    btn.classList.add("pop");
+  }, true);
+
+  document.addEventListener(EVENTO, sincronizar);
+  document.addEventListener("astro:page-load", sincronizar);
+  sincronizar();
+</script>

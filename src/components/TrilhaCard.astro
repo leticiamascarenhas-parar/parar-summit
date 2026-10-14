@@ -1,4 +1,8 @@
 ---
+import EixoTag from "./EixoTag.astro";
+import FavButton from "./FavButton.astro";
+import { idTrilha } from "../data/agenda";
+
 interface Props {
   titulo: string;
   palestrante: string;
@@ -8,6 +12,8 @@ interface Props {
   sala: string;
   descricao?: string;
   trilha: string;
+  trilhaId: string;
+  id: number;
   mesa?: string;
   mediador?: boolean;
   // mesa de conteúdo: todos os palestrantes da mesa num único card
@@ -23,12 +29,15 @@ const {
   sala,
   descricao,
   trilha,
+  trilhaId,
+  id,
   mesa,
   mediador = false,
   palestrantes = []
 } = Astro.props;
 
 const isMesa = palestrantes.length > 1;
+const favId = idTrilha(trilhaId, { id, mesa });
 
 // "20/10 às 13h40" → data "20/10", hora "13h40", dia da semana "TER"
 const [data, hora] = horario.split(/\s+às\s+/);
@@ -74,6 +83,9 @@ const salaNome = sala.replace(/^sala:\s*/i, "");
       {mesa && <span class="mesa-chip">{mediador && !isMesa ? "Mediador" : "Mesa de conteúdo"}</span>}
 
       <span class="details-icon" aria-hidden="true">+</span>
+
+      <!-- Destaque do eixo temático -->
+      <span class="eixo-pos"><EixoTag eixo={trilha} /></span>
     </div>
 
     <div class="trilha-card-info">
@@ -116,12 +128,15 @@ const salaNome = sala.replace(/^sala:\s*/i, "");
       </div>
     </div>
   </button>
+
+  <span class="fav-pos"><FavButton id={favId} titulo={titulo} /></span>
 </article>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
 
   .trilha-card {
+    position: relative;
     width: 290px;
     min-width: 290px;
     max-width: 290px;
@@ -254,6 +269,24 @@ const salaNome = sala.replace(/^sala:\s*/i, "");
     display: block;
     object-fit: cover;
     object-position: center 15%;
+  }
+
+  /* EIXO TEMÁTICO: faixa sobre a base da foto */
+  /* Estrela da agenda: no topo da foto, ao lado do "+" */
+  .fav-pos {
+    position: absolute;
+    top: 67px;
+    right: 56px;
+    z-index: 2;
+    line-height: 0;
+  }
+
+  .eixo-pos {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
   }
 
   .details-icon {

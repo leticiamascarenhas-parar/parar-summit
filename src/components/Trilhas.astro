@@ -88,7 +88,7 @@ function agruparPorMesa(palestras: Palestra[]) {
           data-track={trilha.id}
         >
           {agruparPorMesa(trilha.palestras).map((palestra) => (
-            <TrilhaCard {...palestra} trilha={trilha.nome} />
+            <TrilhaCard {...palestra} trilha={trilha.nome} trilhaId={trilha.id} />
           ))}
         </div>
 
@@ -408,13 +408,19 @@ function agruparPorMesa(palestras: Palestra[]) {
     width: min(1200px, 100%);
     margin: 0 auto;
     justify-content: center;
-    align-items: flex-start;
+    /* Cards de mesa (altura automática) acompanham o mais alto da trilha */
+    align-items: stretch;
     flex-wrap: nowrap;
     gap: 40px;
   }
 
   .track.active {
     display: flex;
+  }
+
+  /* Card aberto cresce sozinho, sem esticar os vizinhos */
+  .track.has-selected {
+    align-items: flex-start;
   }
 
   /* --- Setas dos cards (mobile) --- */
@@ -466,8 +472,7 @@ function agruparPorMesa(palestras: Palestra[]) {
     right: 8px;
   }
 
-  .track:has(:global(.trilha-card.selected))
-    :global(.trilha-card:not(.selected)) {
+  .track.has-selected :global(.trilha-card:not(.selected)) {
     opacity: 0.28;
     transform: scale(0.96);
     filter: saturate(0.65);

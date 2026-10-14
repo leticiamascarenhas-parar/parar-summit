@@ -1,0 +1,828 @@
+---
+// Minha agenda: botão flutuante + painel com as sessões favoritadas (estrela nos cards)
+// e opções de compartilhar (WhatsApp, link)
+import { sessoes, ANO_EVENTO } from "../data/agenda";
+
+const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
+---
+
+<button class="agenda-fab" type="button" aria-haspopup="dialog" data-agenda-abrir>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 3.2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17.1 6.6 20l1-6.1-4.4-4.3 6.1-.9z" />
+  </svg>
+  <span class="agenda-fab-texto">Monte sua agenda</span>
+  <span class="agenda-fab-count" hidden>0</span>
+</button>
+
+<dialog class="agenda-dialog" aria-labelledby="agenda-titulo">
+  <div class="agenda-sheet">
+    <header class="agenda-head">
+      <div>
+        <span class="agenda-kicker">PARAR SUMMIT 26</span>
+        <h2 id="agenda-titulo">Minha agenda</h2>
+      </div>
+      <button class="agenda-fechar" type="button" aria-label="Fechar minha agenda">×</button>
+    </header>
+
+    <!-- Aviso quando a pessoa abre um link de agenda compartilhada -->
+    <div class="agenda-compartilhada" hidden>
+      <p>Alguém compartilhou esta agenda com você.</p>
+      <div class="agenda-compartilhada-acoes">
+        <button type="button" class="agenda-btn agenda-btn--primario" data-acao="importar">Salvar na minha agenda</button>
+        <button type="button" class="agenda-btn agenda-btn--texto" data-acao="ver-minha">Ver a minha</button>
+      </div>
+    </div>
+
+    <div class="agenda-corpo">
+      <div class="agenda-vazia" hidden>
+        <span class="agenda-vazia-icone" aria-hidden="true">☆</span>
+        <p><strong>Sua agenda ainda está vazia.</strong></p>
+        <p>Toque na estrela dos cards da <a href="/#plenaria">Plenária Principal</a> e das <a href="/#trilhas">Trilhas</a> para salvar as palestras que mais combinam com você.</p>
+      </div>
+
+      <div class="agenda-lista"></div>
+    </div>
+
+    <footer class="agenda-acoes" hidden>
+      <button type="button" class="agenda-btn agenda-btn--whats" data-acao="whatsapp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3z" /></svg>
+        Enviar no WhatsApp
+      </button>
+      <button type="button" class="agenda-btn agenda-btn--claro" data-acao="copiar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>
+        Copiar link
+      </button>
+      <button type="button" class="agenda-btn agenda-btn--texto agenda-limpar" data-acao="limpar">Limpar agenda</button>
+    </footer>
+  </div>
+
+  <div class="agenda-toast" role="status" aria-live="polite"></div>
+</dialog>
+
+<script is:inline type="application/json" id="agenda-dados" set:html={dados}></script>
+
+<style>
+  .agenda-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 900;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px 12px 14px;
+
+    border: 2px solid #08d16e;
+    border-radius: 999px;
+    background: #004153;
+    color: #ffffff;
+    cursor: pointer;
+
+    font-family: "Montserrat", "Raleway", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .agenda-fab:hover {
+    transform: translateY(-3px);
+  }
+
+  .agenda-fab:focus-visible {
+    outline: 3px solid #ffc93c;
+    outline-offset: 3px;
+  }
+
+  .agenda-fab svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #ffc93c;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .agenda-fab.tem-itens svg {
+    fill: #ffc93c;
+  }
+
+  .agenda-fab-count {
+    min-width: 22px;
+    padding: 4px 6px;
+    box-sizing: border-box;
+
+    border-radius: 999px;
+    background: #ffc93c;
+    color: #004153;
+
+    font-size: 12px;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .agenda-fab.bump {
+    animation: agenda-bump 0.4s ease;
+  }
+
+  @keyframes agenda-bump {
+    40% { transform: scale(1.1); }
+  }
+
+  /* PAINEL: gaveta à direita no desktop, folha de baixo no celular */
+  .agenda-dialog {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(440px, 100%);
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+    overflow: visible;
+
+    font-family: "Montserrat", "Raleway", sans-serif;
+  }
+
+  .agenda-dialog::backdrop {
+    background: rgba(0, 30, 40, 0.55);
+  }
+
+  .agenda-dialog[open] .agenda-sheet {
+    animation: agenda-entrar 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes agenda-entrar {
+    from { transform: translateX(40px); opacity: 0; }
+  }
+
+  .agenda-sheet {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    background: #f4f8f8;
+    color: #004153;
+    box-shadow: -16px 0 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .agenda-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 24px 18px;
+
+    background: #004153;
+    color: #ffffff;
+    border-bottom: 3px solid #08d16e;
+  }
+
+  .agenda-kicker {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #08d16e;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+  }
+
+  .agenda-head h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .agenda-fechar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .agenda-fechar:hover {
+    background: #ffffff;
+    color: #004153;
+  }
+
+  .agenda-compartilhada {
+    padding: 16px 24px;
+    background: #fff5d6;
+    border-bottom: 1px solid #f1d98a;
+  }
+
+  .agenda-compartilhada p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .agenda-compartilhada-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .agenda-corpo {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 24px 24px;
+    overscroll-behavior: contain;
+  }
+
+  .agenda-vazia {
+    padding: 40px 8px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .agenda-vazia p {
+    margin: 0 0 8px;
+  }
+
+  .agenda-vazia a {
+    color: #00845a;
+    font-weight: 700;
+  }
+
+  .agenda-vazia-icone {
+    display: block;
+    margin-bottom: 8px;
+    color: #e0a800;
+    font-size: 44px;
+    line-height: 1;
+  }
+
+  .agenda-lista :global(.agenda-dia) {
+    margin: 22px 0 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .agenda-lista :global(.agenda-dia strong) {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #08d16e;
+    color: #004153;
+  }
+
+  .agenda-lista :global(.agenda-item) {
+    position: relative;
+    display: grid;
+    grid-template-columns: 54px 1fr auto;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 10px;
+    padding: 14px 12px 14px 14px;
+
+    border: 1px solid #d5e4e6;
+    border-left: 4px solid #08d16e;
+    border-radius: 10px;
+    background: #ffffff;
+  }
+
+  .agenda-lista :global(.agenda-item.conflito) {
+    border-left-color: #f08a24;
+  }
+
+  .agenda-lista :global(.agenda-hora) {
+    font-family: "Oswald", "Arial", sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .agenda-lista :global(.agenda-item h3) {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .agenda-lista :global(.agenda-pessoas) {
+    margin: 0 0 8px;
+    color: #3d6670;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .agenda-lista :global(.agenda-meta) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .agenda-lista :global(.agenda-meta span) {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #e3f0f1;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .agenda-lista :global(.agenda-meta .agenda-local) {
+    background: #004153;
+    color: #ffffff;
+  }
+
+  .agenda-lista :global(.agenda-aviso) {
+    margin: 8px 0 0;
+    color: #b85c00;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .agenda-lista :global(.agenda-remover) {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #7a9aa1;
+    cursor: pointer;
+
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .agenda-lista :global(.agenda-remover:hover) {
+    background: #fde8e8;
+    color: #c0392b;
+  }
+
+  .agenda-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 24px 20px;
+
+    background: #ffffff;
+    border-top: 1px solid #d5e4e6;
+  }
+
+  .agenda-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .agenda-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .agenda-btn:focus-visible {
+    outline: 3px solid #08d16e;
+    outline-offset: 2px;
+  }
+
+  .agenda-btn--whats {
+    background: #25d366;
+    color: #ffffff;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .agenda-btn--whats svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  .agenda-btn--whats:hover {
+    background: #1ebe5b;
+  }
+
+  .agenda-btn--claro {
+    border-color: #004153;
+    background: #ffffff;
+    color: #004153;
+  }
+
+  .agenda-btn--claro svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .agenda-btn--claro:hover {
+    background: #004153;
+    color: #ffffff;
+  }
+
+  .agenda-btn--primario {
+    background: #004153;
+    color: #ffffff;
+  }
+
+  .agenda-btn--texto {
+    padding: 8px;
+    background: transparent;
+    color: #004153;
+    text-decoration: underline;
+  }
+
+  .agenda-limpar {
+    align-self: center;
+    color: #7a9aa1;
+    font-size: 12px;
+  }
+
+  .agenda-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 2;
+
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: #004153;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .agenda-toast.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  @media (max-width: 600px) {
+    .agenda-fab {
+      right: 14px;
+      bottom: 14px;
+      padding: 11px 14px 11px 12px;
+      font-size: 12px;
+    }
+
+    .agenda-dialog {
+      inset: auto 0 0 0;
+      width: 100%;
+      height: 88%;
+    }
+
+    .agenda-sheet {
+      border-radius: 18px 18px 0 0;
+      overflow: hidden;
+    }
+
+    .agenda-dialog[open] .agenda-sheet {
+      animation-name: agenda-subir;
+    }
+
+    @keyframes agenda-subir {
+      from { transform: translateY(60px); opacity: 0; }
+    }
+
+    .agenda-head,
+    .agenda-compartilhada,
+    .agenda-corpo,
+    .agenda-acoes {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agenda-fab,
+    .agenda-fab.bump,
+    .agenda-dialog[open] .agenda-sheet {
+      animation: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { lerAgenda, remover, adicionarVarios, limpar, EVENTO } from "../scripts/agenda";
+
+  interface Sessao {
+    id: string;
+    titulo: string;
+    palestrantes: string[];
+    data: string;
+    hora: string;
+    local: string;
+    eixo: string;
+  }
+
+  const bruto = document.getElementById("agenda-dados")?.textContent ?? "{}";
+  const { sessoes = [], ano = 2026 } = JSON.parse(bruto) as {
+    sessoes: Sessao[];
+    ano: number;
+  };
+  const porId = new Map(sessoes.map((s) => [s.id, s]));
+
+  const DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+  // Código curto e estável para o link compartilhado (os ids completos são longos)
+  function codigo(id: string) {
+    let h = 2166136261;
+    for (let i = 0; i < id.length; i++) {
+      h ^= id.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(36).slice(0, 5);
+  }
+  const porCodigo = new Map(sessoes.map((s) => [codigo(s.id), s.id]));
+
+  function minutos(s: Sessao) {
+    const [h, m] = s.hora.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function diaSemana(data: string) {
+    const [d, m] = data.split("/").map(Number);
+    return DIAS[new Date(ano, m - 1, d).getDay()];
+  }
+
+  function ordenar(ids: string[]) {
+    return ids
+      .map((id) => porId.get(id))
+      .filter((s): s is Sessao => Boolean(s))
+      .sort((a, b) => {
+        const [da, ma] = a.data.split("/").map(Number);
+        const [db, mb] = b.data.split("/").map(Number);
+        return ma - mb || da - db || minutos(a) - minutos(b);
+      });
+  }
+
+  // duas escolhas que começam no mesmo dia e horário
+  function conflitos(lista: Sessao[]) {
+    const ids = new Set<string>();
+    for (let i = 0; i < lista.length; i++) {
+      for (let j = i + 1; j < lista.length; j++) {
+        const a = lista[i];
+        const b = lista[j];
+        if (a.data === b.data && a.hora === b.hora) {
+          ids.add(a.id);
+          ids.add(b.id);
+        }
+      }
+    }
+    return ids;
+  }
+
+  function horaCurta(hora: string) {
+    const [h, m] = hora.split(":");
+    return m === "00" ? `${h}h` : `${h}h${m}`;
+  }
+
+  function escapar(texto: string) {
+    return texto.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  }
+
+  // ---------- elementos ----------
+  const fab = document.querySelector<HTMLButtonElement>("[data-agenda-abrir]");
+  const fabTexto = fab?.querySelector(".agenda-fab-texto");
+  const fabCount = fab?.querySelector<HTMLElement>(".agenda-fab-count");
+  const dialog = document.querySelector<HTMLDialogElement>(".agenda-dialog");
+  const titulo = dialog?.querySelector("#agenda-titulo");
+  const lista = dialog?.querySelector<HTMLElement>(".agenda-lista");
+  const vazia = dialog?.querySelector<HTMLElement>(".agenda-vazia");
+  const acoes = dialog?.querySelector<HTMLElement>(".agenda-acoes");
+  const avisoCompartilhada = dialog?.querySelector<HTMLElement>(".agenda-compartilhada");
+  const toast = dialog?.querySelector<HTMLElement>(".agenda-toast");
+
+  // agenda vinda de um link compartilhado (?agenda=...), mostrada até a pessoa salvar ou dispensar
+  let compartilhada: string[] | null = null;
+
+  function idsVisiveis() {
+    return compartilhada ?? lerAgenda();
+  }
+
+  function renderizar() {
+    if (!lista || !vazia || !acoes || !avisoCompartilhada || !titulo) return;
+
+    const itens = ordenar(idsVisiveis());
+    const emConflito = conflitos(itens);
+
+    titulo.textContent = compartilhada ? "Agenda compartilhada" : "Minha agenda";
+    avisoCompartilhada.hidden = !compartilhada;
+    vazia.hidden = itens.length > 0;
+    acoes.hidden = itens.length === 0 || Boolean(compartilhada);
+
+    let html = "";
+    let diaAtual = "";
+    for (const s of itens) {
+      if (s.data !== diaAtual) {
+        diaAtual = s.data;
+        html += `<h3 class="agenda-dia"><strong>${s.data}</strong>${diaSemana(s.data)}</h3>`;
+      }
+      const conflito = emConflito.has(s.id);
+      html += `
+        <article class="agenda-item${conflito ? " conflito" : ""}">
+          <span class="agenda-hora">${horaCurta(s.hora)}</span>
+          <div>
+            <h3>${escapar(s.titulo)}</h3>
+            ${s.palestrantes.length ? `<p class="agenda-pessoas">${escapar(s.palestrantes.join(", "))}</p>` : ""}
+            <div class="agenda-meta">
+              <span class="agenda-local">${escapar(s.local)}</span>
+              ${s.eixo ? `<span>${escapar(s.eixo)}</span>` : ""}
+            </div>
+            ${conflito ? `<p class="agenda-aviso">⚠ Mesmo horário de outra escolha sua</p>` : ""}
+          </div>
+          ${compartilhada ? "<span></span>" : `<button type="button" class="agenda-remover" data-remover="${s.id}" aria-label="Remover ${escapar(s.titulo)} da agenda">×</button>`}
+        </article>`;
+    }
+    lista.innerHTML = html;
+  }
+
+  function atualizarFab() {
+    if (!fab || !fabTexto || !fabCount) return;
+    const total = lerAgenda().filter((id) => porId.has(id)).length;
+    fab.classList.toggle("tem-itens", total > 0);
+    fabTexto.textContent = total > 0 ? "Minha agenda" : "Monte sua agenda";
+    fabCount.textContent = String(total);
+    fabCount.hidden = total === 0;
+    fab.setAttribute("aria-label", total > 0 ? `Minha agenda: ${total} ${total === 1 ? "palestra" : "palestras"}` : "Monte sua agenda");
+  }
+
+  function abrir() {
+    renderizar();
+    if (dialog && !dialog.open) dialog.showModal();
+  }
+
+  function mostrarToast(texto: string) {
+    if (!toast) return;
+    toast.textContent = texto;
+    toast.classList.add("visivel");
+    window.setTimeout(() => toast.classList.remove("visivel"), 2200);
+  }
+
+  // ---------- compartilhar ----------
+  function linkAgenda(itens: Sessao[]) {
+    const url = new URL(window.location.href);
+    url.hash = "";
+    url.search = "";
+    url.searchParams.set("agenda", itens.map((s) => codigo(s.id)).join("."));
+    return url.toString();
+  }
+
+  function textoWhatsApp(itens: Sessao[]) {
+    let texto = "*Minha agenda no PARAR Summit 26* 📅\n";
+    let diaAtual = "";
+    for (const s of itens) {
+      if (s.data !== diaAtual) {
+        diaAtual = s.data;
+        texto += `\n*${s.data} (${diaSemana(s.data)})*\n`;
+      }
+      const quem = s.palestrantes.length ? ` – ${s.palestrantes.join(", ")}` : "";
+      texto += `${horaCurta(s.hora)} · ${s.titulo}${quem} (${s.local})\n`;
+    }
+    texto += `\nVeja e monte a sua: ${linkAgenda(itens)}`;
+    return texto;
+  }
+
+  async function copiar(texto: string) {
+    try {
+      await navigator.clipboard.writeText(texto);
+      return true;
+    } catch {
+      const campo = document.createElement("textarea");
+      campo.value = texto;
+      campo.setAttribute("readonly", "");
+      campo.style.position = "fixed";
+      campo.style.opacity = "0";
+      dialog?.appendChild(campo);
+      campo.select();
+      const ok = document.execCommand("copy");
+      campo.remove();
+      return ok;
+    }
+  }
+
+  function limparUrl() {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("agenda")) return;
+    url.searchParams.delete("agenda");
+    history.replaceState(history.state, "", url.toString());
+  }
+
+  // ---------- eventos ----------
+  fab?.addEventListener("click", abrir);
+
+  dialog?.addEventListener("click", async (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    // clique no fundo escuro (fora da folha) fecha
+    if (target === dialog) {
+      dialog.close();
+      return;
+    }
+
+    if (target.closest(".agenda-fechar")) {
+      dialog.close();
+      return;
+    }
+
+    const removerBtn = target.closest<HTMLElement>("[data-remover]");
+    if (removerBtn?.dataset.remover) {
+      remover(removerBtn.dataset.remover);
+      return;
+    }
+
+    const acao = target.closest<HTMLElement>("[data-acao]")?.dataset.acao;
+    if (!acao) return;
+
+    const itens = ordenar(lerAgenda());
+
+    if (acao === "whatsapp") {
+      window.open(`https://wa.me/?text=${encodeURIComponent(textoWhatsApp(itens))}`, "_blank", "noopener");
+    } else if (acao === "copiar") {
+      mostrarToast((await copiar(linkAgenda(itens))) ? "Link copiado!" : "Não foi possível copiar o link");
+    } else if (acao === "limpar") {
+      if (window.confirm("Remover todas as palestras da sua agenda?")) limpar();
+    } else if (acao === "importar" && compartilhada) {
+      adicionarVarios(compartilhada);
+      compartilhada = null;
+      limparUrl();
+      renderizar();
+      mostrarToast("Palestras salvas na sua agenda");
+    } else if (acao === "ver-minha") {
+      compartilhada = null;
+      limparUrl();
+      renderizar();
+    }
+  });
+
+  dialog?.addEventListener("close", () => {
+    // fechar sem salvar dispensa a agenda compartilhada
+    if (compartilhada) {
+      compartilhada = null;
+      limparUrl();
+    }
+  });
+
+  document.addEventListener(EVENTO, () => {
+    atualizarFab();
+    if (dialog?.open) renderizar();
+    fab?.classList.remove("bump");
+    void fab?.offsetWidth;
+    fab?.classList.add("bump");
+  });
+
+  // abriu um link compartilhado?
+  const param = new URLSearchParams(window.location.search).get("agenda");
+  if (param) {
+    const ids = param.split(".").map((c) => porCodigo.get(c)).filter((id): id is string => Boolean(id));
+    if (ids.length) {
+      compartilhada = ids;
+      abrir();
+    } else {
+      limparUrl();
+    }
+  }
+
+  atualizarFab();
+</script>
