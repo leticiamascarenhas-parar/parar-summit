@@ -36,11 +36,6 @@ export function remover(id: string) {
   salvar(lerAgenda().filter((x) => x !== id));
 }
 
-export function adicionarVarios(novos: string[]) {
-  const ids = lerAgenda();
-  salvar([...ids, ...novos.filter((id) => !ids.includes(id))]);
-}
-
 export function limpar() {
   salvar([]);
 }

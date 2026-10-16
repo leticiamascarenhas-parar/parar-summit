@@ -118,13 +118,24 @@ export const trilhas: Trilha[] = [
       },
 
       {
+        id: 3,
+        mesa: "inovacao",
+        titulo: "A Era dos carros autônomos está próxima?",
+        palestrante: "Ricardo Pinheiro",
+        cargo: "Gerente de Parcerias da HERE",
+        foto: "/images/trilhas/ricardo-pinheiro.webp",
+        horario: "20/10 às 09h",
+        sala: "sala: Lab 5",
+      },
+
+      {
         id: 4,
         titulo: "Combustível sob Controle: Estratégia, Economia e Alta Performance",
         palestrante: "Mauro Kondo",
         cargo: "Superintendente de Negócios B2B na Veloe",
         foto: "/images/trilhas/mauro-kondo.jpg",
         horario: "21/10 às 13h40",
-        sala: "sala: Lab 5",
+        sala: "sala: Lab 4",
       },
     ]
   },
@@ -179,9 +190,9 @@ export const trilhas: Trilha[] = [
         id: 2,
         mesa: "transporte-rodoviario", // cards com o mesmo "mesa" abrem juntos
         titulo: "O Transporte Rodoviário de Cargas mudou: os principais desafios e tendências",
-        palestrante: "Márcio Lino",
-        cargo: "Gerente de Mobilidade da Copasa | Prof. Inst. PARAR",
-        foto: "/images/trilhas/marcio-lino.webp",
+        palestrante: "Wellington Santos",
+        cargo: "Consultor e proprietário da WS Consulting",
+        foto: "/images/trilhas/wellington-santos.jpg",
         horario: "20/10 às 13h40",
         sala: "sala: Lab 5",
       },
@@ -248,8 +259,8 @@ export const trilhas: Trilha[] = [
         palestrante: "Renata Camargo",
         cargo: "Gerente de Sustentabilidade da UNICA",
         foto: "/images/trilhas/titulo/renata-unica.jpeg",
-        horario: "21/10 às 13h40",
-        sala: "sala: Lab 5",
+        horario: "20/10 às 09h00",
+        sala: "sala: Lab 4",
       }
     ]
   },

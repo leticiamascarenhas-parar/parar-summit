@@ -24,15 +24,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
       <button class="agenda-fechar" type="button" aria-label="Fechar minha agenda">×</button>
     </header>
 
-    <!-- Aviso quando a pessoa abre um link de agenda compartilhada -->
-    <div class="agenda-compartilhada" hidden>
-      <p>Alguém compartilhou esta agenda com você.</p>
-      <div class="agenda-compartilhada-acoes">
-        <button type="button" class="agenda-btn agenda-btn--primario" data-acao="importar">Salvar na minha agenda</button>
-        <button type="button" class="agenda-btn agenda-btn--texto" data-acao="ver-minha">Ver a minha</button>
-      </div>
-    </div>
-
     <div class="agenda-corpo">
       <div class="agenda-vazia" hidden>
         <span class="agenda-vazia-icone" aria-hidden="true">☆</span>
@@ -49,8 +40,8 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
         Enviar no WhatsApp
       </button>
       <button type="button" class="agenda-btn agenda-btn--claro" data-acao="copiar">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>
-        Copiar link
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"></path></svg>
+        Copiar agenda
       </button>
       <button type="button" class="agenda-btn agenda-btn--texto agenda-limpar" data-acao="limpar">Limpar agenda</button>
     </footer>
@@ -224,24 +215,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
     color: #004153;
   }
 
-  .agenda-compartilhada {
-    padding: 16px 24px;
-    background: #fff5d6;
-    border-bottom: 1px solid #f1d98a;
-  }
-
-  .agenda-compartilhada p {
-    margin: 0 0 12px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .agenda-compartilhada-acoes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
   .agenda-corpo {
     flex: 1;
     overflow-y: auto;
@@ -378,6 +351,12 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
   .agenda-lista :global(.agenda-remover:hover) {
     background: #fde8e8;
     color: #c0392b;
+  }
+
+  /* "hidden" precisa vencer os display: flex/grid abaixo */
+  .agenda-dialog [hidden],
+  .agenda-fab [hidden] {
+    display: none !important;
   }
 
   .agenda-acoes {
@@ -524,7 +503,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
     }
 
     .agenda-head,
-    .agenda-compartilhada,
     .agenda-corpo,
     .agenda-acoes {
       padding-left: 18px;
@@ -543,7 +521,7 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
 </style>
 
 <script>
-  import { lerAgenda, remover, adicionarVarios, limpar, EVENTO } from "../scripts/agenda";
+  import { lerAgenda, remover, limpar, EVENTO } from "../scripts/agenda";
 
   interface Sessao {
     id: string;
@@ -563,17 +541,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
   const porId = new Map(sessoes.map((s) => [s.id, s]));
 
   const DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-
-  // Código curto e estável para o link compartilhado (os ids completos são longos)
-  function codigo(id: string) {
-    let h = 2166136261;
-    for (let i = 0; i < id.length; i++) {
-      h ^= id.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return (h >>> 0).toString(36).slice(0, 5);
-  }
-  const porCodigo = new Map(sessoes.map((s) => [codigo(s.id), s.id]));
 
   function minutos(s: Sessao) {
     const [h, m] = s.hora.split(":").map(Number);
@@ -626,30 +593,19 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
   const fabTexto = fab?.querySelector(".agenda-fab-texto");
   const fabCount = fab?.querySelector<HTMLElement>(".agenda-fab-count");
   const dialog = document.querySelector<HTMLDialogElement>(".agenda-dialog");
-  const titulo = dialog?.querySelector("#agenda-titulo");
   const lista = dialog?.querySelector<HTMLElement>(".agenda-lista");
   const vazia = dialog?.querySelector<HTMLElement>(".agenda-vazia");
   const acoes = dialog?.querySelector<HTMLElement>(".agenda-acoes");
-  const avisoCompartilhada = dialog?.querySelector<HTMLElement>(".agenda-compartilhada");
   const toast = dialog?.querySelector<HTMLElement>(".agenda-toast");
 
-  // agenda vinda de um link compartilhado (?agenda=...), mostrada até a pessoa salvar ou dispensar
-  let compartilhada: string[] | null = null;
-
-  function idsVisiveis() {
-    return compartilhada ?? lerAgenda();
-  }
-
   function renderizar() {
-    if (!lista || !vazia || !acoes || !avisoCompartilhada || !titulo) return;
+    if (!lista || !vazia || !acoes) return;
 
-    const itens = ordenar(idsVisiveis());
+    const itens = ordenar(lerAgenda());
     const emConflito = conflitos(itens);
 
-    titulo.textContent = compartilhada ? "Agenda compartilhada" : "Minha agenda";
-    avisoCompartilhada.hidden = !compartilhada;
     vazia.hidden = itens.length > 0;
-    acoes.hidden = itens.length === 0 || Boolean(compartilhada);
+    acoes.hidden = itens.length === 0;
 
     let html = "";
     let diaAtual = "";
@@ -671,7 +627,7 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
             </div>
             ${conflito ? `<p class="agenda-aviso">⚠ Mesmo horário de outra escolha sua</p>` : ""}
           </div>
-          ${compartilhada ? "<span></span>" : `<button type="button" class="agenda-remover" data-remover="${s.id}" aria-label="Remover ${escapar(s.titulo)} da agenda">×</button>`}
+          <button type="button" class="agenda-remover" data-remover="${s.id}" aria-label="Remover ${escapar(s.titulo)} da agenda">×</button>
         </article>`;
     }
     lista.innerHTML = html;
@@ -700,26 +656,20 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
   }
 
   // ---------- compartilhar ----------
-  function linkAgenda(itens: Sessao[]) {
-    const url = new URL(window.location.href);
-    url.hash = "";
-    url.search = "";
-    url.searchParams.set("agenda", itens.map((s) => codigo(s.id)).join("."));
-    return url.toString();
-  }
-
-  function textoWhatsApp(itens: Sessao[]) {
-    let texto = "*Minha agenda no PARAR Summit 26* 📅\n";
+  // texto da agenda: vai no WhatsApp e é o que o "Copiar agenda" copia
+  function textoAgenda(itens: Sessao[]) {
+    // uma linha em branco entre cada bloco (título, dia, palestra)
+    const blocos = ["*Minha agenda no PARAR Summit 26* 📅"];
     let diaAtual = "";
     for (const s of itens) {
       if (s.data !== diaAtual) {
         diaAtual = s.data;
-        texto += `\n*${s.data} (${diaSemana(s.data)})*\n`;
+        blocos.push(`*${s.data} (${diaSemana(s.data)})*`);
       }
       const quem = s.palestrantes.length ? ` – ${s.palestrantes.join(", ")}` : "";
-      texto += `${horaCurta(s.hora)} · ${s.titulo}${quem} (${s.local})\n`;
+      blocos.push(`${horaCurta(s.hora)} · ${s.titulo}${quem} (${s.local})`);
     }
-    return texto;
+    return blocos.join("\n\n");
   }
 
   async function copiar(texto: string) {
@@ -740,13 +690,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
     }
   }
 
-  function limparUrl() {
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has("agenda")) return;
-    url.searchParams.delete("agenda");
-    history.replaceState(history.state, "", url.toString());
-  }
-
   // ---------- eventos ----------
   fab?.addEventListener("click", abrir);
 
@@ -760,7 +703,8 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
       return;
     }
 
-    if (target.closest(".agenda-fechar")) {
+    // fechar ao seguir os links para a Plenária/Trilhas
+    if (target.closest(".agenda-fechar, a[href]")) {
       dialog.close();
       return;
     }
@@ -777,29 +721,11 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
     const itens = ordenar(lerAgenda());
 
     if (acao === "whatsapp") {
-      window.open(`https://wa.me/?text=${encodeURIComponent(textoWhatsApp(itens))}`, "_blank", "noopener");
+      window.open(`https://wa.me/?text=${encodeURIComponent(textoAgenda(itens))}`, "_blank", "noopener");
     } else if (acao === "copiar") {
-      mostrarToast((await copiar(linkAgenda(itens))) ? "Link copiado!" : "Não foi possível copiar o link");
+      mostrarToast((await copiar(textoAgenda(itens))) ? "Agenda copiada! É só colar onde quiser" : "Não foi possível copiar a agenda");
     } else if (acao === "limpar") {
       if (window.confirm("Remover todas as palestras da sua agenda?")) limpar();
-    } else if (acao === "importar" && compartilhada) {
-      adicionarVarios(compartilhada);
-      compartilhada = null;
-      limparUrl();
-      renderizar();
-      mostrarToast("Palestras salvas na sua agenda");
-    } else if (acao === "ver-minha") {
-      compartilhada = null;
-      limparUrl();
-      renderizar();
-    }
-  });
-
-  dialog?.addEventListener("close", () => {
-    // fechar sem salvar dispensa a agenda compartilhada
-    if (compartilhada) {
-      compartilhada = null;
-      limparUrl();
     }
   });
 
@@ -810,18 +736,6 @@ const dados = JSON.stringify({ sessoes, ano: ANO_EVENTO });
     void fab?.offsetWidth;
     fab?.classList.add("bump");
   });
-
-  // abriu um link compartilhado?
-  const param = new URLSearchParams(window.location.search).get("agenda");
-  if (param) {
-    const ids = param.split(".").map((c) => porCodigo.get(c)).filter((id): id is string => Boolean(id));
-    if (ids.length) {
-      compartilhada = ids;
-      abrir();
-    } else {
-      limparUrl();
-    }
-  }
 
   atualizarFab();
 </script>

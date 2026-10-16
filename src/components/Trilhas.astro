@@ -108,7 +108,7 @@ function agruparPorMesa(palestras: Palestra[]) {
   <div class="cronograma-cta-wrap">
     <a
       class="cronograma-cta"
-      href="https://institutoparar.com.br/wp-content/uploads/2026/10/CRONOGRAMA-OFICIAL-PARAR-SUMMIT-26.pdf"
+      href="https://institutoparar.com.br/wp-content/uploads/2026/10/CRONOGRAMA-PARAR-SUMMIT-26-OFICIAL-2.pdf"
       target="_blank"
       rel="noopener noreferrer"
       download
@@ -408,7 +408,7 @@ function agruparPorMesa(palestras: Palestra[]) {
     width: min(1200px, 100%);
     margin: 0 auto;
     justify-content: center;
-    /* Cards de mesa (altura automática) acompanham o mais alto da trilha */
+    /* cards da mesma trilha ficam com a altura do mais alto */
     align-items: stretch;
     flex-wrap: nowrap;
     gap: 40px;
@@ -416,11 +416,6 @@ function agruparPorMesa(palestras: Palestra[]) {
 
   .track.active {
     display: flex;
-  }
-
-  /* Card aberto cresce sozinho, sem esticar os vizinhos */
-  .track.has-selected {
-    align-items: flex-start;
   }
 
   /* --- Setas dos cards (mobile) --- */
@@ -470,12 +465,6 @@ function agruparPorMesa(palestras: Palestra[]) {
 
   .track-arrow-right {
     right: 8px;
-  }
-
-  .track.has-selected :global(.trilha-card:not(.selected)) {
-    opacity: 0.28;
-    transform: scale(0.96);
-    filter: saturate(0.65);
   }
 
   /* --- Mobile --- */
